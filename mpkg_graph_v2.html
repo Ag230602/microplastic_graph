@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Microplastics Knowledge Graph (Revised v2)</title>
+  <style>
+    :root {
+      --bg: #f7f5ef;
+      --ink: #1f2933;
+      --muted: #607080;
+      --line: #c9d2dc;
+      --panel: #ffffff;
+      --study: #2f6f9f;
+      --observation: #238b6e;
+      --association: #b65f24;
+      --biomarker: #8b5fbf;
+      --mechanism: #c3475b;
+      --sample: #667d2f;
+      --method: #4b78c2;
+      --polymer: #8f6a2a;
+      --size: #5f6f89;
+      --tissue: #7c6175;
+      --other: #5f7080;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.9);
+    }
+    h1 { margin: 0; font-size: 18px; letter-spacing: 0; }
+    .meta { color: var(--muted); font-size: 13px; text-align: right; }
+    .layout { min-height: 0; display: grid; grid-template-columns: 1fr 350px; }
+    #graph { width: 100%; height: 100%; min-height: 700px; background: #fbfaf6; }
+    aside { border-left: 1px solid var(--line); background: var(--panel); padding: 14px; overflow: auto; }
+    .toolbar { display: grid; gap: 10px; margin-bottom: 14px; }
+    input, select, button {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 9px 10px;
+      background: #fff;
+      color: var(--ink);
+      font: inherit;
+      font-size: 14px;
+    }
+    button { cursor: pointer; font-weight: 650; }
+    .legend { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; font-size: 12px; color: var(--muted); }
+    .legend span { display: flex; align-items: center; gap: 6px; }
+    .swatch { width: 10px; height: 10px; border-radius: 50%; flex: 0 0 auto; }
+    .details { border-top: 1px solid var(--line); padding-top: 12px; }
+    .details h2 { margin: 0 0 4px; font-size: 16px; line-height: 1.25; letter-spacing: 0; }
+    .details .type { color: var(--muted); font-size: 13px; margin-bottom: 10px; }
+    pre { white-space: pre-wrap; word-break: break-word; border: 1px solid var(--line); border-radius: 6px; padding: 10px; background: #fafafa; font-size: 12px; line-height: 1.45; }
+    .link { stroke: #9aa8b5; stroke-opacity: 0.58; fill: none; }
+    .link-label { fill: #657482; font-size: 9px; pointer-events: none; }
+    .node circle { stroke: #fff; stroke-width: 1.5px; cursor: pointer; }
+    .node text { fill: #1f2933; font-size: 10px; pointer-events: none; paint-order: stroke; stroke: #fbfaf6; stroke-width: 3px; stroke-linejoin: round; }
+    .dim { opacity: 0.14; }
+    .selected circle { stroke: #111827; stroke-width: 2.5px; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; grid-template-rows: 64vh auto; }
+      aside { border-left: 0; border-top: 1px solid var(--line); }
+      #graph { min-height: 0; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Microplastics Knowledge Graph (Revised v2)</h1>
+    <div class="meta"><span id="count">Loading graph...</span><br>Source: mpkg_output_v2.json</div>
+  </header>
+  <main class="layout">
+    <svg id="graph" role="img" aria-label="Knowledge graph visualization"></svg>
+    <aside>
+      <div class="toolbar">
+        <input id="search" type="search" placeholder="Search nodes">
+        <select id="typeFilter"><option value="">All node types</option></select>
+        <button id="reset">Reset View</button>
+      </div>
+      <div class="legend" id="legend"></div>
+      <section class="details" id="details">
+        <h2>Select a node</h2>
+        <div class="type">Node details will appear here.</div>
+      </section>
+    </aside>
+  </main>
+  <script>
+    const colorByType = {
+      Study: 'var(--study)', Observation: 'var(--observation)', Association: 'var(--association)', Biomarker: 'var(--biomarker)',
+      Mechanism: 'var(--mechanism)', Sample: 'var(--sample)', Method: 'var(--method)', Polymer: 'var(--polymer)',
+      ParticleSizeClass: 'var(--size)', TissueOrgan: 'var(--tissue)', Shape: 'var(--other)', ExposurePathway: 'var(--other)', ClinicalOutcome: 'var(--mechanism)'
+    };
+    const svg = document.getElementById('graph');
+    const details = document.getElementById('details');
+    const search = document.getElementById('search');
+    const typeFilter = document.getElementById('typeFilter');
+    const resetButton = document.getElementById('reset');
+
+    fetch('mpkg_graph_v2.json').then((response) => response.json()).then(init).catch((error) => {
+      details.innerHTML = '<h2>Could not load graph</h2><div class="type">Start the local server from this folder and open the served URL.</div><pre>' + escapeHtml(error) + '</pre>';
+    });
+
+    function init(graph) {
+      document.getElementById('count').textContent = graph.node_count + ' nodes / ' + graph.edge_count + ' edges';
+      const types = [...new Set(graph.nodes.map((node) => node.type))].sort();
+      for (const type of types) {
+        const option = document.createElement('option');
+        option.value = type;
+        option.textContent = type;
+        typeFilter.appendChild(option);
+      }
+      const legend = document.getElementById('legend');
+      for (const type of types) {
+        const item = document.createElement('span');
+        item.innerHTML = '<i class="swatch" style="background:' + (colorByType[type] || 'var(--other)') + '"></i>' + type;
+        legend.appendChild(item);
+      }
+
+      const nodes = graph.nodes.map((node) => ({ ...node }));
+      const nodeById = new Map(nodes.map((node) => [node.id, node]));
+      const links = graph.edges.filter((edge) => edge.valid).map((edge) => ({ ...edge, source: nodeById.get(edge.source), target: nodeById.get(edge.target) }));
+      const adjacency = new Map(nodes.map((node) => [node.id, new Set()]));
+      for (const link of links) {
+        adjacency.get(link.source.id).add(link.target.id);
+        adjacency.get(link.target.id).add(link.source.id);
+      }
+
+      let selected = null;
+      let transform = { x: 0, y: 0, scale: 1 };
+      const width = () => svg.clientWidth || 900;
+      const height = () => svg.clientHeight || 700;
+      const ns = 'http://www.w3.org/2000/svg';
+      svg.innerHTML = '<defs><marker id="arrow" viewBox="0 -5 10 10" refX="18" refY="0" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,-5L10,0L0,5" fill="#9aa8b5"></path></marker></defs>';
+      const viewport = document.createElementNS(ns, 'g');
+      const edgeLayer = document.createElementNS(ns, 'g');
+      const labelLayer = document.createElementNS(ns, 'g');
+      const nodeLayer = document.createElementNS(ns, 'g');
+      viewport.append(edgeLayer, labelLayer, nodeLayer);
+      svg.appendChild(viewport);
+
+      const edgeEls = links.map((link) => {
+        const path = document.createElementNS(ns, 'path');
+        path.classList.add('link');
+        path.setAttribute('marker-end', 'url(#arrow)');
+        edgeLayer.appendChild(path);
+        const label = document.createElementNS(ns, 'text');
+        label.classList.add('link-label');
+        label.textContent = link.label;
+        labelLayer.appendChild(label);
+        return { path, label, link };
+      });
+      const nodeEls = nodes.map((node) => {
+        const group = document.createElementNS(ns, 'g');
+        group.classList.add('node');
+        const circle = document.createElementNS(ns, 'circle');
+        circle.setAttribute('r', radiusFor(node));
+        circle.setAttribute('fill', colorByType[node.type] || 'var(--other)');
+        const text = document.createElementNS(ns, 'text');
+        text.setAttribute('x', radiusFor(node) + 4);
+        text.setAttribute('y', 3);
+        text.textContent = truncate(node.label, 34);
+        group.append(circle, text);
+        group.addEventListener('click', () => selectNode(node));
+        nodeLayer.appendChild(group);
+        return { group, node };
+      });
+
+      seedPositions(nodes, width(), height());
+      runLayout(nodes, links, width(), height(), 420);
+      tick();
+      search.addEventListener('input', applyFilters);
+      typeFilter.addEventListener('change', applyFilters);
+      resetButton.addEventListener('click', () => {
+        selected = null;
+        transform = { x: 0, y: 0, scale: 1 };
+        updateTransform();
+        applyFilters();
+        details.innerHTML = '<h2>Select a node</h2><div class="type">Node details will appear here.</div>';
+      });
+
+      let panning = false;
+      let last = null;
+      svg.addEventListener('pointerdown', (event) => {
+        if (event.target.closest('.node')) return;
+        panning = true;
+        last = { x: event.clientX, y: event.clientY };
+        svg.setPointerCapture(event.pointerId);
+      });
+      svg.addEventListener('pointermove', (event) => {
+        if (!panning) return;
+        transform.x += event.clientX - last.x;
+        transform.y += event.clientY - last.y;
+        last = { x: event.clientX, y: event.clientY };
+        updateTransform();
+      });
+      svg.addEventListener('pointerup', () => { panning = false; });
+      svg.addEventListener('wheel', (event) => {
+        event.preventDefault();
+        transform.scale = Math.max(0.35, Math.min(2.4, transform.scale * (event.deltaY > 0 ? 0.9 : 1.1)));
+        updateTransform();
+      }, { passive: false });
+
+      function tick() {
+        for (const { path, label, link } of edgeEls) {
+          const dx = link.target.x - link.source.x;
+          const dy = link.target.y - link.source.y;
+          const dr = Math.sqrt(dx * dx + dy * dy) * 1.35;
+          path.setAttribute('d', 'M' + link.source.x + ',' + link.source.y + 'A' + dr + ',' + dr + ' 0 0,1 ' + link.target.x + ',' + link.target.y);
+          label.setAttribute('x', (link.source.x + link.target.x) / 2);
+          label.setAttribute('y', (link.source.y + link.target.y) / 2 - 4);
+        }
+        for (const { group, node } of nodeEls) group.setAttribute('transform', 'translate(' + node.x + ',' + node.y + ')');
+      }
+      function selectNode(node) {
+        selected = node;
+        details.innerHTML = '<h2>' + escapeHtml(node.label) + '</h2><div class="type">' + escapeHtml(node.type) + ' · ' + escapeHtml(node.id) + '</div><pre>' + escapeHtml(JSON.stringify(node.data, null, 2)) + '</pre>';
+        applyFilters();
+      }
+      function applyFilters() {
+        const query = search.value.trim().toLowerCase();
+        const type = typeFilter.value;
+        const visible = new Set(nodes.filter((node) => {
+          const text = (node.id + ' ' + node.label + ' ' + node.type).toLowerCase();
+          return (!query || text.includes(query)) && (!type || node.type === type);
+        }).map((node) => node.id));
+        const related = selected ? adjacency.get(selected.id) : null;
+        for (const item of nodeEls) {
+          const filtered = !visible.has(item.node.id);
+          const unrelated = selected && item.node.id !== selected.id && !related.has(item.node.id);
+          item.group.classList.toggle('dim', filtered || unrelated);
+          item.group.classList.toggle('selected', selected && item.node.id === selected.id);
+        }
+        for (const item of edgeEls) {
+          const filtered = !visible.has(item.link.source.id) || !visible.has(item.link.target.id);
+          const unrelated = selected && item.link.source.id !== selected.id && item.link.target.id !== selected.id;
+          item.path.classList.toggle('dim', filtered || unrelated);
+          item.label.classList.toggle('dim', filtered || unrelated);
+        }
+      }
+      function updateTransform() { viewport.setAttribute('transform', 'translate(' + transform.x + ',' + transform.y + ') scale(' + transform.scale + ')'); }
+    }
+
+    function seedPositions(nodes, width, height) {
+      const centerX = width / 2;
+      const centerY = height / 2;
+      nodes.forEach((node, index) => {
+        const angle = (index / nodes.length) * Math.PI * 2;
+        const radius = Math.min(width, height) * (0.18 + (index % 5) * 0.035);
+        node.x = centerX + Math.cos(angle) * radius;
+        node.y = centerY + Math.sin(angle) * radius;
+        node.vx = 0;
+        node.vy = 0;
+      });
+    }
+    function runLayout(nodes, links, width, height, steps) {
+      const centerX = width / 2;
+      const centerY = height / 2;
+      for (let step = 0; step < steps; step++) {
+        const alpha = 1 - step / steps;
+        for (let i = 0; i < nodes.length; i++) {
+          for (let j = i + 1; j < nodes.length; j++) {
+            const a = nodes[i];
+            const b = nodes[j];
+            let dx = b.x - a.x;
+            let dy = b.y - a.y;
+            let distance = Math.sqrt(dx * dx + dy * dy) || 1;
+            const force = (720 / (distance * distance)) * alpha;
+            dx /= distance;
+            dy /= distance;
+            a.vx -= dx * force;
+            a.vy -= dy * force;
+            b.vx += dx * force;
+            b.vy += dy * force;
+          }
+        }
+        for (const link of links) {
+          const dx = link.target.x - link.source.x;
+          const dy = link.target.y - link.source.y;
+          const distance = Math.sqrt(dx * dx + dy * dy) || 1;
+          const force = (distance - 116) * 0.014 * alpha;
+          link.source.vx += (dx / distance) * force;
+          link.source.vy += (dy / distance) * force;
+          link.target.vx -= (dx / distance) * force;
+          link.target.vy -= (dy / distance) * force;
+        }
+        for (const node of nodes) {
+          node.vx += (centerX - node.x) * 0.003 * alpha;
+          node.vy += (centerY - node.y) * 0.003 * alpha;
+          node.vx *= 0.82;
+          node.vy *= 0.82;
+          node.x = Math.max(36, Math.min(width - 36, node.x + node.vx));
+          node.y = Math.max(36, Math.min(height - 36, node.y + node.vy));
+        }
+      }
+    }
+    function radiusFor(node) { return node.type === 'Study' ? 13 : (node.type === 'Observation' || node.type === 'Association' ? 9 : 7); }
+    function truncate(value, max) { return value.length > max ? value.slice(0, max - 1) + '...' : value; }
+    function escapeHtml(value) { return String(value).replace(/[&<>\"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[char])); }
+  </script>
+</body>
+</html>

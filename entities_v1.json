@@ -1,0 +1,462 @@
+[
+  {
+    "title": "Association",
+    "description": "An interpreted relationship between biological, mechanistic, biomarker, or clinical entities, separated from raw observations and qualified by evidentiary strength.",
+    "type": "object",
+    "required": ["id", "type", "relationship", "evidence_strength"],
+    "additionalProperties": false,
+    "properties": {
+      "id": { "type": "string", "description": "Unique association identifier." },
+      "type": { "const": "Association", "description": "Type tag for the node." },
+      "relationship": {
+        "type": "string",
+        "enum": [
+          "associated_with",
+          "correlates_with",
+          "suggests",
+          "causal_evidence",
+          "protective",
+          "null"
+        ]
+      },
+      "direction": {
+        "type": "string",
+        "enum": ["increase", "decrease", "variable", "none", "unknown"]
+      },
+      "effect_size": { "type": "number" },
+      "effect_metric": { "type": "string" },
+      "p_value": { "type": "number" },
+      "confidence": { "type": "number" },
+      "evidence_strength": {
+        "type": "string",
+        "enum": ["limited", "moderate", "strong"]
+      },
+      "consistency_across_studies": {
+        "type": "string",
+        "enum": ["low", "medium", "high", "unknown"]
+      },
+      "study_scope": { "type": "string" },
+      "causal_confidence": {
+        "type": "string",
+        "enum": ["low", "medium", "high", "unknown"]
+      },
+      "notes": { "type": "string" }
+    }
+  },
+  {
+    "title": "Biomarker",
+    "description": "A measurable biological indicator linked to mechanisms or health outcomes, interpreted through study-supported associations rather than direct causation.",
+    "type": "object",
+    "required": ["id", "type", "name"],
+    "additionalProperties": false,
+    "properties": {
+      "id": { "type": "string" },
+      "type": { "const": "Biomarker" },
+      "name": { "type": "string" },
+      "assay_type": { "type": "string" },
+      "tissue_matrix": { "type": "string" },
+      "direction_of_change": {
+        "type": "string",
+        "enum": ["increase", "decrease", "variable", "unknown"]
+      },
+      "threshold": { "type": "number" },
+      "threshold_unit": { "type": "string" },
+      "clinical_relevance_notes": { "type": "string" },
+      "citations_ref": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  {
+    "title": "ClinicalOutcome",
+    "description": "A health endpoint associated with exposure and biology, interpreted through evidence-qualified associations.",
+    "type": "object",
+    "required": ["id", "type", "label"],
+    "additionalProperties": false,
+    "properties": {
+      "id": { "type": "string" },
+      "type": { "const": "ClinicalOutcome" },
+      "label": { "type": "string" },
+      "outcome_type": {
+        "type": "string",
+        "enum": ["symptom", "diagnosis", "other"]
+      },
+      "population": { "type": "string" },
+      "strength_of_evidence": {
+        "type": "string",
+        "enum": ["limited", "moderate", "strong"]
+      },
+      "consistency_across_studies": {
+        "type": "string",
+        "enum": ["low", "medium", "high", "unknown"]
+      },
+      "causal_confidence": {
+        "type": "string",
+        "enum": ["low", "medium", "high", "unknown"]
+      },
+      "citations_ref": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "notes": { "type": "string" }
+    }
+  },
+  {
+    "title": "EnvironmentalCompartment",
+    "description": "Represents a physical environmental location (e.g., marine water, air, sediment) where microplastics are present.",
+    "type": "object",
+    "required": ["id", "type", "label"],
+    "additionalProperties": false,
+    "properties": {
+      "id": { "type": "string" },
+      "type": { "const": "EnvironmentalCompartment" },
+      "label": { "type": "string" },
+      "subcompartment": { "type": "string" },
+      "geo_context": {
+        "type": "object",
+        "properties": {
+          "region": { "type": "string" },
+          "country": { "type": "string" }
+        }
+      },
+      "depth_or_height_range": {
+        "type": "object",
+        "properties": {
+          "min": { "type": "number" },
+          "max": { "type": "number" },
+          "unit": { "type": "string" }
+        }
+      }
+    }
+  },
+  {
+    "title": "ExposurePathway",
+    "description": "A route of human or biota exposure linking environmental presence to biological contact.",
+    "type": "object",
+    "required": ["id", "type", "pathway_label"],
+    "additionalProperties": false,
+    "properties": {
+      "id": { "type": "string" },
+      "type": { "const": "ExposurePathway" },
+      "pathway_label": { "type": "string" },
+      "route": {
+        "type": "string",
+        "enum": ["oral", "inhalation", "dermal"]
+      },
+      "intake_metric": { "type": "string" },
+      "population_context": { "type": "string" },
+      "assumptions_notes": { "type": "string" },
+      "citations_ref": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  {
+    "title": "Mechanism",
+    "description": "A biological mechanism implicated in microplastic-related effects, contextualized by evidence type and dose.",
+    "type": "object",
+    "required": ["id", "type", "label"],
+    "additionalProperties": false,
+    "properties": {
+      "id": { "type": "string" },
+      "type": { "const": "Mechanism" },
+      "label": {
+        "type": "string",
+        "enum": [
+          "oxidative_stress",
+          "inflammation",
+          "endocrine_disruption",
+          "genotoxicity",
+          "metabolic_disturbance",
+          "immune_dysregulation",
+          "other"
+        ]
+      },
+      "evidence_type": {
+        "type": "string",
+        "enum": ["in_vitro", "in_vivo", "human_observational", "review"]
+      },
+      "dose_context": {
+        "type": "object",
+        "properties": {
+          "min": { "type": "number" },
+          "max": { "type": "number" },
+          "unit": { "type": "string" }
+        }
+      },
+      "key_biomarkers": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "species_scope": { "type": "string" },
+      "notes": { "type": "string" },
+      "citations_ref": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  {
+    "title": "Method",
+    "description": "An analytical method used for microplastic detection with structured LOD/LOQ, matrix context, and detection bias.",
+    "type": "object",
+    "required": ["id", "type", "method_class"],
+    "additionalProperties": false,
+    "properties": {
+      "id": { "type": "string" },
+      "type": { "const": "Method" },
+      "method_class": { "type": "string" },
+      "min_size_reliable": { "type": "number" },
+      "max_size_reliable": { "type": "number" },
+      "identification_capability": { "type": "string" },
+      "reporting_basis": { "type": "string" },
+      "LOD": {
+        "type": "object",
+        "properties": {
+          "value": { "type": "number" },
+          "unit": { "type": "string" },
+          "matrix": { "type": "string" }
+        }
+      },
+      "LOQ": {
+        "type": "object",
+        "properties": {
+          "value": { "type": "number" },
+          "unit": { "type": "string" },
+          "matrix": { "type": "string" }
+        }
+      },
+      "detects_particles": { "type": "boolean" },
+      "identifies_polymer": { "type": "boolean" },
+      "applicable_matrix": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "bias_notes": { "type": "string" }
+    }
+  },
+  {
+    "title": "Observation",
+    "description": "A measured empirical fact from a study/sample, distinct from interpretation.",
+    "type": "object",
+    "required": ["id", "type", "metric_type", "value", "unit"],
+    "additionalProperties": false,
+    "properties": {
+      "id": { "type": "string" },
+      "type": { "const": "Observation" },
+      "metric_type": {
+        "type": "string",
+        "enum": ["count", "mass", "concentration", "presence_absence", "frequency"]
+      },
+      "value": { "type": ["number", "string"] },
+      "unit": { "type": "string" },
+      "uncertainty": { "type": "number" },
+      "confidence_interval": { "type": "string" },
+      "notes": { "type": "string" }
+    }
+  },
+  {
+    "title": "ParticleSizeClass",
+    "description": "Controlled vocabulary for microplastic or nanoplastic particle size bins.",
+    "type": "object",
+    "required": ["id", "type", "label"],
+    "additionalProperties": false,
+    "properties": {
+      "id": { "type": "string" },
+      "type": { "const": "ParticleSizeClass" },
+      "label": { "type": "string" },
+      "min_micrometer": { "type": "number" },
+      "max_micrometer": { "type": "number" },
+      "bin_type": {
+        "type": "string",
+        "enum": ["nano", "micro"]
+      },
+      "synonyms": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "definition_notes": { "type": "string" }
+    }
+  },
+  {
+    "title": "PolicyInstrument",
+    "description": "A policy or regulation relevant to microplastics sources, definitions, or measurement.",
+    "type": "object",
+    "required": ["id", "type", "title"],
+    "additionalProperties": false,
+    "properties": {
+      "id": { "type": "string" },
+      "type": { "const": "PolicyInstrument" },
+      "title": { "type": "string" },
+      "jurisdiction": { "type": "string" },
+      "effective_dates": { "type": "object" },
+      "scope": { "type": "string" },
+      "targeted_sources": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "required_metrics": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": ["count", "mass", "size_ranges"]
+        }
+      },
+      "compliance_requirements": { "type": "string" },
+      "notes": { "type": "string" }
+    }
+  },
+  {
+    "title": "Polymer",
+    "description": "A polymer material commonly found as a microplastic.",
+    "type": "object",
+    "required": ["id", "type", "name"],
+    "additionalProperties": false,
+    "properties": {
+      "id": { "type": "string" },
+      "type": { "const": "Polymer" },
+      "name": { "type": "string" },
+      "synonyms": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "CAS_number": { "type": "string" },
+      "polymer_class": { "type": "string" },
+      "density_range": { "type": "object" },
+      "typical_additives": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "spectral_library_refs": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "external_refs": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "notes": { "type": "string" }
+    }
+  },
+  {
+    "title": "Sample",
+    "description": "A study-specific collected specimen with standardized matrix and role.",
+    "type": "object",
+    "required": ["id", "type", "matrix_standardized", "sample_role"],
+    "additionalProperties": false,
+    "properties": {
+      "id": { "type": "string" },
+      "type": { "const": "Sample" },
+      "matrix_standardized": { "type": "string" },
+      "sample_role": {
+        "type": "string",
+        "enum": ["environment_study", "biological", "exposure"]
+      },
+      "collection_date": { "type": "string" },
+      "location": { "type": "object" },
+      "volume_or_mass_processed": { "type": "number" },
+      "volume_or_mass_unit": { "type": "string" },
+      "sample_prep": { "type": "string" },
+      "contamination_controls": { "type": "string" },
+      "storage_conditions": { "type": "string" },
+      "notes": { "type": "string" }
+    }
+  },
+  {
+    "title": "Shape",
+    "description": "Particle morphology classification.",
+    "type": "object",
+    "required": ["id", "type", "label"],
+    "additionalProperties": false,
+    "properties": {
+      "id": { "type": "string" },
+      "type": { "const": "Shape" },
+      "label": {
+        "type": "string",
+        "enum": ["fiber", "fragment", "bead", "film", "foam", "other"]
+      },
+      "synonyms": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "definition_notes": { "type": "string" },
+      "artifact_notes": { "type": "string" }
+    }
+  },
+  {
+    "title": "Source",
+    "description": "An emitting activity or product category producing microplastics.",
+    "type": "object",
+    "required": ["id", "type", "label", "source_type"],
+    "additionalProperties": false,
+    "properties": {
+      "id": { "type": "string" },
+      "type": { "const": "Source" },
+      "label": { "type": "string" },
+      "source_type": {
+        "type": "string",
+        "enum": ["primary", "secondary"]
+      },
+      "sector": { "type": "string" },
+      "emission_rate_estimate": { "type": "object" },
+      "mitigation_options_ref": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "notes": { "type": "string" }
+    }
+  },
+  {
+    "title": "Study",
+    "description": "A scientific study providing evidence, metadata, and quality context.",
+    "type": "object",
+    "required": ["id", "type", "title", "design"],
+    "additionalProperties": false,
+    "properties": {
+      "id": { "type": "string" },
+      "type": { "const": "Study" },
+      "title": { "type": "string" },
+      "doi": { "type": "string" },
+      "year": { "type": "integer" },
+      "design": {
+        "type": "string",
+        "enum": ["in_vitro", "in_vivo", "human_observational", "review", "meta_analysis"]
+      },
+      "species": { "type": "string" },
+      "population": { "type": "string" },
+      "sample_size": { "type": "integer" },
+      "geographic_scope": { "type": "string" },
+      "exposure_context": { "type": "string" },
+      "quality_flags": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "evidence_strength": {
+        "type": "string",
+        "enum": ["limited", "moderate", "strong"]
+      },
+      "notes": { "type": "string" }
+    }
+  },
+  {
+    "title": "TissueOrgan",
+    "description": "Canonical biological tissue or organ target, distinct from sample instances.",
+    "type": "object",
+    "required": ["id", "type", "label"],
+    "additionalProperties": false,
+    "properties": {
+      "id": { "type": "string" },
+      "type": { "const": "TissueOrgan" },
+      "label": { "type": "string" },
+      "species": { "type": "string" },
+      "histology_notes": { "type": "string" },
+      "vulnerability_notes": { "type": "string" },
+      "citations_ref": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  }
+]

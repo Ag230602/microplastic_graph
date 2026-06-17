@@ -1,0 +1,1345 @@
+You are a scientific knowledge graph extraction system for a Microplastics Knowledge Graph (MPKG).
+
+Your task is to extract a conservative, ontology-compliant knowledge graph from the provided paper content.
+
+Use only evidence explicitly supported by the source paper content.
+If a fact is uncertain, omit it.
+It is better to miss a fact than to hallucinate one.
+
+EXTRACTION RULES
+
+1. Ontology compliance
+- Use only node types, attributes, and relationship types allowed by the provided ontology files.
+- Do not invent node types, fields, or edge labels.
+- Ensure every entity includes all required fields for its type.
+
+2. Evidence discipline
+- Extract only facts grounded in the source paper.
+- Do not generalize beyond the paper.
+- Do not import outside knowledge.
+- Do not infer causal claims from correlational evidence.
+
+3. Observation vs interpretation
+- Put measured findings into `Observation` nodes.
+- Put interpreted findings, associations, and evidence-qualified claims into `Association` nodes.
+- Keep raw measurements separate from interpretations.
+
+4. Quantitative fidelity
+- Preserve values, units, ranges, confidence intervals, p-values, and uncertainty exactly as stated when available.
+- Do not silently convert units.
+- If a quantity is ambiguous, omit it rather than guessing.
+
+5. Entity hygiene
+- Reuse entities instead of duplicating them.
+- Keep labels concise and canonical.
+- Use the most specific allowed node type.
+
+6. Relationships
+- Only create relationships explicitly supported by the paper and allowed by the relationship schema.
+- Ensure source and target types are valid for that relationship.
+
+OUTPUT FORMAT
+
+Return strict JSON only in the following top-level structure:
+
+{
+  "entities": [],
+  "relationships": []
+}
+
+Each relationship object must use this structure:
+
+{
+  "source_id": "...",
+  "relation_type": "...",
+  "target_id": "..."
+}
+
+Do not include markdown fences.
+Do not include commentary.
+Return only the JSON object.
+
+PAPER TITLE
+Neurotoxicity Following Exposure to Micro and Nanoplastics
+
+SOURCE PAPER CONTENT
+{
+  "title_abstract": {
+    "title": "Neurotoxicity Following Exposure to Micro and Nanoplastics",
+    "abstract": "The pervasive presence and enduring existence of micro and nanoplastics in the environment render their exposure to humans and aquatic creatures unavoidable. Research indicates these tiny plastic particles can be taken in by aquatic beings and mammals. Once within the body, micro and nanoplastics have the capability to infiltrate the brain, although the level of penetration and the subsequent neurotoxic effects are not fully explored. Previous studies indicate that metal (oxide) nanoparticles can enter the brain and induce neurotoxic effects. Given the chemical resemblances between plastic particles and inert metal (oxide) nanoparticles, this review aims to summarize existing studies on the neurotoxic implications of nanoplastics across various species and in vitro settings. The current evidence, although incomplete, suggests that exposure to nanoplastics may lead to oxidative stress, potentially causing cell damage and raising the risk of developing neurological disorders. Moreover, such exposure could inhibit acetylcholinesterase activity and alter neurotransmitter levels, potentially contributing to observed behavioral changes. There is a notable lack of systematic comparison regarding the neurotoxic effects stemming from different particle types, shapes, and sizes at various concentrations and durations of exposure. Understanding these aspects is essential for further evaluating the neurotoxic danger and risk associated with nanoplastics."
+  },
+  "sections": {
+    "introduction": "1. Introduction Plastics are crucial in producing various products, including packaging materials, pharmaceuticals, cosmetics, textiles, masks, and surgical instruments [1,2,3]. Their widespread application can be attributed to their adaptability, strength, water resistance, cost-effectiveness, and ease of production with minimal energy use [1,2]. These attributes make plastics an excellent choice for fabricating medical devices such as syringes, IV bags, medical packaging, artificial joints, and prosthetics, as well as food storage solutions and other plastic goods [4]. Despite these benefits, plastics face criticism due to environmental and health concerns stemming from their long-lasting nature, widespread presence, and potential to contaminate food and water sources for animals [1,4]. Plastics gained traction alongside the Industrial Revolution, expanding significantly as a consumer product since the 1930s and 1940s. Between 1975 and 2012, global plastic resin production jumped by 620%, reaching 288 million tons [5]. Consequently, plastic waste surged from 275 million tons in 2010 to 335 million tons by 2017 [5,6], posing a grave threat to human health due to its largely unsustainable usage patterns [4]. In the U.S., the recycling rate for plastics is merely 8.8% [7]. Plastics' slow decomposition remains problematic, as single-use plastics like LDPE bags may take up to 250 years to break down in landfills or natural environments [8]. By 2025, it is expected that 192 countries' coasts within 50 km will accumulate around 250 million tons of poorly managed marine plastic waste [5]. Over time, these enduring plastics fragment into microplastics and nanoplastics-tiny particles with variable chemical structures formed through degradation processes [9,10,11]. Microplastics and nanoplastics, present everywhere, from the atmosphere to aquatic systems, pose threats due to their minute size and diverse shapes, including fibers, foams, beads, and fragments [12]. Interestingly, spherical microplastics may cause fewer gut health issues than irregular ones [13]. Although there is debate over the size categories of plastic debris, classifications typically include macroplastics (2.5-100 cm), mesoplastics (0.1-2.5 cm), microplastics (1000 μm-1 µm), and nanoplastics (<1 µm) [14,15,16], with some sources defining micro- and nanoplastics as slightly different ranges small microplastics (1 µm to <100 µm), sub-micron plastics (100 nm - <1 µm), nanoplastics (1 nm to <100 nm) [17,18], or 100 nm-1 nm [19,20]. However, there is a significant gap in understanding regarding the dimensions, architecture, and cost of micro- and nanoplastics. The toxicological impacts of micro- and nanoplastics on human organs, their cellular absorption pathways, and the underlying molecular mechanisms remain underexplored due to the scant and often inconsistent scientific literature. This study aims to provide an overview of the potential entry of microplastics and nanoplastics into the body and then into the brain and to link exposure and the physicochemical properties of the particles with neurological diseases. In addition, it also provides insights into the mechanisms of the effects of microplastics and nanoplastics on the diseases above.",
+    "methodology": "2. Methodology A systematic search was conducted across multiple databases, including PubMed, Scopus, and Web of Science, using keywords such as combinations such as Neurotox AND Nanoplastic, Neurotox AND Microplastic, and Neurotox AND plastic particles, neuroinflammation, and oxidative stress markers. The review includes studies published between 2015 and 2024, ensuring that the most current findings are represented. The inclusion criteria were focused on peer-reviewed articles that involved both animal and human models and specifically examined micro and nanoplastics's effects on oxidative stress and neuroinflammation. Studies unrelated to micro and nanoplastics, those involving other pollutants classes, or those lacking molecular insights were excluded. The selected studies were synthesized to assess consistent findings on micro and nanoplastics's ability to induce oxidative stress, including the production of reactive oxygen species (ROS) and lipid peroxidation, as well as its endocrine-disrupting effects on the hypothalamic-pituitary-adrenal (HPA) axis, thyroid function, and other hormonal pathways. Special attention was given to studies addressing micro and nanoplastics's persistence in the environment and their potential for cumulative toxicity through prolonged exposure.",
+    "microplastics and nanoplastics effects on the nervous system": "5. Microplastics and Nanoplastics Effects on the Nervous System Due to the constraints in obtaining human tissue samples, the repercussions of microplastics and nanoplastics on human health remain inadequately comprehended [37]. The human nervous system, a sophisticated network with numerous neurons, oversees various physiological functions [38]. Despite the limited research on how microplastics and nanoplastics impact the nervous system, there is potential for nanoplastics to breach physiological barriers like the BBB [39]. The transport and build-up of these particles in the brain can result in different types of damage, heightening the brain's susceptibility to neurological disorders by causing oxidative stress [40]. Research indicates that microplastics and nanoplastics have detrimental effects on the nervous system, potentially leading to neurodegeneration. Studies have observed that nanoplastics contribute to neurotoxicity by disrupting typical neuron arrangements and characteristics in the cerebral cortex, signified by nuclear pyknosis. In particular, mouse brain tissues exposed to PS-NH2 showed increased caspase-3 signals, a marker for neuron cell apoptosis. Additionally, cytokines like TNF-α and IL-6 were upregulated in these tissues, hinting at inflammation caused by cytokine presence [41]. In the case of European seabass, exposure to microplastics reduced the release of the enzyme acetylcholinesterase (AChE), triggered oxidative stress and lipid peroxidation, and forced a shift towards anaerobic energy pathways, which subsequently led to irregular swimming behavior [42]. When neural cells were subjected to these particles, toxicity was induced and the metabolic rate decreased. These adverse effects of microplastics and nanoplastics appear to stem from the build-up of immune cells activated within the brain, oxidative stress, and heightened levels of inflammatory cytokines in circulation, particularly TNF-α and IL-6 [41,43]. Other research supports the neurotoxic impact of these particles [44,45], such as findings by O'Donovan et al., [46] which demonstrated that LDPE microplastic particles in clams could lead to neurotoxicity by altering acetylcholinesterase activity or by infiltrating the brain and causing oxidative stress, culminating in cellular damage that can cause neurodegenerative and neurodevelopmental issues [47].",
+    "microplastics and nanoplastics neurotoxic effects on marine invertebrates": "7. Microplastics and Nanoplastics Neurotoxic Effects on Marine Invertebrates Caenorhabditis elegans were subjected to five different spherical polystyrene microplastic sizes (0.1-5 μm) in a culture medium at 1 mg/L concentration. This led to excitotoxicity affecting their movement, lowered survival rates, and decreased average lifespan, with the most pronounced effects observed with exposure to 1.0 μm size particles. Additionally, the expression of several neuronal genes declined, which was linked to disruptions in cholinergic and GABA neurons and increased oxidative stress. However, there is no direct proof of the ingestion of these microplastics by C. elegans [83,84]. Earthworms (Eisenia fetida) exposed to low-density polyethylene particles ranging from 100-200 μm (0.1-1.5 g/kg soil) for a period of up to 28 days within artificial soil, exhibited skin damage, particularly at 1.5 g/kg soil exposure level. Upon analyzing and quantifying polyethylene particles, their uptake (after 14-28 days at 1.5 g/kg soil) was confirmed, yet the detailed distribution of the particles inside the earthworms remains unclear. When exposed to polyethylene particles at a level of 1.0 g/kg soil for 28 days, an increase in catalase activity and malondialdehyde levels was noted, suggesting oxidative stress in these organisms. Notably, exposure levels of 1.0 and 1.5 g/kg soil for 21 and 28 days, respectively, also led to higher AChE activity [85]. Freshwater zebra mussels, known as Dreissena polymorpha, were exposed to pristine polystyrene microbeads of two sizes (1 μm and 10 μm) at concentrations of 1 and 4 × 106 MPs/L for six days. This led to the accumulation of particles within the gut lumen and further movement to tissues and hemolymph, as observed with confocal microscopy. Importantly, these polystyrene microbeads did not cause genotoxic effects. While both bead sizes boosted dopamine levels, other parameters such as serotonin, glutamate levels, and activities of monoamine oxidase and AChE remained unchanged. Interestingly, the lower-dose mix enhanced catalase activity, lowering glutathione peroxidase and pointing towards moderate cellular stress [86]. In a different study involving the bivalve Scrobicularia plana, exposure to 20 μm polystyrene microplastics at a concentration of 1 mg/L resulted in particles being detected in the hemolymph, digestive gland, and gills using light microscopy and infrared spectroscopy. A 7-day exposure to these microplastics in the gills led to sustained increases in superoxide dismutase (SOD) activity and a rise in Glutathione-S-transferase (GST) activity by the end of the exposure, suggesting oxidative stress. During the exposure period of 3 to 14 days, along with post-excretion, a decrease in AChE and lipid peroxidation (LPO) activities was noted in the gills. In the digestive gland, from day 14, SOD activity was elevated, whereas catalase activity was reduced [87]. Myetilus gallopro-vincialis (Mediterranean Mussels) were subjected to polystyrene microplastics (0.11 μm, 0.005-50 mg/L) for 96 hours, resulting in notable deviations in the genes' expression linked to biotransformation, cellular stress response, and innate immunity. Distinct responses were observed in the gills (hsp70 at 50 mg/L) and digestive glands (cyp11 at 0.5 mg/L, cyp32 at 5 mg/L, cat at 0.05 and 0.5 mg/L, lys at 5 mg/L). While there wasn't an evident pattern of dose dependence, the mean DNA damage increased with exposure concentrations ranging from 0.05-50 mg/L. There was a reduced cholinesterase activity in the hemolymph at concentrations between 0.05-0.5 mg/L, though no further signs of neurotoxicity were noted. However, there's a lack of evidence concerning the actual uptake of polystyrene microplastics [88]. Exposure of the same species to both unpolluted and pyrene-contaminated polyethylene and polystyrene microplastics (100 μm, 1.5 g/L) over seven days led to the introduction of plastic particles within the hemolymph, gills, and intestines, identified through polarized light microscopy. This exposure decreased AChE activity in the gills but not in the hemolymph, also inducing nuclear alterations and DNA damage. Pyrene did not amplify the AChE activity inhibition [89]. Corbicula flumina (Asian Freshwater Mussels), when exposed to red fluorescent polymeric microspheres (composition unspecified; 1-5 μm, 0.2 or 0.7 mg/L) for 96 hours, showed plastic particles inside the digestive tract, gland's lumen, connective tissue, hemolymphatic sinuses, and the surface of the gills using light and fluorescent microscopy. Exposure at 0.2 mg/L significantly reduced cholinesterase activity, heightened with florfenicol exposure [90]. In another study, these mussels exposed to red fluorescent polymeric microspheres (1-5 μm, 0.13 mg/L) for eight days had increased presence of particles in their digestive tract and gills. The exposure diminished cholinesterase activity and elevated LPO levels, signifying oxidative damage. The effects were reversible after six days of recovery and, surprisingly, were mitigated by simultaneous mercury exposure [91]. The exposure of both striped shrimp (Amphibia lanu amphitrite) and brine shrimp (Artemia Franciscan) larvae to 0.1 μm fluorescent polystyrene microparticles, at concentrations ranging from 0.001 to 10 mg/L, over periods of 24 to 48 hours led to plastic particles being detectable within them through fluorescence microscopy. Yet, it remains uncertain whether these particles can penetrate further into surrounding tissues. When exposed to microplastics at concentrations of 1 mg/L or higher for 48 hours, noticeable alterations in the larvae's swimming speeds were observed. Furthermore, the microplastic exposure resulted in various influences on enzyme activities. Notably, there was a significant increase in catalase activity, more evident at a higher concentration of 1 mg/L. In contrast, the influence on cholinesterases, such as acetylcholinesterase and propionylcholinesterase, showed no clear pattern of dose dependency [92]. Exposure of brine shrimp larvae (Artemia Francesca) to amino-modified polystyrene nanoparticles, with a size of 50 nm, at concentrations of 0.1 to 10 μg/mL over either 48 hours or 14 days caused a decrease in GST and catalase activity. This reduction suggests oxidative stress, along with inhibition of carboxylation and ChE carboxylation processes, particularly at a 1 μg/mL concentration. Unfortunately, despite these effects, there was no substantial evidence to confirm the actual uptake of these polystyrene nanoparticles by the larvae [93].",
+    "microplastics and nanoplastics neurotoxic effects in rodents": "8. Microplastics and Nanoplastics Neurotoxic Effects in Rodents In contrast to the extensive rodent in vivo research available for metal(oxide) nanoparticles, studies delving into the micro- and nanoplastics neurotoxicity in rodents are notably scarce, with only two such investigations. This scarcity is particularly surprising when considering the documented neurotoxic consequences of micro- and nanoplastics exposure in marine and fish invertebrates. In the solely published mice in vivo study, adult mice were subject to chronic exposure over 30 days to polystyrene microplastics, with sizes of 5 and 20 μm and doses ranging from 0.01 to 0.5 mg per day (approximately 0.5 to 25 mg/kg body weight daily), administered through oral gavage. The exposure to polystyrene microplastics led to the absorption and presence of particles in the mice's gut, liver, and kidneys, confirmed via fluorescence spectrometer analysis of freeze-dried tissues. During the initial week of exposure, particle concentrations in the tissues rose swiftly and stabilized at approximately 0.2, 1.0, and 1.4 mg/g for 5 μm particles in the liver, kidney, and gut, respectively. For 20 μm particles, the concentration was more consistent across the organs, reaching a plateau at about 0.8. Examination of the liver revealed dose-dependent alterations in energy metabolism, including reduced ATP levels and elevated LDH activity, alongside oxidative stress markers such as increased GSH-Px and SOD and decreased CAT. Curiously, liver AChE activity rose, and metabolomic shifts implied possible neurotransmitter level changes. Notably, the difference in effect size between 5 μm and 20 μm particles was minimal when considered on a mass basis. Regrettably, the study did not explore brain tissue [42]. Another in vivo study involved chronic exposure, over five weeks, of male rats to significant doses of polystyrene nanoplastics measuring 40 nm, with dosages between 1 and 10 mg/kg body weight per day. However, this exposure did not impact behavior or weight gain, and no evidence was provided of actual polystyrene nanoplastic uptake [94].",
+    "conclusions": "11. Conclusions Despite the widespread presence of micro- and nanoplastics in the environment, information on their absorption and toxicity remains limited. Research shows these particles can enter various organisms, including humans, fish, and mammals, through different exposure pathways. There's a significant lack of knowledge about the neurotoxic potential of these plastics. However, studies indicate that they might induce oxidative stress, inhibit the activity of AChE, impact neurotransmitter levels, and alter behavior in some species. It's still unclear if these effects relate to neurodevelopmental or neurodegenerative disorders in humans, unlike metal nanoparticles. Most experimental exposures to date don't mimic real human exposure situations, as they occur over short periods with high doses. In contrast, humans are exposed chronically to lower levels. Moreover, many studies use particle types and shapes that are not typical of environmental conditions. There's also a significant gap in systematically comparing various particle types, shapes, sizes, and concentrations. Most research so far has concentrated on aquatic species. To thoroughly understand the neurotoxin and exposure risks from micro- and nanoplastics, several actions are necessary: 1. Improved Monitoring: A better assessment of exposure levels for humans is needed, focusing on different exposure routes like inhalation, ingestion, and retrograde transport after nasal exposure, along with particle characteristics. 2. Focused Assessments: Research should investigate absorption through the lungs, nasal epithelium, or gut, potential crossing into the bloodstream, blood-brain barrier penetration, and organ accumulation, including the brain. It must determine direct transfer to the brain via nerve endings or indirect bloodstream transport, helping to identify the most dangerous particles for human health and the most vital exposure reduction measures. 3. Enhanced Risk Identification: Exposure time and particle dose standardization should incorporate dose-response curves, considering particle weight and number. Research should utilize various particle types, sizes, shapes, and surface charges, preferably those prevalent in the environment. For realistic assessments, aged and contaminated particles should be studied alongside virgin manufactured particles despite the complex toxicity. 4. Diversified Species Use: It's crucial to include different species, particularly mammals, given the variability in exposure routes. Laboratory assays can significantly aid hazard identification, increasing throughput, reducing costs, and providing mechanistic insights. However, the focus should be on subtle, functional effects beyond overt (neuro)toxic endpoints, as such effects may occur only at unrealistic exposure levels. Ultimately, irrespective of the findings from these hazard and risk evaluations of nanoplastics, measures should be implemented to minimize their further contamination and release into the environment.",
+    "Abstract": " The pervasive presence and enduring existence of micro and nanoplastics in the environment render their exposure to humans and aquatic creatures unavoidable. Research indicates these tiny plastic particles can be taken in by aquatic beings and mammals. Once within the body, micro and nanoplastics have the capability to infiltrate the brain, although the level of penetration and the subsequent neurotoxic effects are not fully explored. Previous studies indicate that metal (oxide) nanoparticles can enter the brain and induce neurotoxic effects. Given the chemical resemblances between plastic particles and inert metal (oxide) nanoparticles, this review aims to summarize existing studies on the neurotoxic implications of nanoplastics across various species and in vitro settings. The current evidence, although incomplete, suggests that exposure to nanoplastics may lead to oxidative stress, potentially causing cell damage and raising the risk of developing neurological disorders. Moreover, such exposure could inhibit acetylcholinesterase activity and alter neurotransmitter levels, potentially contributing to observed behavioral changes. There is a notable lack of systematic comparison regarding the neurotoxic effects stemming from different particle types, shapes, and sizes at various concentrations and durations of exposure. Understanding these aspects is essential for further evaluating the neurotoxic danger and risk associated with nanoplastics.",
+    "Title": "Neurotoxicity Following Exposure to Micro and Nanoplastics"
+  }
+}
+
+ONTOLOGY: ENTITIES SCHEMA (entities_v1.json)
+[
+  {
+    "title": "Association",
+    "description": "An interpreted relationship between biological, mechanistic, biomarker, or clinical entities, separated from raw observations and qualified by evidentiary strength.",
+    "type": "object",
+    "required": [
+      "id",
+      "type",
+      "relationship",
+      "evidence_strength"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "Unique association identifier."
+      },
+      "type": {
+        "const": "Association",
+        "description": "Type tag for the node."
+      },
+      "relationship": {
+        "type": "string",
+        "enum": [
+          "associated_with",
+          "correlates_with",
+          "suggests",
+          "causal_evidence",
+          "protective",
+          "null"
+        ]
+      },
+      "direction": {
+        "type": "string",
+        "enum": [
+          "increase",
+          "decrease",
+          "variable",
+          "none",
+          "unknown"
+        ]
+      },
+      "effect_size": {
+        "type": "number"
+      },
+      "effect_metric": {
+        "type": "string"
+      },
+      "p_value": {
+        "type": "number"
+      },
+      "confidence": {
+        "type": "number"
+      },
+      "evidence_strength": {
+        "type": "string",
+        "enum": [
+          "limited",
+          "moderate",
+          "strong"
+        ]
+      },
+      "consistency_across_studies": {
+        "type": "string",
+        "enum": [
+          "low",
+          "medium",
+          "high",
+          "unknown"
+        ]
+      },
+      "study_scope": {
+        "type": "string"
+      },
+      "causal_confidence": {
+        "type": "string",
+        "enum": [
+          "low",
+          "medium",
+          "high",
+          "unknown"
+        ]
+      },
+      "notes": {
+        "type": "string"
+      }
+    }
+  },
+  {
+    "title": "Biomarker",
+    "description": "A measurable biological indicator linked to mechanisms or health outcomes, interpreted through study-supported associations rather than direct causation.",
+    "type": "object",
+    "required": [
+      "id",
+      "type",
+      "name"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "type": {
+        "const": "Biomarker"
+      },
+      "name": {
+        "type": "string"
+      },
+      "assay_type": {
+        "type": "string"
+      },
+      "tissue_matrix": {
+        "type": "string"
+      },
+      "direction_of_change": {
+        "type": "string",
+        "enum": [
+          "increase",
+          "decrease",
+          "variable",
+          "unknown"
+        ]
+      },
+      "threshold": {
+        "type": "number"
+      },
+      "threshold_unit": {
+        "type": "string"
+      },
+      "clinical_relevance_notes": {
+        "type": "string"
+      },
+      "citations_ref": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "title": "ClinicalOutcome",
+    "description": "A health endpoint associated with exposure and biology, interpreted through evidence-qualified associations.",
+    "type": "object",
+    "required": [
+      "id",
+      "type",
+      "label"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "type": {
+        "const": "ClinicalOutcome"
+      },
+      "label": {
+        "type": "string"
+      },
+      "outcome_type": {
+        "type": "string",
+        "enum": [
+          "symptom",
+          "diagnosis",
+          "other"
+        ]
+      },
+      "population": {
+        "type": "string"
+      },
+      "strength_of_evidence": {
+        "type": "string",
+        "enum": [
+          "limited",
+          "moderate",
+          "strong"
+        ]
+      },
+      "consistency_across_studies": {
+        "type": "string",
+        "enum": [
+          "low",
+          "medium",
+          "high",
+          "unknown"
+        ]
+      },
+      "causal_confidence": {
+        "type": "string",
+        "enum": [
+          "low",
+          "medium",
+          "high",
+          "unknown"
+        ]
+      },
+      "citations_ref": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "notes": {
+        "type": "string"
+      }
+    }
+  },
+  {
+    "title": "EnvironmentalCompartment",
+    "description": "Represents a physical environmental location (e.g., marine water, air, sediment) where microplastics are present.",
+    "type": "object",
+    "required": [
+      "id",
+      "type",
+      "label"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "type": {
+        "const": "EnvironmentalCompartment"
+      },
+      "label": {
+        "type": "string"
+      },
+      "subcompartment": {
+        "type": "string"
+      },
+      "geo_context": {
+        "type": "object",
+        "properties": {
+          "region": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          }
+        }
+      },
+      "depth_or_height_range": {
+        "type": "object",
+        "properties": {
+          "min": {
+            "type": "number"
+          },
+          "max": {
+            "type": "number"
+          },
+          "unit": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  {
+    "title": "ExposurePathway",
+    "description": "A route of human or biota exposure linking environmental presence to biological contact.",
+    "type": "object",
+    "required": [
+      "id",
+      "type",
+      "pathway_label"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "type": {
+        "const": "ExposurePathway"
+      },
+      "pathway_label": {
+        "type": "string"
+      },
+      "route": {
+        "type": "string",
+        "enum": [
+          "oral",
+          "inhalation",
+          "dermal"
+        ]
+      },
+      "intake_metric": {
+        "type": "string"
+      },
+      "population_context": {
+        "type": "string"
+      },
+      "assumptions_notes": {
+        "type": "string"
+      },
+      "citations_ref": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "title": "Mechanism",
+    "description": "A biological mechanism implicated in microplastic-related effects, contextualized by evidence type and dose.",
+    "type": "object",
+    "required": [
+      "id",
+      "type",
+      "label"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "type": {
+        "const": "Mechanism"
+      },
+      "label": {
+        "type": "string",
+        "enum": [
+          "oxidative_stress",
+          "inflammation",
+          "endocrine_disruption",
+          "genotoxicity",
+          "metabolic_disturbance",
+          "immune_dysregulation",
+          "other"
+        ]
+      },
+      "evidence_type": {
+        "type": "string",
+        "enum": [
+          "in_vitro",
+          "in_vivo",
+          "human_observational",
+          "review"
+        ]
+      },
+      "dose_context": {
+        "type": "object",
+        "properties": {
+          "min": {
+            "type": "number"
+          },
+          "max": {
+            "type": "number"
+          },
+          "unit": {
+            "type": "string"
+          }
+        }
+      },
+      "key_biomarkers": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "species_scope": {
+        "type": "string"
+      },
+      "notes": {
+        "type": "string"
+      },
+      "citations_ref": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "title": "Method",
+    "description": "An analytical method used for microplastic detection with structured LOD/LOQ, matrix context, and detection bias.",
+    "type": "object",
+    "required": [
+      "id",
+      "type",
+      "method_class"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "type": {
+        "const": "Method"
+      },
+      "method_class": {
+        "type": "string"
+      },
+      "min_size_reliable": {
+        "type": "number"
+      },
+      "max_size_reliable": {
+        "type": "number"
+      },
+      "identification_capability": {
+        "type": "string"
+      },
+      "reporting_basis": {
+        "type": "string"
+      },
+      "LOD": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "number"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "matrix": {
+            "type": "string"
+          }
+        }
+      },
+      "LOQ": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "number"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "matrix": {
+            "type": "string"
+          }
+        }
+      },
+      "detects_particles": {
+        "type": "boolean"
+      },
+      "identifies_polymer": {
+        "type": "boolean"
+      },
+      "applicable_matrix": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "bias_notes": {
+        "type": "string"
+      }
+    }
+  },
+  {
+    "title": "Observation",
+    "description": "A measured empirical fact from a study/sample, distinct from interpretation.",
+    "type": "object",
+    "required": [
+      "id",
+      "type",
+      "metric_type",
+      "value",
+      "unit"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "type": {
+        "const": "Observation"
+      },
+      "metric_type": {
+        "type": "string",
+        "enum": [
+          "count",
+          "mass",
+          "concentration",
+          "presence_absence",
+          "frequency"
+        ]
+      },
+      "value": {
+        "type": [
+          "number",
+          "string"
+        ]
+      },
+      "unit": {
+        "type": "string"
+      },
+      "uncertainty": {
+        "type": "number"
+      },
+      "confidence_interval": {
+        "type": "string"
+      },
+      "notes": {
+        "type": "string"
+      }
+    }
+  },
+  {
+    "title": "ParticleSizeClass",
+    "description": "Controlled vocabulary for microplastic or nanoplastic particle size bins.",
+    "type": "object",
+    "required": [
+      "id",
+      "type",
+      "label"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "type": {
+        "const": "ParticleSizeClass"
+      },
+      "label": {
+        "type": "string"
+      },
+      "min_micrometer": {
+        "type": "number"
+      },
+      "max_micrometer": {
+        "type": "number"
+      },
+      "bin_type": {
+        "type": "string",
+        "enum": [
+          "nano",
+          "micro"
+        ]
+      },
+      "synonyms": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "definition_notes": {
+        "type": "string"
+      }
+    }
+  },
+  {
+    "title": "PolicyInstrument",
+    "description": "A policy or regulation relevant to microplastics sources, definitions, or measurement.",
+    "type": "object",
+    "required": [
+      "id",
+      "type",
+      "title"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "type": {
+        "const": "PolicyInstrument"
+      },
+      "title": {
+        "type": "string"
+      },
+      "jurisdiction": {
+        "type": "string"
+      },
+      "effective_dates": {
+        "type": "object"
+      },
+      "scope": {
+        "type": "string"
+      },
+      "targeted_sources": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "required_metrics": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": [
+            "count",
+            "mass",
+            "size_ranges"
+          ]
+        }
+      },
+      "compliance_requirements": {
+        "type": "string"
+      },
+      "notes": {
+        "type": "string"
+      }
+    }
+  },
+  {
+    "title": "Polymer",
+    "description": "A polymer material commonly found as a microplastic.",
+    "type": "object",
+    "required": [
+      "id",
+      "type",
+      "name"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "type": {
+        "const": "Polymer"
+      },
+      "name": {
+        "type": "string"
+      },
+      "synonyms": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "CAS_number": {
+        "type": "string"
+      },
+      "polymer_class": {
+        "type": "string"
+      },
+      "density_range": {
+        "type": "object"
+      },
+      "typical_additives": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "spectral_library_refs": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "external_refs": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "notes": {
+        "type": "string"
+      }
+    }
+  },
+  {
+    "title": "Sample",
+    "description": "A study-specific collected specimen with standardized matrix and role.",
+    "type": "object",
+    "required": [
+      "id",
+      "type",
+      "matrix_standardized",
+      "sample_role"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "type": {
+        "const": "Sample"
+      },
+      "matrix_standardized": {
+        "type": "string"
+      },
+      "sample_role": {
+        "type": "string",
+        "enum": [
+          "environment_study",
+          "biological",
+          "exposure"
+        ]
+      },
+      "collection_date": {
+        "type": "string"
+      },
+      "location": {
+        "type": "object"
+      },
+      "volume_or_mass_processed": {
+        "type": "number"
+      },
+      "volume_or_mass_unit": {
+        "type": "string"
+      },
+      "sample_prep": {
+        "type": "string"
+      },
+      "contamination_controls": {
+        "type": "string"
+      },
+      "storage_conditions": {
+        "type": "string"
+      },
+      "notes": {
+        "type": "string"
+      }
+    }
+  },
+  {
+    "title": "Shape",
+    "description": "Particle morphology classification.",
+    "type": "object",
+    "required": [
+      "id",
+      "type",
+      "label"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "type": {
+        "const": "Shape"
+      },
+      "label": {
+        "type": "string",
+        "enum": [
+          "fiber",
+          "fragment",
+          "bead",
+          "film",
+          "foam",
+          "other"
+        ]
+      },
+      "synonyms": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "definition_notes": {
+        "type": "string"
+      },
+      "artifact_notes": {
+        "type": "string"
+      }
+    }
+  },
+  {
+    "title": "Source",
+    "description": "An emitting activity or product category producing microplastics.",
+    "type": "object",
+    "required": [
+      "id",
+      "type",
+      "label",
+      "source_type"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "type": {
+        "const": "Source"
+      },
+      "label": {
+        "type": "string"
+      },
+      "source_type": {
+        "type": "string",
+        "enum": [
+          "primary",
+          "secondary"
+        ]
+      },
+      "sector": {
+        "type": "string"
+      },
+      "emission_rate_estimate": {
+        "type": "object"
+      },
+      "mitigation_options_ref": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "notes": {
+        "type": "string"
+      }
+    }
+  },
+  {
+    "title": "Study",
+    "description": "A scientific study providing evidence, metadata, and quality context.",
+    "type": "object",
+    "required": [
+      "id",
+      "type",
+      "title",
+      "design"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "type": {
+        "const": "Study"
+      },
+      "title": {
+        "type": "string"
+      },
+      "doi": {
+        "type": "string"
+      },
+      "year": {
+        "type": "integer"
+      },
+      "design": {
+        "type": "string",
+        "enum": [
+          "in_vitro",
+          "in_vivo",
+          "human_observational",
+          "review",
+          "meta_analysis"
+        ]
+      },
+      "species": {
+        "type": "string"
+      },
+      "population": {
+        "type": "string"
+      },
+      "sample_size": {
+        "type": "integer"
+      },
+      "geographic_scope": {
+        "type": "string"
+      },
+      "exposure_context": {
+        "type": "string"
+      },
+      "quality_flags": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "evidence_strength": {
+        "type": "string",
+        "enum": [
+          "limited",
+          "moderate",
+          "strong"
+        ]
+      },
+      "notes": {
+        "type": "string"
+      }
+    }
+  },
+  {
+    "title": "TissueOrgan",
+    "description": "Canonical biological tissue or organ target, distinct from sample instances.",
+    "type": "object",
+    "required": [
+      "id",
+      "type",
+      "label"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "type": {
+        "const": "TissueOrgan"
+      },
+      "label": {
+        "type": "string"
+      },
+      "species": {
+        "type": "string"
+      },
+      "histology_notes": {
+        "type": "string"
+      },
+      "vulnerability_notes": {
+        "type": "string"
+      },
+      "citations_ref": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    }
+  }
+]
+
+ONTOLOGY: RELATIONSHIPS SCHEMA (relationships_v1.json)
+[
+  {
+    "source": "Study",
+    "relation_type": "includes",
+    "target": "Sample",
+    "description": "A study contains one or more collected samples."
+  },
+  {
+    "source": "Study",
+    "relation_type": "reports",
+    "target": "Observation",
+    "description": "A study reports empirical observations."
+  },
+  {
+    "source": "Study",
+    "relation_type": "supports",
+    "target": "Association",
+    "description": "A study provides evidence for interpreted associations."
+  },
+  {
+    "source": "Study",
+    "relation_type": "investigates",
+    "target": "ExposurePathway",
+    "description": "A study examines one or more exposure pathways."
+  },
+  {
+    "source": "Study",
+    "relation_type": "evaluates",
+    "target": "Mechanism",
+    "description": "A study investigates biological mechanisms."
+  },
+  {
+    "source": "Study",
+    "relation_type": "assesses",
+    "target": "ClinicalOutcome",
+    "description": "A study evaluates clinical or health outcomes."
+  },
+  {
+    "source": "Sample",
+    "relation_type": "part_of",
+    "target": "Study",
+    "description": "A sample belongs to a study."
+  },
+  {
+    "source": "Sample",
+    "relation_type": "collected_from",
+    "target": "EnvironmentalCompartment",
+    "description": "An environmental sample is collected from a physical compartment."
+  },
+  {
+    "source": "Sample",
+    "relation_type": "derived_from",
+    "target": "TissueOrgan",
+    "description": "A biological sample is derived from a conceptual tissue or organ."
+  },
+  {
+    "source": "Sample",
+    "relation_type": "processed_by",
+    "target": "Method",
+    "description": "A sample is analyzed using a method."
+  },
+  {
+    "source": "Sample",
+    "relation_type": "linked_to",
+    "target": "ExposurePathway",
+    "description": "A sample may represent an exposure-relevant biological or environmental context."
+  },
+  {
+    "source": "Observation",
+    "relation_type": "reported_in",
+    "target": "Study",
+    "description": "An observation is reported in a study."
+  },
+  {
+    "source": "Observation",
+    "relation_type": "observed_in",
+    "target": "Sample",
+    "description": "An observation is measured from a specific sample."
+  },
+  {
+    "source": "Observation",
+    "relation_type": "identified_by",
+    "target": "Method",
+    "description": "An observation is generated through a method."
+  },
+  {
+    "source": "Observation",
+    "relation_type": "has_polymer",
+    "target": "Polymer",
+    "description": "An observation identifies polymer composition."
+  },
+  {
+    "source": "Observation",
+    "relation_type": "has_shape",
+    "target": "Shape",
+    "description": "An observation identifies particle morphology."
+  },
+  {
+    "source": "Observation",
+    "relation_type": "has_size_class",
+    "target": "ParticleSizeClass",
+    "description": "An observation references a standardized particle size class."
+  },
+  {
+    "source": "Observation",
+    "relation_type": "located_in",
+    "target": "EnvironmentalCompartment",
+    "description": "An observation may be environmentally contextualized."
+  },
+  {
+    "source": "Source",
+    "relation_type": "emits_to",
+    "target": "EnvironmentalCompartment",
+    "description": "A source emits microplastics into an environmental compartment."
+  },
+  {
+    "source": "Source",
+    "relation_type": "generates_polymer",
+    "target": "Polymer",
+    "description": "A source commonly emits specific polymer types."
+  },
+  {
+    "source": "Source",
+    "relation_type": "has_typical_shape",
+    "target": "Shape",
+    "description": "A source is associated with characteristic particle morphologies."
+  },
+  {
+    "source": "Source",
+    "relation_type": "has_typical_size_class",
+    "target": "ParticleSizeClass",
+    "description": "A source is associated with characteristic particle size classes."
+  },
+  {
+    "source": "Source",
+    "relation_type": "regulated_by",
+    "target": "PolicyInstrument",
+    "description": "A source may be targeted by policy interventions."
+  },
+  {
+    "source": "EnvironmentalCompartment",
+    "relation_type": "contains",
+    "target": "Source",
+    "description": "An environmental compartment may contain pollution sources."
+  },
+  {
+    "source": "EnvironmentalCompartment",
+    "relation_type": "contains",
+    "target": "Sample",
+    "description": "An environmental compartment contains collected samples."
+  },
+  {
+    "source": "EnvironmentalCompartment",
+    "relation_type": "contains",
+    "target": "Observation",
+    "description": "Environmental observations are contextualized within compartments."
+  },
+  {
+    "source": "EnvironmentalCompartment",
+    "relation_type": "contributes_to",
+    "target": "ExposurePathway",
+    "description": "Environmental presence contributes to exposure routes."
+  },
+  {
+    "source": "Method",
+    "relation_type": "applied_to",
+    "target": "Sample",
+    "description": "A method is applied to samples."
+  },
+  {
+    "source": "Method",
+    "relation_type": "produces",
+    "target": "Observation",
+    "description": "A method generates observations."
+  },
+  {
+    "source": "Method",
+    "relation_type": "detects_polymer",
+    "target": "Polymer",
+    "description": "A method can identify polymer composition."
+  },
+  {
+    "source": "Method",
+    "relation_type": "detects_shape",
+    "target": "Shape",
+    "description": "A method can identify particle morphology."
+  },
+  {
+    "source": "Method",
+    "relation_type": "reliable_for",
+    "target": "ParticleSizeClass",
+    "description": "A method reliably detects certain particle size ranges."
+  },
+  {
+    "source": "Method",
+    "relation_type": "underdetects",
+    "target": "ParticleSizeClass",
+    "description": "A method may systematically miss certain particle sizes."
+  },
+  {
+    "source": "Method",
+    "relation_type": "overdetects",
+    "target": "ParticleSizeClass",
+    "description": "A method may bias toward certain particle sizes."
+  },
+  {
+    "source": "ExposurePathway",
+    "relation_type": "originates_from",
+    "target": "EnvironmentalCompartment",
+    "description": "Exposure pathways begin from environmental reservoirs."
+  },
+  {
+    "source": "ExposurePathway",
+    "relation_type": "targets",
+    "target": "TissueOrgan",
+    "description": "Exposure pathways lead to biological targets."
+  },
+  {
+    "source": "ExposurePathway",
+    "relation_type": "linked_population",
+    "target": "Study",
+    "description": "Exposure pathways are studied within specific populations."
+  },
+  {
+    "source": "ExposurePathway",
+    "relation_type": "initiates",
+    "target": "Mechanism",
+    "description": "Exposure can initiate biological mechanisms."
+  },
+  {
+    "source": "Mechanism",
+    "relation_type": "evidenced_by",
+    "target": "Biomarker",
+    "description": "Biomarkers provide measurable support for mechanisms."
+  },
+  {
+    "source": "Mechanism",
+    "relation_type": "affects",
+    "target": "TissueOrgan",
+    "description": "Mechanisms impact biological tissues or organs."
+  },
+  {
+    "source": "Mechanism",
+    "relation_type": "associated_with",
+    "target": "ClinicalOutcome",
+    "description": "Mechanisms may be linked to health outcomes through evidence."
+  },
+  {
+    "source": "Biomarker",
+    "relation_type": "measured_in",
+    "target": "TissueOrgan",
+    "description": "Biomarkers are measured in specific tissues or organs."
+  },
+  {
+    "source": "Biomarker",
+    "relation_type": "evaluated_in",
+    "target": "Study",
+    "description": "Biomarkers are evaluated within studies."
+  },
+  {
+    "source": "ClinicalOutcome",
+    "relation_type": "assessed_in",
+    "target": "Study",
+    "description": "Clinical outcomes are assessed in studies."
+  },
+  {
+    "source": "ClinicalOutcome",
+    "relation_type": "relevant_to",
+    "target": "TissueOrgan",
+    "description": "Clinical outcomes may pertain to particular organs."
+  },
+  {
+    "source": "Association",
+    "relation_type": "links",
+    "target": "Biomarker",
+    "description": "Association may include biomarker evidence."
+  },
+  {
+    "source": "Association",
+    "relation_type": "links",
+    "target": "Mechanism",
+    "description": "Association may include biological mechanisms."
+  },
+  {
+    "source": "Association",
+    "relation_type": "links",
+    "target": "ClinicalOutcome",
+    "description": "Association may include health outcomes."
+  },
+  {
+    "source": "Association",
+    "relation_type": "supported_by",
+    "target": "Study",
+    "description": "Associations are supported by one or more studies."
+  },
+  {
+    "source": "PolicyInstrument",
+    "relation_type": "regulates",
+    "target": "Source",
+    "description": "Policies regulate sources of microplastics."
+  },
+  {
+    "source": "PolicyInstrument",
+    "relation_type": "regulates",
+    "target": "Polymer",
+    "description": "Policies may regulate specific polymers."
+  },
+  {
+    "source": "PolicyInstrument",
+    "relation_type": "targets",
+    "target": "EnvironmentalCompartment",
+    "description": "Policies may target environmental domains."
+  },
+  {
+    "source": "PolicyInstrument",
+    "relation_type": "mandates",
+    "target": "Method",
+    "description": "Policies may require analytical methods."
+  },
+  {
+    "source": "PolicyInstrument",
+    "relation_type": "requires_reporting_of",
+    "target": "Observation",
+    "description": "Policies may require reporting of measured outcomes."
+  },
+  {
+    "source": "Polymer",
+    "relation_type": "detected_in",
+    "target": "Observation",
+    "description": "Polymers are identified through observations."
+  },
+  {
+    "source": "Shape",
+    "relation_type": "detected_in",
+    "target": "Observation",
+    "description": "Shapes are identified through observations."
+  },
+  {
+    "source": "ParticleSizeClass",
+    "relation_type": "referenced_in",
+    "target": "Observation",
+    "description": "Particle size classes are referenced by observations."
+  },
+  {
+    "source": "TissueOrgan",
+    "relation_type": "sampled_by",
+    "target": "Sample",
+    "description": "Biological tissues may be represented through samples."
+  }
+]
+
+Return strict JSON only.

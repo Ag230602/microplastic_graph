@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MPKG Critique Graph</title>
+  <style>
+    :root {
+      --bg: #f7f5ef;
+      --ink: #1f2933;
+      --muted: #607080;
+      --line: #c9d2dc;
+      --panel: #ffffff;
+      --critique: #1f2933;
+      --category: #2f6f9f;
+      --critical: #c3475b;
+      --finding: #b65f24;
+      --recommendation: #238b6e;
+      --other: #5f7080;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.9);
+    }
+    h1 { margin: 0; font-size: 18px; letter-spacing: 0; }
+    .meta { color: var(--muted); font-size: 13px; text-align: right; }
+    .layout { min-height: 0; display: grid; grid-template-columns: 1fr 360px; }
+    #graph { width: 100%; height: 100%; min-height: 700px; background: #fbfaf6; }
+    aside { border-left: 1px solid var(--line); background: var(--panel); padding: 14px; overflow: auto; }
+    .toolbar { display: grid; gap: 10px; margin-bottom: 14px; }
+    input, select, button {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 9px 10px;
+      background: #fff;
+      color: var(--ink);
+      font: inherit;
+      font-size: 14px;
+    }
+    button { cursor: pointer; font-weight: 650; }
+    .legend { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; font-size: 12px; color: var(--muted); }
+    .legend span { display: flex; align-items: center; gap: 6px; }
+    .swatch { width: 10px; height: 10px; border-radius: 50%; flex: 0 0 auto; }
+    .details { border-top: 1px solid var(--line); padding-top: 12px; }
+    .details h2 { margin: 0 0 4px; font-size: 16px; line-height: 1.25; letter-spacing: 0; }
+    .details .type { color: var(--muted); font-size: 13px; margin-bottom: 10px; }
+    pre { white-space: pre-wrap; word-break: break-word; border: 1px solid var(--line); border-radius: 6px; padding: 10px; background: #fafafa; font-size: 12px; line-height: 1.45; }
+    .link { stroke: #9aa8b5; stroke-opacity: 0.58; fill: none; }
+    .link-label { fill: #657482; font-size: 9px; pointer-events: none; }
+    .node circle { stroke: #fff; stroke-width: 1.5px; cursor: pointer; }
+    .node text { fill: #1f2933; font-size: 10px; pointer-events: none; paint-order: stroke; stroke: #fbfaf6; stroke-width: 3px; stroke-linejoin: round; }
+    .dim { opacity: 0.14; }
+    .selected circle { stroke: #111827; stroke-width: 2.5px; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; grid-template-rows: 64vh auto; }
+      aside { border-left: 0; border-top: 1px solid var(--line); }
+      #graph { min-height: 0; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>MPKG Critique Graph</h1>
+    <div class="meta"><span id="count">Loading graph...</span><br>Source: mpkg_critique_v1.json</div>
+  </header>
+  <main class="layout">
+    <svg id="graph" role="img" aria-label="Critique graph visualization"></svg>
+    <aside>
+      <div class="toolbar">
+        <input id="search" type="search" placeholder="Search findings">
+        <select id="typeFilter"><option value="">All node types</option></select>
+        <button id="reset">Reset View</button>
+      </div>
+      <div class="legend" id="legend"></div>
+      <section class="details" id="details">
+        <h2>Select a node</h2>
+        <div class="type">Click a category or finding to see full details.</div>
+      </section>
+    </aside>
+  </main>
+  <script>
+    const colorByType = {
+      Critique: 'var(--critique)', Category: 'var(--category)', Finding: 'var(--finding)', Recommendation: 'var(--recommendation)'
+    };
+    const criticalCategories = new Set(['critical_errors']);
+    const svg = document.getElementById('graph');
+    const details = document.getElementById('details');
+    const search = document.getElementById('search');
+    const typeFilter = document.getElementById('typeFilter');
+    const resetButton = document.getElementById('reset');
+
+    const __GRAPH_DATA__ = {"directed": true, "source_file": "mpkg_critique_v1.json", "node_count": 53, "edge_count": 52, "nodes": [{"id": "critique_root", "label": "MPKG Critique", "type": "Critique", "data": {"id": "critique_root", "type": "Critique", "audit_target": "mpkg_graph.json", "source_paper": "Neurotoxicity Following Exposure to Micro and Nanoplastics", "graph_summary": {"node_count": 64, "edge_count": 105}}}, {"id": "cat_critical_errors", "label": "critical_errors (3)", "type": "Category", "data": {"id": "cat_critical_errors", "type": "Category", "name": "critical_errors", "count": 3}}, {"id": "critical_errors_1", "label": "TissueOrgan layer entirely missing", "type": "Finding", "data": {"id": "critical_errors_1", "type": "Finding", "category": "critical_errors", "detail": {"issue": "TissueOrgan layer entirely missing", "detail": "No TissueOrgan nodes exist, yet observations and biomarkers richly describe organ-level distribution (mouse brain, liver, kidney, gut; bivalve gills, hemolymph, digestive gland). Biomarkers carry a 'tissue_matrix' attribute (e.g., 'mouse brain tissue', 'mouse liver') but there is no canonical TissueOrgan node and no 'measured_in' or 'affects' edge.", "evidence": "Paper: '...particles in the mice's gut, liver, and kidneys...'; '...within the hemolymph, gills, and intestines...'. Ontology supports Biomarker->measured_in->TissueOrgan and Mechanism->affects->TissueOrgan."}}}, {"id": "critical_errors_2", "label": "Disconnected (orphan) nodes with no edges", "type": "Finding", "data": {"id": "critical_errors_2", "type": "Finding", "category": "critical_errors", "detail": {"issue": "Disconnected (orphan) nodes with no edges", "detail": "size_50_nm, size_40_nm, size_0_11_um, size_0_1_to_5_um, size_1_0_um, and shape_spherical have zero incident edges. They inflate node_count without participating in the graph.", "evidence": "No has_size_class / has_shape edge references these node ids."}}}, {"id": "critical_errors_3", "label": "Size entities not found in provided paper content", "type": "Finding", "data": {"id": "critical_errors_3", "type": "Finding", "category": "critical_errors", "detail": {"issue": "Size entities not found in provided paper content", "detail": "size_50_nm (50 nm) and size_0_11_um (0.11 um) do not appear in the supplied paper excerpt. 0.11 um may be a misextraction of the shrimp study's 0.1 um.", "evidence": "Provided sizes in text: 0.1-5, 1.0, 100-200, 1, 10, 20, 100, 1-5, 0.1 um and 40 nm. 50 nm and 0.11 um are absent (verify against full/truncated sections before keeping)."}}}, {"id": "cat_unsupported_entities", "label": "unsupported_entities (5)", "type": "Category", "data": {"id": "cat_unsupported_entities", "type": "Category", "name": "unsupported_entities", "count": 5}}, {"id": "unsupported_entities_1", "label": "size_50_nm", "type": "Finding", "data": {"id": "unsupported_entities_1", "type": "Finding", "category": "unsupported_entities", "detail": {"id": "size_50_nm", "reason": "No mention of 50 nm in provided paper content; orphan node. Verify against full text or remove."}}}, {"id": "unsupported_entities_2", "label": "size_0_11_um", "type": "Finding", "data": {"id": "unsupported_entities_2", "type": "Finding", "category": "unsupported_entities", "detail": {"id": "size_0_11_um", "reason": "0.11 um not present in provided content; likely a misread of the 0.1 um shrimp particle. Orphan node."}}}, {"id": "unsupported_entities_3", "label": "size_1_0_um", "type": "Finding", "data": {"id": "unsupported_entities_3", "type": "Finding", "category": "unsupported_entities", "detail": {"id": "size_1_0_um", "reason": "Duplicate of size_1_um (both min=max=1 um). Controlled-vocabulary duplication; orphan node."}}}, {"id": "unsupported_entities_4", "label": "shape_spherical", "type": "Finding", "data": {"id": "unsupported_entities_4", "type": "Finding", "category": "unsupported_entities", "detail": {"id": "shape_spherical", "reason": "Maps 'spherical' to label 'other' but is never linked to any observation (C. elegans 'spherical polystyrene' is not connected). Orphan node."}}}, {"id": "unsupported_entities_5", "label": "Biomarkers superoxide_dismutase_activity, catalase_activity, glutathi\u2026", "type": "Finding", "data": {"id": "unsupported_entities_5", "type": "Finding", "category": "unsupported_entities", "detail": {"note": "Biomarkers superoxide_dismutase_activity, catalase_activity, glutathione_s_transferase_activity, malondialdehyde_levels cite refs ([87],[89]-[93]) that fall in paper sections NOT included in the provided excerpt; their direction_of_change could not be confirmed from supplied text. Flag for source verification rather than asserting unsupported."}}}, {"id": "cat_missing_entities", "label": "missing_entities (6)", "type": "Category", "data": {"id": "cat_missing_entities", "type": "Category", "name": "missing_entities", "count": 6}}, {"id": "missing_entities_1", "label": "TissueOrgan", "type": "Finding", "data": {"id": "missing_entities_1", "type": "Finding", "category": "missing_entities", "detail": {"type": "TissueOrgan", "examples": ["brain / cerebral cortex", "liver", "kidney", "gut/intestine", "gills", "hemolymph", "digestive gland"], "evidence": "Distribution explicitly reported across sections 5, 7, 8."}}}, {"id": "missing_entities_2", "label": "ExposurePathway", "type": "Finding", "data": {"id": "missing_entities_2", "type": "Finding", "category": "missing_entities", "detail": {"type": "ExposurePathway", "examples": ["oral / ingestion", "inhalation", "nasal / retrograde transport"], "evidence": "Abstract + Conclusions: 'exposure routes like inhalation, ingestion, and retrograde transport after nasal exposure'; particles 'taken in by aquatic beings and mammals'."}}}, {"id": "missing_entities_3", "label": "Mechanism", "type": "Finding", "data": {"id": "missing_entities_3", "type": "Finding", "category": "missing_entities", "detail": {"type": "Mechanism", "examples": ["apoptosis / neuronal cell death (label 'other')"], "evidence": "Section 5: caspase-3 is 'a marker for neuron cell apoptosis'; biomarker_caspase_3 exists but is linked to no Mechanism."}}}, {"id": "missing_entities_4", "label": "Observation/Association", "type": "Finding", "data": {"id": "missing_entities_4", "type": "Finding", "category": "missing_entities", "detail": {"type": "Observation/Association", "examples": ["European seabass [42]: reduced AChE release, oxidative stress, lipid peroxidation, anaerobic shift, irregular swimming"], "evidence": "Section 5 reports this explicitly; not represented as observations/associations."}}}, {"id": "missing_entities_5", "label": "Observation/Finding", "type": "Finding", "data": {"id": "missing_entities_5", "type": "Finding", "category": "missing_entities", "detail": {"type": "Observation/Finding", "examples": ["neurodegeneration", "nuclear pyknosis", "disrupted neuron arrangement in cerebral cortex"], "evidence": "Section 5 describes these morphological findings; not captured."}}}, {"id": "missing_entities_6", "label": "Sample", "type": "Finding", "data": {"id": "missing_entities_6", "type": "Finding", "category": "missing_entities", "detail": {"type": "Sample", "examples": ["per-organism exposure/biological samples"], "evidence": "Zero Sample nodes; Observations are not 'observed_in' any Sample."}}}, {"id": "cat_unsupported_relationships", "label": "unsupported_relationships (2)", "type": "Category", "data": {"id": "cat_unsupported_relationships", "type": "Category", "name": "unsupported_relationships", "count": 2}}, {"id": "unsupported_relationships_1", "label": "No fabricated/invalid relationship endpoints detected", "type": "Finding", "data": {"id": "unsupported_relationships_1", "type": "Finding", "category": "unsupported_relationships", "detail": {"issue": "No fabricated/invalid relationship endpoints detected", "detail": "All 105 edges use valid relation types with ontology-compliant source/target types (reports, supports, evaluates, assesses, identified_by, produces, has_polymer, has_size_class, has_shape, links, supported_by, evidenced_by, evaluated_in)."}}}, {"id": "unsupported_relationships_2", "label": "Redundant inverse-pair edges", "type": "Finding", "data": {"id": "unsupported_relationships_2", "type": "Finding", "category": "unsupported_relationships", "detail": {"issue": "Redundant inverse-pair edges", "detail": "Both directions are stored for the same relation (e.g., Study--supports-->Association AND Association--supported_by-->Study; Observation--identified_by-->Method AND Method--produces-->Observation), inflating edge_count. Not invalid, but redundant."}}}, {"id": "cat_missing_relationships", "label": "missing_relationships (5)", "type": "Category", "data": {"id": "cat_missing_relationships", "type": "Category", "name": "missing_relationships", "count": 5}}, {"id": "missing_relationships_1", "label": "Biomarker -> measured_in -> TissueOrgan", "type": "Finding", "data": {"id": "missing_relationships_1", "type": "Finding", "category": "missing_relationships", "detail": {"relation": "Biomarker -> measured_in -> TissueOrgan", "examples": ["caspase_3 / tnf_alpha / il_6 in brain", "atp_levels / ldh_activity in liver"]}}}, {"id": "missing_relationships_2", "label": "Mechanism -> affects -> TissueOrgan", "type": "Finding", "data": {"id": "missing_relationships_2", "type": "Finding", "category": "missing_relationships", "detail": {"relation": "Mechanism -> affects -> TissueOrgan", "examples": ["inflammation -> brain", "metabolic_disturbance -> liver"]}}}, {"id": "missing_relationships_3", "label": "Mechanism -> associated_with -> ClinicalOutcome", "type": "Finding", "data": {"id": "missing_relationships_3", "type": "Finding", "category": "missing_relationships", "detail": {"relation": "Mechanism -> associated_with -> ClinicalOutcome", "detail": "oxidative_stress -> neurological_disorders is only expressed via an Association; the direct ontology edge is unused."}}}, {"id": "missing_relationships_4", "label": "Observation -> has_size_class / has_polymer / has_shape", "type": "Finding", "data": {"id": "missing_relationships_4", "type": "Finding", "category": "missing_relationships", "detail": {"relation": "Observation -> has_size_class / has_polymer / has_shape", "detail": "C. elegans (0.1-5 um, spherical polystyrene, 1 mg/L) and the rat study (40 nm PS) have Associations but no Observation, so size_0_1_to_5_um, size_40_nm, shape_spherical, polystyrene remain unlinked for those studies."}}}, {"id": "missing_relationships_5", "label": "Association -> links -> Biomarker/Mechanism", "type": "Finding", "data": {"id": "missing_relationships_5", "type": "Finding", "category": "missing_relationships", "detail": {"relation": "Association -> links -> Biomarker/Mechanism", "detail": "biomarker_dopamine_levels and biomarker_caspase_3 connect only to the Study (evaluated_in); neither is tied to a Mechanism or Association despite clear interpretive context."}}}, {"id": "cat_ontology_violations", "label": "ontology_violations (3)", "type": "Category", "data": {"id": "cat_ontology_violations", "type": "Category", "name": "ontology_violations", "count": 3}}, {"id": "ontology_violations_1", "label": "Observation.unit misused as a descriptor", "type": "Finding", "data": {"id": "ontology_violations_1", "type": "Finding", "category": "ontology_violations", "detail": {"issue": "Observation.unit misused as a descriptor", "detail": "Several Observation nodes set unit to 'presence reported', 'reported direction', or 'reported null finding' rather than a measurement unit.", "nodes": ["obs_earthworm_polyethylene_uptake", "obs_mouse_brain_caspase3_increased", "obs_mouse_brain_tnf_il6_upregulated", "obs_zebra_mussel_no_genotoxic_effects", "obs_*_detected"]}}}, {"id": "ontology_violations_2", "label": "ParticleSizeClass bin_type questionable", "type": "Finding", "data": {"id": "ontology_violations_2", "type": "Finding", "category": "ontology_violations", "detail": {"issue": "ParticleSizeClass bin_type questionable", "detail": "size_0_1_um (0.1 um = 100 nm) and size_0_11_um are tagged bin_type 'micro' though they sit at/below the nano boundary; size_50_nm and size_40_nm are 'nano' but omit min/max_micrometer."}}}, {"id": "ontology_violations_3", "label": "Method.identification_capability stores result text", "type": "Finding", "data": {"id": "ontology_violations_3", "type": "Finding", "category": "ontology_violations", "detail": {"issue": "Method.identification_capability stores result text", "detail": "Field holds narrative findings (e.g., 'confirmed absorption and presence of particles in freeze-dried tissues') rather than a description of the method's detection capability. Within schema type but semantically off."}}}, {"id": "cat_observation_association_errors", "label": "observation_association_errors (3)", "type": "Category", "data": {"id": "cat_observation_association_errors", "type": "Category", "name": "observation_association_errors", "count": 3}}, {"id": "observation_association_errors_1", "label": "Mostly correct separation", "type": "Finding", "data": {"id": "observation_association_errors_1", "type": "Finding", "category": "observation_association_errors", "detail": {"issue": "Mostly correct separation", "detail": "Measured findings are Observation nodes; interpretations/suggestions are Association nodes. Good overall."}}}, {"id": "observation_association_errors_2", "label": "Triple representation of the null genotoxicity finding", "type": "Finding", "data": {"id": "observation_association_errors_2", "type": "Finding", "category": "observation_association_errors", "detail": {"issue": "Triple representation of the null genotoxicity finding", "detail": "The single 'no genotoxic effects in Dreissena polymorpha' result appears as an Observation (obs_zebra_mussel_no_genotoxic_effects), an Association (assoc_zebra_mussel_genotoxicity_null), AND a Mechanism (mechanism_genotoxicity). Verify this is intentional and not double counting."}}}, {"id": "observation_association_errors_3", "label": "Direction words inside Observation.value", "type": "Finding", "data": {"id": "observation_association_errors_3", "type": "Finding", "category": "observation_association_errors", "detail": {"issue": "Direction words inside Observation.value", "detail": "Observations encode 'increased'/'upregulated' inside value with metric_type presence_absence; acceptable but borders on interpretation."}}}, {"id": "cat_quantitative_errors", "label": "quantitative_errors (3)", "type": "Category", "data": {"id": "cat_quantitative_errors", "type": "Category", "name": "quantitative_errors", "count": 3}}, {"id": "quantitative_errors_1", "label": "Inferred unit", "type": "Finding", "data": {"id": "quantitative_errors_1", "type": "Finding", "category": "quantitative_errors", "detail": {"issue": "Inferred unit", "node": "obs_mouse_20um_ps_concentration_plateau", "detail": "Paper states '...plateau at about 0.8' without restating mg/g; extraction assigns mg/g. Verify."}}}, {"id": "quantitative_errors_2", "label": "Exposure doses/concentrations not captured as structured quantities", "type": "Finding", "data": {"id": "quantitative_errors_2", "type": "Finding", "category": "quantitative_errors", "detail": {"issue": "Exposure doses/concentrations not captured as structured quantities", "detail": "Held only in notes: mouse 0.01-0.5 mg/day (~0.5-25 mg/kg/day); rat 1-10 mg/kg/day, 40 nm, 5 weeks; C. elegans 1 mg/L; zebra mussel 1 and 4x10^6 MPs/L; earthworm 0.1-1.5 g/kg soil; shrimp 0.001-10 mg/L; Corbicula 0.2/0.7 mg/L."}}}, {"id": "quantitative_errors_3", "label": "No altered numeric values detected", "type": "Finding", "data": {"id": "quantitative_errors_3", "type": "Finding", "category": "quantitative_errors", "detail": {"issue": "No altered numeric values detected", "detail": "Extracted tissue concentrations (0.2, 1.0, 1.4 mg/g for 5 um in liver/kidney/gut) match the paper exactly."}}}, {"id": "cat_study_structure_errors", "label": "study_structure_errors (3)", "type": "Category", "data": {"id": "cat_study_structure_errors", "type": "Category", "name": "study_structure_errors", "count": 3}}, {"id": "study_structure_errors_1", "label": "Primary studies collapsed into one review Study", "type": "Finding", "data": {"id": "study_structure_errors_1", "type": "Finding", "category": "study_structure_errors", "detail": {"issue": "Primary studies collapsed into one review Study", "detail": "All observations/associations attach to the single review node via reports/supports. Primary references ([41],[42],[85],[86], etc.) are preserved only as biomarker citations_ref, so most observations lack per-study provenance."}}}, {"id": "study_structure_errors_2", "label": "No Sample layer", "type": "Finding", "data": {"id": "study_structure_errors_2", "type": "Finding", "category": "study_structure_errors", "detail": {"issue": "No Sample layer", "detail": "Observations are not linked to Sample nodes (Observation->observed_in->Sample chain absent)."}}}, {"id": "study_structure_errors_3", "label": "Edge_count inflated by bidirectional duplicates", "type": "Finding", "data": {"id": "study_structure_errors_3", "type": "Finding", "category": "study_structure_errors", "detail": {"issue": "Edge_count inflated by bidirectional duplicates", "detail": "supports/supported_by and identified_by/produces are both stored, so 105 edges overstate the number of unique relations."}}}, {"id": "cat_recommendations", "label": "recommendations (9)", "type": "Category", "data": {"id": "cat_recommendations", "type": "Category", "name": "recommendations", "count": 9}}, {"id": "recommendations_1", "label": "Add TissueOrgan nodes (brain, cerebral cortex, liver, kidney, gut, gi\u2026", "type": "Recommendation", "data": {"id": "recommendations_1", "type": "Recommendation", "category": "recommendations", "detail": {"text": "Add TissueOrgan nodes (brain, cerebral cortex, liver, kidney, gut, gills, hemolymph, digestive gland) and connect via Biomarker->measured_in and Mechanism->affects."}}}, {"id": "recommendations_2", "label": "Verify 50 nm and 0.11 um against the full/truncated text; remove if u\u2026", "type": "Recommendation", "data": {"id": "recommendations_2", "type": "Recommendation", "category": "recommendations", "detail": {"text": "Verify 50 nm and 0.11 um against the full/truncated text; remove if unsupported and merge size_1_0_um into size_1_um."}}}, {"id": "recommendations_3", "label": "Connect or remove orphan nodes: link size_40_nm to the rat study and \u2026", "type": "Recommendation", "data": {"id": "recommendations_3", "type": "Recommendation", "category": "recommendations", "detail": {"text": "Connect or remove orphan nodes: link size_40_nm to the rat study and size_0_1_to_5_um / shape_spherical to the C. elegans finding (add the missing Observation), or drop them."}}}, {"id": "recommendations_4", "label": "Add ExposurePathway nodes (oral, inhalation, nasal/retrograde) with l\u2026", "type": "Recommendation", "data": {"id": "recommendations_4", "type": "Recommendation", "category": "recommendations", "detail": {"text": "Add ExposurePathway nodes (oral, inhalation, nasal/retrograde) with limited-evidence hedging, sourced from abstract/conclusions."}}}, {"id": "recommendations_5", "label": "Represent the European seabass [42] findings and the neurodegeneratio\u2026", "type": "Recommendation", "data": {"id": "recommendations_5", "type": "Recommendation", "category": "recommendations", "detail": {"text": "Represent the European seabass [42] findings and the neurodegeneration / nuclear pyknosis observations from Section 5."}}}, {"id": "recommendations_6", "label": "Fix Observation.unit misuse (use a real unit or move descriptors to n\u2026", "type": "Recommendation", "data": {"id": "recommendations_6", "type": "Recommendation", "category": "recommendations", "detail": {"text": "Fix Observation.unit misuse (use a real unit or move descriptors to notes) and add structured exposure-dose observations."}}}, {"id": "recommendations_7", "label": "Preserve provenance: model key primary studies as separate Study node\u2026", "type": "Recommendation", "data": {"id": "recommendations_7", "type": "Recommendation", "category": "recommendations", "detail": {"text": "Preserve provenance: model key primary studies as separate Study nodes or add a citation attribute on observations."}}}, {"id": "recommendations_8", "label": "Link caspase_3 to an apoptosis Mechanism (label 'other') and tie dopa\u2026", "type": "Recommendation", "data": {"id": "recommendations_8", "type": "Recommendation", "category": "recommendations", "detail": {"text": "Link caspase_3 to an apoptosis Mechanism (label 'other') and tie dopamine_levels to a neurotransmitter-related Mechanism/Association."}}}, {"id": "recommendations_9", "label": "Optionally deduplicate inverse-pair edges to keep edge_count meaningf\u2026", "type": "Recommendation", "data": {"id": "recommendations_9", "type": "Recommendation", "category": "recommendations", "detail": {"text": "Optionally deduplicate inverse-pair edges to keep edge_count meaningful."}}}], "edges": [{"id": "edge_1", "source": "critique_root", "target": "cat_critical_errors", "label": "has_category", "data": {"source_id": "critique_root", "relation_type": "has_category", "target_id": "cat_critical_errors"}, "valid": true}, {"id": "edge_2", "source": "cat_critical_errors", "target": "critical_errors_1", "label": "contains", "data": {"source_id": "cat_critical_errors", "relation_type": "contains", "target_id": "critical_errors_1"}, "valid": true}, {"id": "edge_3", "source": "cat_critical_errors", "target": "critical_errors_2", "label": "contains", "data": {"source_id": "cat_critical_errors", "relation_type": "contains", "target_id": "critical_errors_2"}, "valid": true}, {"id": "edge_4", "source": "cat_critical_errors", "target": "critical_errors_3", "label": "contains", "data": {"source_id": "cat_critical_errors", "relation_type": "contains", "target_id": "critical_errors_3"}, "valid": true}, {"id": "edge_5", "source": "critique_root", "target": "cat_unsupported_entities", "label": "has_category", "data": {"source_id": "critique_root", "relation_type": "has_category", "target_id": "cat_unsupported_entities"}, "valid": true}, {"id": "edge_6", "source": "cat_unsupported_entities", "target": "unsupported_entities_1", "label": "contains", "data": {"source_id": "cat_unsupported_entities", "relation_type": "contains", "target_id": "unsupported_entities_1"}, "valid": true}, {"id": "edge_7", "source": "cat_unsupported_entities", "target": "unsupported_entities_2", "label": "contains", "data": {"source_id": "cat_unsupported_entities", "relation_type": "contains", "target_id": "unsupported_entities_2"}, "valid": true}, {"id": "edge_8", "source": "cat_unsupported_entities", "target": "unsupported_entities_3", "label": "contains", "data": {"source_id": "cat_unsupported_entities", "relation_type": "contains", "target_id": "unsupported_entities_3"}, "valid": true}, {"id": "edge_9", "source": "cat_unsupported_entities", "target": "unsupported_entities_4", "label": "contains", "data": {"source_id": "cat_unsupported_entities", "relation_type": "contains", "target_id": "unsupported_entities_4"}, "valid": true}, {"id": "edge_10", "source": "cat_unsupported_entities", "target": "unsupported_entities_5", "label": "contains", "data": {"source_id": "cat_unsupported_entities", "relation_type": "contains", "target_id": "unsupported_entities_5"}, "valid": true}, {"id": "edge_11", "source": "critique_root", "target": "cat_missing_entities", "label": "has_category", "data": {"source_id": "critique_root", "relation_type": "has_category", "target_id": "cat_missing_entities"}, "valid": true}, {"id": "edge_12", "source": "cat_missing_entities", "target": "missing_entities_1", "label": "contains", "data": {"source_id": "cat_missing_entities", "relation_type": "contains", "target_id": "missing_entities_1"}, "valid": true}, {"id": "edge_13", "source": "cat_missing_entities", "target": "missing_entities_2", "label": "contains", "data": {"source_id": "cat_missing_entities", "relation_type": "contains", "target_id": "missing_entities_2"}, "valid": true}, {"id": "edge_14", "source": "cat_missing_entities", "target": "missing_entities_3", "label": "contains", "data": {"source_id": "cat_missing_entities", "relation_type": "contains", "target_id": "missing_entities_3"}, "valid": true}, {"id": "edge_15", "source": "cat_missing_entities", "target": "missing_entities_4", "label": "contains", "data": {"source_id": "cat_missing_entities", "relation_type": "contains", "target_id": "missing_entities_4"}, "valid": true}, {"id": "edge_16", "source": "cat_missing_entities", "target": "missing_entities_5", "label": "contains", "data": {"source_id": "cat_missing_entities", "relation_type": "contains", "target_id": "missing_entities_5"}, "valid": true}, {"id": "edge_17", "source": "cat_missing_entities", "target": "missing_entities_6", "label": "contains", "data": {"source_id": "cat_missing_entities", "relation_type": "contains", "target_id": "missing_entities_6"}, "valid": true}, {"id": "edge_18", "source": "critique_root", "target": "cat_unsupported_relationships", "label": "has_category", "data": {"source_id": "critique_root", "relation_type": "has_category", "target_id": "cat_unsupported_relationships"}, "valid": true}, {"id": "edge_19", "source": "cat_unsupported_relationships", "target": "unsupported_relationships_1", "label": "contains", "data": {"source_id": "cat_unsupported_relationships", "relation_type": "contains", "target_id": "unsupported_relationships_1"}, "valid": true}, {"id": "edge_20", "source": "cat_unsupported_relationships", "target": "unsupported_relationships_2", "label": "contains", "data": {"source_id": "cat_unsupported_relationships", "relation_type": "contains", "target_id": "unsupported_relationships_2"}, "valid": true}, {"id": "edge_21", "source": "critique_root", "target": "cat_missing_relationships", "label": "has_category", "data": {"source_id": "critique_root", "relation_type": "has_category", "target_id": "cat_missing_relationships"}, "valid": true}, {"id": "edge_22", "source": "cat_missing_relationships", "target": "missing_relationships_1", "label": "contains", "data": {"source_id": "cat_missing_relationships", "relation_type": "contains", "target_id": "missing_relationships_1"}, "valid": true}, {"id": "edge_23", "source": "cat_missing_relationships", "target": "missing_relationships_2", "label": "contains", "data": {"source_id": "cat_missing_relationships", "relation_type": "contains", "target_id": "missing_relationships_2"}, "valid": true}, {"id": "edge_24", "source": "cat_missing_relationships", "target": "missing_relationships_3", "label": "contains", "data": {"source_id": "cat_missing_relationships", "relation_type": "contains", "target_id": "missing_relationships_3"}, "valid": true}, {"id": "edge_25", "source": "cat_missing_relationships", "target": "missing_relationships_4", "label": "contains", "data": {"source_id": "cat_missing_relationships", "relation_type": "contains", "target_id": "missing_relationships_4"}, "valid": true}, {"id": "edge_26", "source": "cat_missing_relationships", "target": "missing_relationships_5", "label": "contains", "data": {"source_id": "cat_missing_relationships", "relation_type": "contains", "target_id": "missing_relationships_5"}, "valid": true}, {"id": "edge_27", "source": "critique_root", "target": "cat_ontology_violations", "label": "has_category", "data": {"source_id": "critique_root", "relation_type": "has_category", "target_id": "cat_ontology_violations"}, "valid": true}, {"id": "edge_28", "source": "cat_ontology_violations", "target": "ontology_violations_1", "label": "contains", "data": {"source_id": "cat_ontology_violations", "relation_type": "contains", "target_id": "ontology_violations_1"}, "valid": true}, {"id": "edge_29", "source": "cat_ontology_violations", "target": "ontology_violations_2", "label": "contains", "data": {"source_id": "cat_ontology_violations", "relation_type": "contains", "target_id": "ontology_violations_2"}, "valid": true}, {"id": "edge_30", "source": "cat_ontology_violations", "target": "ontology_violations_3", "label": "contains", "data": {"source_id": "cat_ontology_violations", "relation_type": "contains", "target_id": "ontology_violations_3"}, "valid": true}, {"id": "edge_31", "source": "critique_root", "target": "cat_observation_association_errors", "label": "has_category", "data": {"source_id": "critique_root", "relation_type": "has_category", "target_id": "cat_observation_association_errors"}, "valid": true}, {"id": "edge_32", "source": "cat_observation_association_errors", "target": "observation_association_errors_1", "label": "contains", "data": {"source_id": "cat_observation_association_errors", "relation_type": "contains", "target_id": "observation_association_errors_1"}, "valid": true}, {"id": "edge_33", "source": "cat_observation_association_errors", "target": "observation_association_errors_2", "label": "contains", "data": {"source_id": "cat_observation_association_errors", "relation_type": "contains", "target_id": "observation_association_errors_2"}, "valid": true}, {"id": "edge_34", "source": "cat_observation_association_errors", "target": "observation_association_errors_3", "label": "contains", "data": {"source_id": "cat_observation_association_errors", "relation_type": "contains", "target_id": "observation_association_errors_3"}, "valid": true}, {"id": "edge_35", "source": "critique_root", "target": "cat_quantitative_errors", "label": "has_category", "data": {"source_id": "critique_root", "relation_type": "has_category", "target_id": "cat_quantitative_errors"}, "valid": true}, {"id": "edge_36", "source": "cat_quantitative_errors", "target": "quantitative_errors_1", "label": "contains", "data": {"source_id": "cat_quantitative_errors", "relation_type": "contains", "target_id": "quantitative_errors_1"}, "valid": true}, {"id": "edge_37", "source": "cat_quantitative_errors", "target": "quantitative_errors_2", "label": "contains", "data": {"source_id": "cat_quantitative_errors", "relation_type": "contains", "target_id": "quantitative_errors_2"}, "valid": true}, {"id": "edge_38", "source": "cat_quantitative_errors", "target": "quantitative_errors_3", "label": "contains", "data": {"source_id": "cat_quantitative_errors", "relation_type": "contains", "target_id": "quantitative_errors_3"}, "valid": true}, {"id": "edge_39", "source": "critique_root", "target": "cat_study_structure_errors", "label": "has_category", "data": {"source_id": "critique_root", "relation_type": "has_category", "target_id": "cat_study_structure_errors"}, "valid": true}, {"id": "edge_40", "source": "cat_study_structure_errors", "target": "study_structure_errors_1", "label": "contains", "data": {"source_id": "cat_study_structure_errors", "relation_type": "contains", "target_id": "study_structure_errors_1"}, "valid": true}, {"id": "edge_41", "source": "cat_study_structure_errors", "target": "study_structure_errors_2", "label": "contains", "data": {"source_id": "cat_study_structure_errors", "relation_type": "contains", "target_id": "study_structure_errors_2"}, "valid": true}, {"id": "edge_42", "source": "cat_study_structure_errors", "target": "study_structure_errors_3", "label": "contains", "data": {"source_id": "cat_study_structure_errors", "relation_type": "contains", "target_id": "study_structure_errors_3"}, "valid": true}, {"id": "edge_43", "source": "critique_root", "target": "cat_recommendations", "label": "has_category", "data": {"source_id": "critique_root", "relation_type": "has_category", "target_id": "cat_recommendations"}, "valid": true}, {"id": "edge_44", "source": "cat_recommendations", "target": "recommendations_1", "label": "contains", "data": {"source_id": "cat_recommendations", "relation_type": "contains", "target_id": "recommendations_1"}, "valid": true}, {"id": "edge_45", "source": "cat_recommendations", "target": "recommendations_2", "label": "contains", "data": {"source_id": "cat_recommendations", "relation_type": "contains", "target_id": "recommendations_2"}, "valid": true}, {"id": "edge_46", "source": "cat_recommendations", "target": "recommendations_3", "label": "contains", "data": {"source_id": "cat_recommendations", "relation_type": "contains", "target_id": "recommendations_3"}, "valid": true}, {"id": "edge_47", "source": "cat_recommendations", "target": "recommendations_4", "label": "contains", "data": {"source_id": "cat_recommendations", "relation_type": "contains", "target_id": "recommendations_4"}, "valid": true}, {"id": "edge_48", "source": "cat_recommendations", "target": "recommendations_5", "label": "contains", "data": {"source_id": "cat_recommendations", "relation_type": "contains", "target_id": "recommendations_5"}, "valid": true}, {"id": "edge_49", "source": "cat_recommendations", "target": "recommendations_6", "label": "contains", "data": {"source_id": "cat_recommendations", "relation_type": "contains", "target_id": "recommendations_6"}, "valid": true}, {"id": "edge_50", "source": "cat_recommendations", "target": "recommendations_7", "label": "contains", "data": {"source_id": "cat_recommendations", "relation_type": "contains", "target_id": "recommendations_7"}, "valid": true}, {"id": "edge_51", "source": "cat_recommendations", "target": "recommendations_8", "label": "contains", "data": {"source_id": "cat_recommendations", "relation_type": "contains", "target_id": "recommendations_8"}, "valid": true}, {"id": "edge_52", "source": "cat_recommendations", "target": "recommendations_9", "label": "contains", "data": {"source_id": "cat_recommendations", "relation_type": "contains", "target_id": "recommendations_9"}, "valid": true}]};
+    Promise.resolve(__GRAPH_DATA__).then(init).catch((error) => {
+      details.innerHTML = '<h2>Could not load graph</h2><pre>' + escapeHtml(error) + '</pre>';
+    });
+
+    function colorFor(node) {
+      if (node.type === 'Finding' && node.data && criticalCategories.has(node.data.category)) return 'var(--critical)';
+      return colorByType[node.type] || 'var(--other)';
+    }
+
+    function init(graph) {
+      document.getElementById('count').textContent = graph.node_count + ' nodes / ' + graph.edge_count + ' edges';
+      const types = [...new Set(graph.nodes.map((node) => node.type))].sort();
+      for (const type of types) {
+        const option = document.createElement('option');
+        option.value = type;
+        option.textContent = type;
+        typeFilter.appendChild(option);
+      }
+      const legend = document.getElementById('legend');
+      const legendTypes = [...types, 'Critical finding'];
+      for (const type of legendTypes) {
+        const item = document.createElement('span');
+        const color = type === 'Critical finding' ? 'var(--critical)' : (colorByType[type] || 'var(--other)');
+        item.innerHTML = '<i class="swatch" style="background:' + color + '"></i>' + type;
+        legend.appendChild(item);
+      }
+
+      const nodes = graph.nodes.map((node) => ({ ...node }));
+      const nodeById = new Map(nodes.map((node) => [node.id, node]));
+      const links = graph.edges.filter((edge) => edge.valid).map((edge) => ({ ...edge, source: nodeById.get(edge.source), target: nodeById.get(edge.target) }));
+      const adjacency = new Map(nodes.map((node) => [node.id, new Set()]));
+      for (const link of links) {
+        adjacency.get(link.source.id).add(link.target.id);
+        adjacency.get(link.target.id).add(link.source.id);
+      }
+
+      let selected = null;
+      let transform = { x: 0, y: 0, scale: 1 };
+      const width = () => svg.clientWidth || 900;
+      const height = () => svg.clientHeight || 700;
+      const ns = 'http://www.w3.org/2000/svg';
+      svg.innerHTML = '<defs><marker id="arrow" viewBox="0 -5 10 10" refX="18" refY="0" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,-5L10,0L0,5" fill="#9aa8b5"></path></marker></defs>';
+      const viewport = document.createElementNS(ns, 'g');
+      const edgeLayer = document.createElementNS(ns, 'g');
+      const labelLayer = document.createElementNS(ns, 'g');
+      const nodeLayer = document.createElementNS(ns, 'g');
+      viewport.append(edgeLayer, labelLayer, nodeLayer);
+      svg.appendChild(viewport);
+
+      const edgeEls = links.map((link) => {
+        const path = document.createElementNS(ns, 'path');
+        path.classList.add('link');
+        path.setAttribute('marker-end', 'url(#arrow)');
+        edgeLayer.appendChild(path);
+        const label = document.createElementNS(ns, 'text');
+        label.classList.add('link-label');
+        label.textContent = link.label;
+        labelLayer.appendChild(label);
+        return { path, label, link };
+      });
+      const nodeEls = nodes.map((node) => {
+        const group = document.createElementNS(ns, 'g');
+        group.classList.add('node');
+        const circle = document.createElementNS(ns, 'circle');
+        circle.setAttribute('r', radiusFor(node));
+        circle.setAttribute('fill', colorFor(node));
+        const text = document.createElementNS(ns, 'text');
+        text.setAttribute('x', radiusFor(node) + 4);
+        text.setAttribute('y', 3);
+        text.textContent = truncate(node.label, 40);
+        group.append(circle, text);
+        group.addEventListener('click', () => selectNode(node));
+        nodeLayer.appendChild(group);
+        return { group, node };
+      });
+
+      seedPositions(nodes, width(), height());
+      runLayout(nodes, links, width(), height(), 460);
+      tick();
+      search.addEventListener('input', applyFilters);
+      typeFilter.addEventListener('change', applyFilters);
+      resetButton.addEventListener('click', () => {
+        selected = null;
+        transform = { x: 0, y: 0, scale: 1 };
+        updateTransform();
+        applyFilters();
+        details.innerHTML = '<h2>Select a node</h2><div class="type">Click a category or finding to see full details.</div>';
+      });
+
+      let panning = false;
+      let last = null;
+      svg.addEventListener('pointerdown', (event) => {
+        if (event.target.closest('.node')) return;
+        panning = true;
+        last = { x: event.clientX, y: event.clientY };
+        svg.setPointerCapture(event.pointerId);
+      });
+      svg.addEventListener('pointermove', (event) => {
+        if (!panning) return;
+        transform.x += event.clientX - last.x;
+        transform.y += event.clientY - last.y;
+        last = { x: event.clientX, y: event.clientY };
+        updateTransform();
+      });
+      svg.addEventListener('pointerup', () => { panning = false; });
+      svg.addEventListener('wheel', (event) => {
+        event.preventDefault();
+        transform.scale = Math.max(0.35, Math.min(2.4, transform.scale * (event.deltaY > 0 ? 0.9 : 1.1)));
+        updateTransform();
+      }, { passive: false });
+
+      function tick() {
+        for (const { path, label, link } of edgeEls) {
+          const dx = link.target.x - link.source.x;
+          const dy = link.target.y - link.source.y;
+          const dr = Math.sqrt(dx * dx + dy * dy) * 1.35;
+          path.setAttribute('d', 'M' + link.source.x + ',' + link.source.y + 'A' + dr + ',' + dr + ' 0 0,1 ' + link.target.x + ',' + link.target.y);
+          label.setAttribute('x', (link.source.x + link.target.x) / 2);
+          label.setAttribute('y', (link.source.y + link.target.y) / 2 - 4);
+        }
+        for (const { group, node } of nodeEls) group.setAttribute('transform', 'translate(' + node.x + ',' + node.y + ')');
+      }
+      function selectNode(node) {
+        selected = node;
+        details.innerHTML = '<h2>' + escapeHtml(node.label) + '</h2><div class="type">' + escapeHtml(node.type) + ' · ' + escapeHtml(node.id) + '</div><pre>' + escapeHtml(JSON.stringify(node.data, null, 2)) + '</pre>';
+        applyFilters();
+      }
+      function applyFilters() {
+        const query = search.value.trim().toLowerCase();
+        const type = typeFilter.value;
+        const visible = new Set(nodes.filter((node) => {
+          const text = (node.id + ' ' + node.label + ' ' + node.type + ' ' + JSON.stringify(node.data || {})).toLowerCase();
+          return (!query || text.includes(query)) && (!type || node.type === type);
+        }).map((node) => node.id));
+        const related = selected ? adjacency.get(selected.id) : null;
+        for (const item of nodeEls) {
+          const filtered = !visible.has(item.node.id);
+          const unrelated = selected && item.node.id !== selected.id && !related.has(item.node.id);
+          item.group.classList.toggle('dim', filtered || unrelated);
+          item.group.classList.toggle('selected', selected && item.node.id === selected.id);
+        }
+        for (const item of edgeEls) {
+          const filtered = !visible.has(item.link.source.id) || !visible.has(item.link.target.id);
+          const unrelated = selected && item.link.source.id !== selected.id && item.link.target.id !== selected.id;
+          item.path.classList.toggle('dim', filtered || unrelated);
+          item.label.classList.toggle('dim', filtered || unrelated);
+        }
+      }
+      function updateTransform() { viewport.setAttribute('transform', 'translate(' + transform.x + ',' + transform.y + ') scale(' + transform.scale + ')'); }
+    }
+
+    function seedPositions(nodes, width, height) {
+      const centerX = width / 2;
+      const centerY = height / 2;
+      nodes.forEach((node, index) => {
+        const angle = (index / nodes.length) * Math.PI * 2;
+        const radius = Math.min(width, height) * (0.18 + (index % 5) * 0.035);
+        node.x = centerX + Math.cos(angle) * radius;
+        node.y = centerY + Math.sin(angle) * radius;
+        node.vx = 0;
+        node.vy = 0;
+      });
+    }
+    function runLayout(nodes, links, width, height, steps) {
+      const centerX = width / 2;
+      const centerY = height / 2;
+      for (let step = 0; step < steps; step++) {
+        const alpha = 1 - step / steps;
+        for (let i = 0; i < nodes.length; i++) {
+          for (let j = i + 1; j < nodes.length; j++) {
+            const a = nodes[i];
+            const b = nodes[j];
+            let dx = b.x - a.x;
+            let dy = b.y - a.y;
+            let distance = Math.sqrt(dx * dx + dy * dy) || 1;
+            const force = (820 / (distance * distance)) * alpha;
+            dx /= distance;
+            dy /= distance;
+            a.vx -= dx * force;
+            a.vy -= dy * force;
+            b.vx += dx * force;
+            b.vy += dy * force;
+          }
+        }
+        for (const link of links) {
+          const dx = link.target.x - link.source.x;
+          const dy = link.target.y - link.source.y;
+          const distance = Math.sqrt(dx * dx + dy * dy) || 1;
+          const force = (distance - 120) * 0.014 * alpha;
+          link.source.vx += (dx / distance) * force;
+          link.source.vy += (dy / distance) * force;
+          link.target.vx -= (dx / distance) * force;
+          link.target.vy -= (dy / distance) * force;
+        }
+        for (const node of nodes) {
+          node.vx += (centerX - node.x) * 0.003 * alpha;
+          node.vy += (centerY - node.y) * 0.003 * alpha;
+          node.vx *= 0.82;
+          node.vy *= 0.82;
+          node.x = Math.max(36, Math.min(width - 36, node.x + node.vx));
+          node.y = Math.max(36, Math.min(height - 36, node.y + node.vy));
+        }
+      }
+    }
+    function radiusFor(node) { return node.type === 'Critique' ? 15 : (node.type === 'Category' ? 11 : 7); }
+    function truncate(value, max) { return value.length > max ? value.slice(0, max - 1) + '...' : value; }
+    function escapeHtml(value) { return String(value).replace(/[&<>\"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[char])); }
+  </script>
+</body>
+</html>

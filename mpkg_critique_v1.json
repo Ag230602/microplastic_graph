@@ -1,0 +1,177 @@
+{
+  "audit_target": "mpkg_graph.json",
+  "source_paper": "Neurotoxicity Following Exposure to Micro and Nanoplastics",
+  "ontology": ["entities_v1.json", "relationships_v1.json"],
+  "graph_summary": { "node_count": 64, "edge_count": 105 },
+  "critical_errors": [
+    {
+      "issue": "TissueOrgan layer entirely missing",
+      "detail": "No TissueOrgan nodes exist, yet observations and biomarkers richly describe organ-level distribution (mouse brain, liver, kidney, gut; bivalve gills, hemolymph, digestive gland). Biomarkers carry a 'tissue_matrix' attribute (e.g., 'mouse brain tissue', 'mouse liver') but there is no canonical TissueOrgan node and no 'measured_in' or 'affects' edge.",
+      "evidence": "Paper: '...particles in the mice's gut, liver, and kidneys...'; '...within the hemolymph, gills, and intestines...'. Ontology supports Biomarker->measured_in->TissueOrgan and Mechanism->affects->TissueOrgan."
+    },
+    {
+      "issue": "Disconnected (orphan) nodes with no edges",
+      "detail": "size_50_nm, size_40_nm, size_0_11_um, size_0_1_to_5_um, size_1_0_um, and shape_spherical have zero incident edges. They inflate node_count without participating in the graph.",
+      "evidence": "No has_size_class / has_shape edge references these node ids."
+    },
+    {
+      "issue": "Size entities not found in provided paper content",
+      "detail": "size_50_nm (50 nm) and size_0_11_um (0.11 um) do not appear in the supplied paper excerpt. 0.11 um may be a misextraction of the shrimp study's 0.1 um.",
+      "evidence": "Provided sizes in text: 0.1-5, 1.0, 100-200, 1, 10, 20, 100, 1-5, 0.1 um and 40 nm. 50 nm and 0.11 um are absent (verify against full/truncated sections before keeping)."
+    }
+  ],
+  "unsupported_entities": [
+    {
+      "id": "size_50_nm",
+      "reason": "No mention of 50 nm in provided paper content; orphan node. Verify against full text or remove."
+    },
+    {
+      "id": "size_0_11_um",
+      "reason": "0.11 um not present in provided content; likely a misread of the 0.1 um shrimp particle. Orphan node."
+    },
+    {
+      "id": "size_1_0_um",
+      "reason": "Duplicate of size_1_um (both min=max=1 um). Controlled-vocabulary duplication; orphan node."
+    },
+    {
+      "id": "shape_spherical",
+      "reason": "Maps 'spherical' to label 'other' but is never linked to any observation (C. elegans 'spherical polystyrene' is not connected). Orphan node."
+    },
+    {
+      "note": "Biomarkers superoxide_dismutase_activity, catalase_activity, glutathione_s_transferase_activity, malondialdehyde_levels cite refs ([87],[89]-[93]) that fall in paper sections NOT included in the provided excerpt; their direction_of_change could not be confirmed from supplied text. Flag for source verification rather than asserting unsupported."
+    }
+  ],
+  "missing_entities": [
+    {
+      "type": "TissueOrgan",
+      "examples": ["brain / cerebral cortex", "liver", "kidney", "gut/intestine", "gills", "hemolymph", "digestive gland"],
+      "evidence": "Distribution explicitly reported across sections 5, 7, 8."
+    },
+    {
+      "type": "ExposurePathway",
+      "examples": ["oral / ingestion", "inhalation", "nasal / retrograde transport"],
+      "evidence": "Abstract + Conclusions: 'exposure routes like inhalation, ingestion, and retrograde transport after nasal exposure'; particles 'taken in by aquatic beings and mammals'."
+    },
+    {
+      "type": "Mechanism",
+      "examples": ["apoptosis / neuronal cell death (label 'other')"],
+      "evidence": "Section 5: caspase-3 is 'a marker for neuron cell apoptosis'; biomarker_caspase_3 exists but is linked to no Mechanism."
+    },
+    {
+      "type": "Observation/Association",
+      "examples": ["European seabass [42]: reduced AChE release, oxidative stress, lipid peroxidation, anaerobic shift, irregular swimming"],
+      "evidence": "Section 5 reports this explicitly; not represented as observations/associations."
+    },
+    {
+      "type": "Observation/Finding",
+      "examples": ["neurodegeneration", "nuclear pyknosis", "disrupted neuron arrangement in cerebral cortex"],
+      "evidence": "Section 5 describes these morphological findings; not captured."
+    },
+    {
+      "type": "Sample",
+      "examples": ["per-organism exposure/biological samples"],
+      "evidence": "Zero Sample nodes; Observations are not 'observed_in' any Sample."
+    }
+  ],
+  "unsupported_relationships": [
+    {
+      "issue": "No fabricated/invalid relationship endpoints detected",
+      "detail": "All 105 edges use valid relation types with ontology-compliant source/target types (reports, supports, evaluates, assesses, identified_by, produces, has_polymer, has_size_class, has_shape, links, supported_by, evidenced_by, evaluated_in)."
+    },
+    {
+      "issue": "Redundant inverse-pair edges",
+      "detail": "Both directions are stored for the same relation (e.g., Study--supports-->Association AND Association--supported_by-->Study; Observation--identified_by-->Method AND Method--produces-->Observation), inflating edge_count. Not invalid, but redundant."
+    }
+  ],
+  "missing_relationships": [
+    {
+      "relation": "Biomarker -> measured_in -> TissueOrgan",
+      "examples": ["caspase_3 / tnf_alpha / il_6 in brain", "atp_levels / ldh_activity in liver"]
+    },
+    {
+      "relation": "Mechanism -> affects -> TissueOrgan",
+      "examples": ["inflammation -> brain", "metabolic_disturbance -> liver"]
+    },
+    {
+      "relation": "Mechanism -> associated_with -> ClinicalOutcome",
+      "detail": "oxidative_stress -> neurological_disorders is only expressed via an Association; the direct ontology edge is unused."
+    },
+    {
+      "relation": "Observation -> has_size_class / has_polymer / has_shape",
+      "detail": "C. elegans (0.1-5 um, spherical polystyrene, 1 mg/L) and the rat study (40 nm PS) have Associations but no Observation, so size_0_1_to_5_um, size_40_nm, shape_spherical, polystyrene remain unlinked for those studies."
+    },
+    {
+      "relation": "Association -> links -> Biomarker/Mechanism",
+      "detail": "biomarker_dopamine_levels and biomarker_caspase_3 connect only to the Study (evaluated_in); neither is tied to a Mechanism or Association despite clear interpretive context."
+    }
+  ],
+  "ontology_violations": [
+    {
+      "issue": "Observation.unit misused as a descriptor",
+      "detail": "Several Observation nodes set unit to 'presence reported', 'reported direction', or 'reported null finding' rather than a measurement unit.",
+      "nodes": ["obs_earthworm_polyethylene_uptake", "obs_mouse_brain_caspase3_increased", "obs_mouse_brain_tnf_il6_upregulated", "obs_zebra_mussel_no_genotoxic_effects", "obs_*_detected"]
+    },
+    {
+      "issue": "ParticleSizeClass bin_type questionable",
+      "detail": "size_0_1_um (0.1 um = 100 nm) and size_0_11_um are tagged bin_type 'micro' though they sit at/below the nano boundary; size_50_nm and size_40_nm are 'nano' but omit min/max_micrometer."
+    },
+    {
+      "issue": "Method.identification_capability stores result text",
+      "detail": "Field holds narrative findings (e.g., 'confirmed absorption and presence of particles in freeze-dried tissues') rather than a description of the method's detection capability. Within schema type but semantically off."
+    }
+  ],
+  "observation_association_errors": [
+    {
+      "issue": "Mostly correct separation",
+      "detail": "Measured findings are Observation nodes; interpretations/suggestions are Association nodes. Good overall."
+    },
+    {
+      "issue": "Triple representation of the null genotoxicity finding",
+      "detail": "The single 'no genotoxic effects in Dreissena polymorpha' result appears as an Observation (obs_zebra_mussel_no_genotoxic_effects), an Association (assoc_zebra_mussel_genotoxicity_null), AND a Mechanism (mechanism_genotoxicity). Verify this is intentional and not double counting."
+    },
+    {
+      "issue": "Direction words inside Observation.value",
+      "detail": "Observations encode 'increased'/'upregulated' inside value with metric_type presence_absence; acceptable but borders on interpretation."
+    }
+  ],
+  "quantitative_errors": [
+    {
+      "issue": "Inferred unit",
+      "node": "obs_mouse_20um_ps_concentration_plateau",
+      "detail": "Paper states '...plateau at about 0.8' without restating mg/g; extraction assigns mg/g. Verify."
+    },
+    {
+      "issue": "Exposure doses/concentrations not captured as structured quantities",
+      "detail": "Held only in notes: mouse 0.01-0.5 mg/day (~0.5-25 mg/kg/day); rat 1-10 mg/kg/day, 40 nm, 5 weeks; C. elegans 1 mg/L; zebra mussel 1 and 4x10^6 MPs/L; earthworm 0.1-1.5 g/kg soil; shrimp 0.001-10 mg/L; Corbicula 0.2/0.7 mg/L."
+    },
+    {
+      "issue": "No altered numeric values detected",
+      "detail": "Extracted tissue concentrations (0.2, 1.0, 1.4 mg/g for 5 um in liver/kidney/gut) match the paper exactly."
+    }
+  ],
+  "study_structure_errors": [
+    {
+      "issue": "Primary studies collapsed into one review Study",
+      "detail": "All observations/associations attach to the single review node via reports/supports. Primary references ([41],[42],[85],[86], etc.) are preserved only as biomarker citations_ref, so most observations lack per-study provenance."
+    },
+    {
+      "issue": "No Sample layer",
+      "detail": "Observations are not linked to Sample nodes (Observation->observed_in->Sample chain absent)."
+    },
+    {
+      "issue": "Edge_count inflated by bidirectional duplicates",
+      "detail": "supports/supported_by and identified_by/produces are both stored, so 105 edges overstate the number of unique relations."
+    }
+  ],
+  "recommendations": [
+    "Add TissueOrgan nodes (brain, cerebral cortex, liver, kidney, gut, gills, hemolymph, digestive gland) and connect via Biomarker->measured_in and Mechanism->affects.",
+    "Verify 50 nm and 0.11 um against the full/truncated text; remove if unsupported and merge size_1_0_um into size_1_um.",
+    "Connect or remove orphan nodes: link size_40_nm to the rat study and size_0_1_to_5_um / shape_spherical to the C. elegans finding (add the missing Observation), or drop them.",
+    "Add ExposurePathway nodes (oral, inhalation, nasal/retrograde) with limited-evidence hedging, sourced from abstract/conclusions.",
+    "Represent the European seabass [42] findings and the neurodegeneration / nuclear pyknosis observations from Section 5.",
+    "Fix Observation.unit misuse (use a real unit or move descriptors to notes) and add structured exposure-dose observations.",
+    "Preserve provenance: model key primary studies as separate Study nodes or add a citation attribute on observations.",
+    "Link caspase_3 to an apoptosis Mechanism (label 'other') and tie dopamine_levels to a neurotransmitter-related Mechanism/Association.",
+    "Optionally deduplicate inverse-pair edges to keep edge_count meaningful."
+  ]
+}

@@ -1,0 +1,1078 @@
+{
+  "entities": [
+    {
+      "id": "study_neurotoxicity_following_exposure_review",
+      "type": "Study",
+      "title": "Neurotoxicity Following Exposure to Micro and Nanoplastics",
+      "design": "review",
+      "exposure_context": "neurotoxic implications of nanoplastics across various species and in vitro settings",
+      "notes": "The review includes studies published between 2015 and 2024."
+    },
+    {
+      "id": "polymer_polystyrene",
+      "type": "Polymer",
+      "name": "polystyrene",
+      "synonyms": [
+        "PS"
+      ]
+    },
+    {
+      "id": "polymer_amino_modified_polystyrene",
+      "type": "Polymer",
+      "name": "amino-modified polystyrene",
+      "synonyms": [
+        "PS-NH2"
+      ]
+    },
+    {
+      "id": "polymer_polyethylene",
+      "type": "Polymer",
+      "name": "polyethylene"
+    },
+    {
+      "id": "polymer_low_density_polyethylene",
+      "type": "Polymer",
+      "name": "low-density polyethylene",
+      "synonyms": [
+        "LDPE"
+      ]
+    },
+    {
+      "id": "shape_bead",
+      "type": "Shape",
+      "label": "bead",
+      "synonyms": [
+        "microbead"
+      ]
+    },
+    {
+      "id": "shape_spherical",
+      "type": "Shape",
+      "label": "other",
+      "synonyms": [
+        "spherical"
+      ]
+    },
+    {
+      "id": "size_0_1_to_5_um",
+      "type": "ParticleSizeClass",
+      "label": "0.1-5 μm",
+      "min_micrometer": 0.1,
+      "max_micrometer": 5,
+      "bin_type": "micro"
+    },
+    {
+      "id": "size_1_0_um",
+      "type": "ParticleSizeClass",
+      "label": "1.0 μm",
+      "min_micrometer": 1,
+      "max_micrometer": 1,
+      "bin_type": "micro"
+    },
+    {
+      "id": "size_100_to_200_um",
+      "type": "ParticleSizeClass",
+      "label": "100-200 μm",
+      "min_micrometer": 100,
+      "max_micrometer": 200,
+      "bin_type": "micro"
+    },
+    {
+      "id": "size_1_um",
+      "type": "ParticleSizeClass",
+      "label": "1 μm",
+      "min_micrometer": 1,
+      "max_micrometer": 1,
+      "bin_type": "micro"
+    },
+    {
+      "id": "size_10_um",
+      "type": "ParticleSizeClass",
+      "label": "10 μm",
+      "min_micrometer": 10,
+      "max_micrometer": 10,
+      "bin_type": "micro"
+    },
+    {
+      "id": "size_20_um",
+      "type": "ParticleSizeClass",
+      "label": "20 μm",
+      "min_micrometer": 20,
+      "max_micrometer": 20,
+      "bin_type": "micro"
+    },
+    {
+      "id": "size_0_11_um",
+      "type": "ParticleSizeClass",
+      "label": "0.11 μm",
+      "min_micrometer": 0.11,
+      "max_micrometer": 0.11,
+      "bin_type": "micro"
+    },
+    {
+      "id": "size_100_um",
+      "type": "ParticleSizeClass",
+      "label": "100 μm",
+      "min_micrometer": 100,
+      "max_micrometer": 100,
+      "bin_type": "micro"
+    },
+    {
+      "id": "size_1_to_5_um",
+      "type": "ParticleSizeClass",
+      "label": "1-5 μm",
+      "min_micrometer": 1,
+      "max_micrometer": 5,
+      "bin_type": "micro"
+    },
+    {
+      "id": "size_0_1_um",
+      "type": "ParticleSizeClass",
+      "label": "0.1 μm",
+      "min_micrometer": 0.1,
+      "max_micrometer": 0.1,
+      "bin_type": "micro"
+    },
+    {
+      "id": "size_50_nm",
+      "type": "ParticleSizeClass",
+      "label": "50 nm",
+      "bin_type": "nano"
+    },
+    {
+      "id": "size_5_um",
+      "type": "ParticleSizeClass",
+      "label": "5 μm",
+      "min_micrometer": 5,
+      "max_micrometer": 5,
+      "bin_type": "micro"
+    },
+    {
+      "id": "size_40_nm",
+      "type": "ParticleSizeClass",
+      "label": "40 nm",
+      "bin_type": "nano"
+    },
+    {
+      "id": "method_fluorescence_spectrometer",
+      "type": "Method",
+      "method_class": "fluorescence spectrometer analysis",
+      "identification_capability": "confirmed absorption and presence of particles in freeze-dried tissues"
+    },
+    {
+      "id": "method_confocal_microscopy",
+      "type": "Method",
+      "method_class": "confocal microscopy",
+      "identification_capability": "observed accumulation of particles"
+    },
+    {
+      "id": "method_light_microscopy",
+      "type": "Method",
+      "method_class": "light microscopy",
+      "identification_capability": "detected microplastic particles"
+    },
+    {
+      "id": "method_infrared_spectroscopy",
+      "type": "Method",
+      "method_class": "infrared spectroscopy",
+      "identification_capability": "detected microplastic particles"
+    },
+    {
+      "id": "method_polarized_light_microscopy",
+      "type": "Method",
+      "method_class": "polarized light microscopy",
+      "identification_capability": "identified plastic particles"
+    },
+    {
+      "id": "method_fluorescence_microscopy",
+      "type": "Method",
+      "method_class": "fluorescence microscopy",
+      "identification_capability": "detected fluorescent microparticles"
+    },
+    {
+      "id": "biomarker_acetylcholinesterase_activity",
+      "type": "Biomarker",
+      "name": "acetylcholinesterase activity",
+      "direction_of_change": "variable",
+      "citations_ref": [
+        "[42]",
+        "[85]",
+        "[87]",
+        "[89]",
+        "[90]",
+        "[91]"
+      ]
+    },
+    {
+      "id": "biomarker_caspase_3",
+      "type": "Biomarker",
+      "name": "caspase-3 signals",
+      "tissue_matrix": "mouse brain tissue",
+      "direction_of_change": "increase",
+      "citations_ref": [
+        "[41]"
+      ]
+    },
+    {
+      "id": "biomarker_tnf_alpha",
+      "type": "Biomarker",
+      "name": "TNF-α",
+      "tissue_matrix": "mouse brain tissue",
+      "direction_of_change": "increase",
+      "citations_ref": [
+        "[41]"
+      ]
+    },
+    {
+      "id": "biomarker_il_6",
+      "type": "Biomarker",
+      "name": "IL-6",
+      "tissue_matrix": "mouse brain tissue",
+      "direction_of_change": "increase",
+      "citations_ref": [
+        "[41]"
+      ]
+    },
+    {
+      "id": "biomarker_catalase_activity",
+      "type": "Biomarker",
+      "name": "catalase activity",
+      "direction_of_change": "variable",
+      "citations_ref": [
+        "[85]",
+        "[86]",
+        "[87]",
+        "[93]"
+      ]
+    },
+    {
+      "id": "biomarker_malondialdehyde_levels",
+      "type": "Biomarker",
+      "name": "malondialdehyde levels",
+      "direction_of_change": "increase",
+      "citations_ref": [
+        "[85]"
+      ]
+    },
+    {
+      "id": "biomarker_dopamine_levels",
+      "type": "Biomarker",
+      "name": "dopamine levels",
+      "direction_of_change": "increase",
+      "citations_ref": [
+        "[86]"
+      ]
+    },
+    {
+      "id": "biomarker_superoxide_dismutase_activity",
+      "type": "Biomarker",
+      "name": "superoxide dismutase activity",
+      "direction_of_change": "increase",
+      "citations_ref": [
+        "[87]"
+      ]
+    },
+    {
+      "id": "biomarker_glutathione_s_transferase_activity",
+      "type": "Biomarker",
+      "name": "Glutathione-S-transferase activity",
+      "direction_of_change": "variable",
+      "citations_ref": [
+        "[87]",
+        "[93]"
+      ]
+    },
+    {
+      "id": "biomarker_lipid_peroxidation",
+      "type": "Biomarker",
+      "name": "lipid peroxidation",
+      "direction_of_change": "variable",
+      "citations_ref": [
+        "[42]",
+        "[87]",
+        "[91]"
+      ]
+    },
+    {
+      "id": "biomarker_atp_levels",
+      "type": "Biomarker",
+      "name": "ATP levels",
+      "tissue_matrix": "mouse liver",
+      "direction_of_change": "decrease",
+      "citations_ref": [
+        "[42]"
+      ]
+    },
+    {
+      "id": "biomarker_ldh_activity",
+      "type": "Biomarker",
+      "name": "LDH activity",
+      "tissue_matrix": "mouse liver",
+      "direction_of_change": "increase",
+      "citations_ref": [
+        "[42]"
+      ]
+    },
+    {
+      "id": "mechanism_oxidative_stress",
+      "type": "Mechanism",
+      "label": "oxidative_stress",
+      "evidence_type": "review",
+      "key_biomarkers": [
+        "catalase activity",
+        "malondialdehyde levels",
+        "superoxide dismutase activity",
+        "lipid peroxidation"
+      ],
+      "notes": "The paper explicitly reports oxidative stress or oxidative damage in multiple summarized studies."
+    },
+    {
+      "id": "mechanism_inflammation",
+      "type": "Mechanism",
+      "label": "inflammation",
+      "evidence_type": "review",
+      "key_biomarkers": [
+        "TNF-α",
+        "IL-6"
+      ],
+      "notes": "The paper reports upregulated TNF-α and IL-6 in mouse brain tissues exposed to PS-NH2."
+    },
+    {
+      "id": "mechanism_metabolic_disturbance",
+      "type": "Mechanism",
+      "label": "metabolic_disturbance",
+      "evidence_type": "review",
+      "key_biomarkers": [
+        "ATP levels",
+        "LDH activity"
+      ],
+      "notes": "The paper reports dose-dependent alterations in energy metabolism in mouse liver."
+    },
+    {
+      "id": "mechanism_genotoxicity",
+      "type": "Mechanism",
+      "label": "genotoxicity",
+      "evidence_type": "review",
+      "notes": "The paper explicitly states that polystyrene microbeads did not cause genotoxic effects in Dreissena polymorpha."
+    },
+    {
+      "id": "outcome_behavioral_changes",
+      "type": "ClinicalOutcome",
+      "label": "behavioral changes",
+      "outcome_type": "other",
+      "strength_of_evidence": "limited",
+      "causal_confidence": "low",
+      "notes": "The abstract states that exposure could inhibit acetylcholinesterase activity and alter neurotransmitter levels, potentially contributing to observed behavioral changes."
+    },
+    {
+      "id": "outcome_neurological_disorders",
+      "type": "ClinicalOutcome",
+      "label": "neurological disorders",
+      "outcome_type": "diagnosis",
+      "strength_of_evidence": "limited",
+      "causal_confidence": "low",
+      "notes": "The abstract states that exposure to nanoplastics may lead to oxidative stress, potentially causing cell damage and raising the risk of developing neurological disorders."
+    },
+    {
+      "id": "outcome_lower_survival_lifespan",
+      "type": "ClinicalOutcome",
+      "label": "lowered survival rates and decreased average lifespan",
+      "outcome_type": "other",
+      "strength_of_evidence": "limited",
+      "causal_confidence": "low",
+      "notes": "Caenorhabditis elegans exposed to spherical polystyrene microplastics showed lowered survival rates and decreased average lifespan."
+    },
+    {
+      "id": "obs_mouse_liver_5um_ps_concentration",
+      "type": "Observation",
+      "metric_type": "concentration",
+      "value": "approximately 0.2",
+      "unit": "mg/g",
+      "notes": "During the initial week of exposure, 5 μm polystyrene particle concentrations stabilized at approximately 0.2 mg/g in liver."
+    },
+    {
+      "id": "obs_mouse_kidney_5um_ps_concentration",
+      "type": "Observation",
+      "metric_type": "concentration",
+      "value": "approximately 1.0",
+      "unit": "mg/g",
+      "notes": "During the initial week of exposure, 5 μm polystyrene particle concentrations stabilized at approximately 1.0 mg/g in kidney."
+    },
+    {
+      "id": "obs_mouse_gut_5um_ps_concentration",
+      "type": "Observation",
+      "metric_type": "concentration",
+      "value": "approximately 1.4",
+      "unit": "mg/g",
+      "notes": "During the initial week of exposure, 5 μm polystyrene particle concentrations stabilized at approximately 1.4 mg/g in gut."
+    },
+    {
+      "id": "obs_mouse_20um_ps_concentration_plateau",
+      "type": "Observation",
+      "metric_type": "concentration",
+      "value": "about 0.8",
+      "unit": "mg/g",
+      "notes": "For 20 μm particles, the concentration was more consistent across the organs, reaching a plateau at about 0.8."
+    },
+    {
+      "id": "obs_earthworm_polyethylene_uptake",
+      "type": "Observation",
+      "metric_type": "presence_absence",
+      "value": "uptake confirmed",
+      "unit": "presence reported",
+      "notes": "Polyethylene particle uptake was confirmed after 14-28 days at 1.5 g/kg soil."
+    },
+    {
+      "id": "obs_zebra_mussel_polystyrene_microbeads_accumulation",
+      "type": "Observation",
+      "metric_type": "presence_absence",
+      "value": "accumulation of particles within the gut lumen and further movement to tissues and hemolymph",
+      "unit": "presence reported",
+      "notes": "Dreissena polymorpha exposed to pristine polystyrene microbeads of 1 μm and 10 μm at concentrations of 1 and 4 × 106 MPs/L for six days."
+    },
+    {
+      "id": "obs_scrobicularia_polystyrene_particles_detected",
+      "type": "Observation",
+      "metric_type": "presence_absence",
+      "value": "particles detected in the hemolymph, digestive gland, and gills",
+      "unit": "presence reported",
+      "notes": "Scrobicularia plana exposed to 20 μm polystyrene microplastics at a concentration of 1 mg/L."
+    },
+    {
+      "id": "obs_mediterranean_mussel_particles_detected",
+      "type": "Observation",
+      "metric_type": "presence_absence",
+      "value": "plastic particles within the hemolymph, gills, and intestines",
+      "unit": "presence reported",
+      "notes": "Mytilus galloprovincialis exposed to unpolluted and pyrene-contaminated polyethylene and polystyrene microplastics (100 μm, 1.5 g/L) over seven days."
+    },
+    {
+      "id": "obs_corbicula_polymeric_microspheres_detected",
+      "type": "Observation",
+      "metric_type": "presence_absence",
+      "value": "plastic particles inside the digestive tract, gland's lumen, connective tissue, hemolymphatic sinuses, and the surface of the gills",
+      "unit": "presence reported",
+      "notes": "Corbicula flumina exposed to red fluorescent polymeric microspheres (composition unspecified; 1-5 μm, 0.2 or 0.7 mg/L) for 96 hours."
+    },
+    {
+      "id": "obs_shrimp_polystyrene_particles_detected",
+      "type": "Observation",
+      "metric_type": "presence_absence",
+      "value": "plastic particles detectable within larvae",
+      "unit": "presence reported",
+      "notes": "Amphibia lanu amphitrite and Artemia Franciscan larvae exposed to 0.1 μm fluorescent polystyrene microparticles at 0.001 to 10 mg/L over 24 to 48 hours."
+    },
+    {
+      "id": "obs_mouse_brain_caspase3_increased",
+      "type": "Observation",
+      "metric_type": "presence_absence",
+      "value": "increased caspase-3 signals",
+      "unit": "reported direction",
+      "notes": "Mouse brain tissues exposed to PS-NH2 showed increased caspase-3 signals."
+    },
+    {
+      "id": "obs_mouse_brain_tnf_il6_upregulated",
+      "type": "Observation",
+      "metric_type": "presence_absence",
+      "value": "TNF-α and IL-6 were upregulated",
+      "unit": "reported direction",
+      "notes": "Mouse brain tissues exposed to PS-NH2 showed TNF-α and IL-6 upregulation."
+    },
+    {
+      "id": "obs_zebra_mussel_no_genotoxic_effects",
+      "type": "Observation",
+      "metric_type": "presence_absence",
+      "value": "did not cause genotoxic effects",
+      "unit": "reported null finding",
+      "notes": "Polystyrene microbeads did not cause genotoxic effects in Dreissena polymorpha."
+    },
+    {
+      "id": "assoc_nanoplastics_oxidative_stress",
+      "type": "Association",
+      "relationship": "suggests",
+      "direction": "increase",
+      "evidence_strength": "limited",
+      "consistency_across_studies": "unknown",
+      "study_scope": "nanoplastics across various species and in vitro settings",
+      "causal_confidence": "low",
+      "notes": "The abstract states: current evidence, although incomplete, suggests that exposure to nanoplastics may lead to oxidative stress."
+    },
+    {
+      "id": "assoc_ache_neurotransmitter_behavioral_changes",
+      "type": "Association",
+      "relationship": "suggests",
+      "direction": "variable",
+      "evidence_strength": "limited",
+      "consistency_across_studies": "unknown",
+      "causal_confidence": "low",
+      "notes": "The abstract states that exposure could inhibit acetylcholinesterase activity and alter neurotransmitter levels, potentially contributing to observed behavioral changes."
+    },
+    {
+      "id": "assoc_celegans_polystyrene_exposure_effects",
+      "type": "Association",
+      "relationship": "associated_with",
+      "direction": "decrease",
+      "evidence_strength": "limited",
+      "consistency_across_studies": "unknown",
+      "causal_confidence": "low",
+      "notes": "Caenorhabditis elegans exposed to five different spherical polystyrene microplastic sizes (0.1-5 μm) at 1 mg/L showed movement effects, lowered survival rates, and decreased average lifespan; the paper notes no direct proof of ingestion."
+    },
+    {
+      "id": "assoc_neuronal_gene_decline_disruptions_oxidative_stress",
+      "type": "Association",
+      "relationship": "associated_with",
+      "direction": "decrease",
+      "evidence_strength": "limited",
+      "consistency_across_studies": "unknown",
+      "causal_confidence": "low",
+      "notes": "The paper states that expression of several neuronal genes declined, which was linked to disruptions in cholinergic and GABA neurons and increased oxidative stress."
+    },
+    {
+      "id": "assoc_rat_40nm_ps_null_behavior_weight",
+      "type": "Association",
+      "relationship": "null",
+      "direction": "none",
+      "evidence_strength": "limited",
+      "consistency_across_studies": "unknown",
+      "causal_confidence": "low",
+      "notes": "Male rats chronically exposed over five weeks to 40 nm polystyrene nanoplastics at 1 to 10 mg/kg body weight per day showed no impact on behavior or weight gain, and no evidence was provided of actual uptake."
+    },
+    {
+      "id": "assoc_zebra_mussel_genotoxicity_null",
+      "type": "Association",
+      "relationship": "null",
+      "direction": "none",
+      "evidence_strength": "limited",
+      "consistency_across_studies": "unknown",
+      "causal_confidence": "low",
+      "notes": "The paper states that polystyrene microbeads did not cause genotoxic effects in Dreissena polymorpha."
+    }
+  ],
+  "relationships": [
+    {
+      "source_id": "study_neurotoxicity_following_exposure_review",
+      "relation_type": "reports",
+      "target_id": "obs_mouse_liver_5um_ps_concentration"
+    },
+    {
+      "source_id": "study_neurotoxicity_following_exposure_review",
+      "relation_type": "reports",
+      "target_id": "obs_mouse_kidney_5um_ps_concentration"
+    },
+    {
+      "source_id": "study_neurotoxicity_following_exposure_review",
+      "relation_type": "reports",
+      "target_id": "obs_mouse_gut_5um_ps_concentration"
+    },
+    {
+      "source_id": "study_neurotoxicity_following_exposure_review",
+      "relation_type": "reports",
+      "target_id": "obs_mouse_20um_ps_concentration_plateau"
+    },
+    {
+      "source_id": "study_neurotoxicity_following_exposure_review",
+      "relation_type": "reports",
+      "target_id": "obs_earthworm_polyethylene_uptake"
+    },
+    {
+      "source_id": "study_neurotoxicity_following_exposure_review",
+      "relation_type": "reports",
+      "target_id": "obs_zebra_mussel_polystyrene_microbeads_accumulation"
+    },
+    {
+      "source_id": "study_neurotoxicity_following_exposure_review",
+      "relation_type": "reports",
+      "target_id": "obs_scrobicularia_polystyrene_particles_detected"
+    },
+    {
+      "source_id": "study_neurotoxicity_following_exposure_review",
+      "relation_type": "reports",
+      "target_id": "obs_mediterranean_mussel_particles_detected"
+    },
+    {
+      "source_id": "study_neurotoxicity_following_exposure_review",
+      "relation_type": "reports",
+      "target_id": "obs_corbicula_polymeric_microspheres_detected"
+    },
+    {
+      "source_id": "study_neurotoxicity_following_exposure_review",
+      "relation_type": "reports",
+      "target_id": "obs_shrimp_polystyrene_particles_detected"
+    },
+    {
+      "source_id": "study_neurotoxicity_following_exposure_review",
+      "relation_type": "reports",
+      "target_id": "obs_mouse_brain_caspase3_increased"
+    },
+    {
+      "source_id": "study_neurotoxicity_following_exposure_review",
+      "relation_type": "reports",
+      "target_id": "obs_mouse_brain_tnf_il6_upregulated"
+    },
+    {
+      "source_id": "study_neurotoxicity_following_exposure_review",
+      "relation_type": "reports",
+      "target_id": "obs_zebra_mussel_no_genotoxic_effects"
+    },
+    {
+      "source_id": "study_neurotoxicity_following_exposure_review",
+      "relation_type": "supports",
+      "target_id": "assoc_nanoplastics_oxidative_stress"
+    },
+    {
+      "source_id": "study_neurotoxicity_following_exposure_review",
+      "relation_type": "supports",
+      "target_id": "assoc_ache_neurotransmitter_behavioral_changes"
+    },
+    {
+      "source_id": "study_neurotoxicity_following_exposure_review",
+      "relation_type": "supports",
+      "target_id": "assoc_celegans_polystyrene_exposure_effects"
+    },
+    {
+      "source_id": "study_neurotoxicity_following_exposure_review",
+      "relation_type": "supports",
+      "target_id": "assoc_neuronal_gene_decline_disruptions_oxidative_stress"
+    },
+    {
+      "source_id": "study_neurotoxicity_following_exposure_review",
+      "relation_type": "supports",
+      "target_id": "assoc_rat_40nm_ps_null_behavior_weight"
+    },
+    {
+      "source_id": "study_neurotoxicity_following_exposure_review",
+      "relation_type": "supports",
+      "target_id": "assoc_zebra_mussel_genotoxicity_null"
+    },
+    {
+      "source_id": "study_neurotoxicity_following_exposure_review",
+      "relation_type": "evaluates",
+      "target_id": "mechanism_oxidative_stress"
+    },
+    {
+      "source_id": "study_neurotoxicity_following_exposure_review",
+      "relation_type": "evaluates",
+      "target_id": "mechanism_inflammation"
+    },
+    {
+      "source_id": "study_neurotoxicity_following_exposure_review",
+      "relation_type": "evaluates",
+      "target_id": "mechanism_metabolic_disturbance"
+    },
+    {
+      "source_id": "study_neurotoxicity_following_exposure_review",
+      "relation_type": "evaluates",
+      "target_id": "mechanism_genotoxicity"
+    },
+    {
+      "source_id": "study_neurotoxicity_following_exposure_review",
+      "relation_type": "assesses",
+      "target_id": "outcome_behavioral_changes"
+    },
+    {
+      "source_id": "study_neurotoxicity_following_exposure_review",
+      "relation_type": "assesses",
+      "target_id": "outcome_neurological_disorders"
+    },
+    {
+      "source_id": "study_neurotoxicity_following_exposure_review",
+      "relation_type": "assesses",
+      "target_id": "outcome_lower_survival_lifespan"
+    },
+    {
+      "source_id": "obs_mouse_liver_5um_ps_concentration",
+      "relation_type": "identified_by",
+      "target_id": "method_fluorescence_spectrometer"
+    },
+    {
+      "source_id": "obs_mouse_kidney_5um_ps_concentration",
+      "relation_type": "identified_by",
+      "target_id": "method_fluorescence_spectrometer"
+    },
+    {
+      "source_id": "obs_mouse_gut_5um_ps_concentration",
+      "relation_type": "identified_by",
+      "target_id": "method_fluorescence_spectrometer"
+    },
+    {
+      "source_id": "obs_zebra_mussel_polystyrene_microbeads_accumulation",
+      "relation_type": "identified_by",
+      "target_id": "method_confocal_microscopy"
+    },
+    {
+      "source_id": "obs_scrobicularia_polystyrene_particles_detected",
+      "relation_type": "identified_by",
+      "target_id": "method_light_microscopy"
+    },
+    {
+      "source_id": "obs_scrobicularia_polystyrene_particles_detected",
+      "relation_type": "identified_by",
+      "target_id": "method_infrared_spectroscopy"
+    },
+    {
+      "source_id": "obs_mediterranean_mussel_particles_detected",
+      "relation_type": "identified_by",
+      "target_id": "method_polarized_light_microscopy"
+    },
+    {
+      "source_id": "obs_corbicula_polymeric_microspheres_detected",
+      "relation_type": "identified_by",
+      "target_id": "method_light_microscopy"
+    },
+    {
+      "source_id": "obs_corbicula_polymeric_microspheres_detected",
+      "relation_type": "identified_by",
+      "target_id": "method_fluorescence_microscopy"
+    },
+    {
+      "source_id": "obs_shrimp_polystyrene_particles_detected",
+      "relation_type": "identified_by",
+      "target_id": "method_fluorescence_microscopy"
+    },
+    {
+      "source_id": "method_fluorescence_spectrometer",
+      "relation_type": "produces",
+      "target_id": "obs_mouse_liver_5um_ps_concentration"
+    },
+    {
+      "source_id": "method_fluorescence_spectrometer",
+      "relation_type": "produces",
+      "target_id": "obs_mouse_kidney_5um_ps_concentration"
+    },
+    {
+      "source_id": "method_fluorescence_spectrometer",
+      "relation_type": "produces",
+      "target_id": "obs_mouse_gut_5um_ps_concentration"
+    },
+    {
+      "source_id": "method_confocal_microscopy",
+      "relation_type": "produces",
+      "target_id": "obs_zebra_mussel_polystyrene_microbeads_accumulation"
+    },
+    {
+      "source_id": "method_light_microscopy",
+      "relation_type": "produces",
+      "target_id": "obs_scrobicularia_polystyrene_particles_detected"
+    },
+    {
+      "source_id": "method_infrared_spectroscopy",
+      "relation_type": "produces",
+      "target_id": "obs_scrobicularia_polystyrene_particles_detected"
+    },
+    {
+      "source_id": "method_polarized_light_microscopy",
+      "relation_type": "produces",
+      "target_id": "obs_mediterranean_mussel_particles_detected"
+    },
+    {
+      "source_id": "method_light_microscopy",
+      "relation_type": "produces",
+      "target_id": "obs_corbicula_polymeric_microspheres_detected"
+    },
+    {
+      "source_id": "method_fluorescence_microscopy",
+      "relation_type": "produces",
+      "target_id": "obs_corbicula_polymeric_microspheres_detected"
+    },
+    {
+      "source_id": "method_fluorescence_microscopy",
+      "relation_type": "produces",
+      "target_id": "obs_shrimp_polystyrene_particles_detected"
+    },
+    {
+      "source_id": "obs_mouse_liver_5um_ps_concentration",
+      "relation_type": "has_polymer",
+      "target_id": "polymer_polystyrene"
+    },
+    {
+      "source_id": "obs_mouse_kidney_5um_ps_concentration",
+      "relation_type": "has_polymer",
+      "target_id": "polymer_polystyrene"
+    },
+    {
+      "source_id": "obs_mouse_gut_5um_ps_concentration",
+      "relation_type": "has_polymer",
+      "target_id": "polymer_polystyrene"
+    },
+    {
+      "source_id": "obs_mouse_20um_ps_concentration_plateau",
+      "relation_type": "has_polymer",
+      "target_id": "polymer_polystyrene"
+    },
+    {
+      "source_id": "obs_earthworm_polyethylene_uptake",
+      "relation_type": "has_polymer",
+      "target_id": "polymer_polyethylene"
+    },
+    {
+      "source_id": "obs_zebra_mussel_polystyrene_microbeads_accumulation",
+      "relation_type": "has_polymer",
+      "target_id": "polymer_polystyrene"
+    },
+    {
+      "source_id": "obs_scrobicularia_polystyrene_particles_detected",
+      "relation_type": "has_polymer",
+      "target_id": "polymer_polystyrene"
+    },
+    {
+      "source_id": "obs_mediterranean_mussel_particles_detected",
+      "relation_type": "has_polymer",
+      "target_id": "polymer_polyethylene"
+    },
+    {
+      "source_id": "obs_mediterranean_mussel_particles_detected",
+      "relation_type": "has_polymer",
+      "target_id": "polymer_polystyrene"
+    },
+    {
+      "source_id": "obs_shrimp_polystyrene_particles_detected",
+      "relation_type": "has_polymer",
+      "target_id": "polymer_polystyrene"
+    },
+    {
+      "source_id": "obs_mouse_brain_caspase3_increased",
+      "relation_type": "has_polymer",
+      "target_id": "polymer_amino_modified_polystyrene"
+    },
+    {
+      "source_id": "obs_mouse_brain_tnf_il6_upregulated",
+      "relation_type": "has_polymer",
+      "target_id": "polymer_amino_modified_polystyrene"
+    },
+    {
+      "source_id": "obs_zebra_mussel_no_genotoxic_effects",
+      "relation_type": "has_polymer",
+      "target_id": "polymer_polystyrene"
+    },
+    {
+      "source_id": "obs_mouse_liver_5um_ps_concentration",
+      "relation_type": "has_size_class",
+      "target_id": "size_5_um"
+    },
+    {
+      "source_id": "obs_mouse_kidney_5um_ps_concentration",
+      "relation_type": "has_size_class",
+      "target_id": "size_5_um"
+    },
+    {
+      "source_id": "obs_mouse_gut_5um_ps_concentration",
+      "relation_type": "has_size_class",
+      "target_id": "size_5_um"
+    },
+    {
+      "source_id": "obs_mouse_20um_ps_concentration_plateau",
+      "relation_type": "has_size_class",
+      "target_id": "size_20_um"
+    },
+    {
+      "source_id": "obs_earthworm_polyethylene_uptake",
+      "relation_type": "has_size_class",
+      "target_id": "size_100_to_200_um"
+    },
+    {
+      "source_id": "obs_zebra_mussel_polystyrene_microbeads_accumulation",
+      "relation_type": "has_size_class",
+      "target_id": "size_1_um"
+    },
+    {
+      "source_id": "obs_zebra_mussel_polystyrene_microbeads_accumulation",
+      "relation_type": "has_size_class",
+      "target_id": "size_10_um"
+    },
+    {
+      "source_id": "obs_scrobicularia_polystyrene_particles_detected",
+      "relation_type": "has_size_class",
+      "target_id": "size_20_um"
+    },
+    {
+      "source_id": "obs_mediterranean_mussel_particles_detected",
+      "relation_type": "has_size_class",
+      "target_id": "size_100_um"
+    },
+    {
+      "source_id": "obs_corbicula_polymeric_microspheres_detected",
+      "relation_type": "has_size_class",
+      "target_id": "size_1_to_5_um"
+    },
+    {
+      "source_id": "obs_shrimp_polystyrene_particles_detected",
+      "relation_type": "has_size_class",
+      "target_id": "size_0_1_um"
+    },
+    {
+      "source_id": "obs_zebra_mussel_polystyrene_microbeads_accumulation",
+      "relation_type": "has_shape",
+      "target_id": "shape_bead"
+    },
+    {
+      "source_id": "assoc_nanoplastics_oxidative_stress",
+      "relation_type": "links",
+      "target_id": "mechanism_oxidative_stress"
+    },
+    {
+      "source_id": "assoc_nanoplastics_oxidative_stress",
+      "relation_type": "links",
+      "target_id": "outcome_neurological_disorders"
+    },
+    {
+      "source_id": "assoc_ache_neurotransmitter_behavioral_changes",
+      "relation_type": "links",
+      "target_id": "biomarker_acetylcholinesterase_activity"
+    },
+    {
+      "source_id": "assoc_ache_neurotransmitter_behavioral_changes",
+      "relation_type": "links",
+      "target_id": "outcome_behavioral_changes"
+    },
+    {
+      "source_id": "assoc_celegans_polystyrene_exposure_effects",
+      "relation_type": "links",
+      "target_id": "outcome_lower_survival_lifespan"
+    },
+    {
+      "source_id": "assoc_neuronal_gene_decline_disruptions_oxidative_stress",
+      "relation_type": "links",
+      "target_id": "mechanism_oxidative_stress"
+    },
+    {
+      "source_id": "assoc_rat_40nm_ps_null_behavior_weight",
+      "relation_type": "links",
+      "target_id": "outcome_behavioral_changes"
+    },
+    {
+      "source_id": "assoc_zebra_mussel_genotoxicity_null",
+      "relation_type": "links",
+      "target_id": "mechanism_genotoxicity"
+    },
+    {
+      "source_id": "assoc_nanoplastics_oxidative_stress",
+      "relation_type": "supported_by",
+      "target_id": "study_neurotoxicity_following_exposure_review"
+    },
+    {
+      "source_id": "assoc_ache_neurotransmitter_behavioral_changes",
+      "relation_type": "supported_by",
+      "target_id": "study_neurotoxicity_following_exposure_review"
+    },
+    {
+      "source_id": "assoc_celegans_polystyrene_exposure_effects",
+      "relation_type": "supported_by",
+      "target_id": "study_neurotoxicity_following_exposure_review"
+    },
+    {
+      "source_id": "assoc_neuronal_gene_decline_disruptions_oxidative_stress",
+      "relation_type": "supported_by",
+      "target_id": "study_neurotoxicity_following_exposure_review"
+    },
+    {
+      "source_id": "assoc_rat_40nm_ps_null_behavior_weight",
+      "relation_type": "supported_by",
+      "target_id": "study_neurotoxicity_following_exposure_review"
+    },
+    {
+      "source_id": "assoc_zebra_mussel_genotoxicity_null",
+      "relation_type": "supported_by",
+      "target_id": "study_neurotoxicity_following_exposure_review"
+    },
+    {
+      "source_id": "mechanism_oxidative_stress",
+      "relation_type": "evidenced_by",
+      "target_id": "biomarker_catalase_activity"
+    },
+    {
+      "source_id": "mechanism_oxidative_stress",
+      "relation_type": "evidenced_by",
+      "target_id": "biomarker_malondialdehyde_levels"
+    },
+    {
+      "source_id": "mechanism_oxidative_stress",
+      "relation_type": "evidenced_by",
+      "target_id": "biomarker_superoxide_dismutase_activity"
+    },
+    {
+      "source_id": "mechanism_oxidative_stress",
+      "relation_type": "evidenced_by",
+      "target_id": "biomarker_lipid_peroxidation"
+    },
+    {
+      "source_id": "mechanism_inflammation",
+      "relation_type": "evidenced_by",
+      "target_id": "biomarker_tnf_alpha"
+    },
+    {
+      "source_id": "mechanism_inflammation",
+      "relation_type": "evidenced_by",
+      "target_id": "biomarker_il_6"
+    },
+    {
+      "source_id": "mechanism_metabolic_disturbance",
+      "relation_type": "evidenced_by",
+      "target_id": "biomarker_atp_levels"
+    },
+    {
+      "source_id": "mechanism_metabolic_disturbance",
+      "relation_type": "evidenced_by",
+      "target_id": "biomarker_ldh_activity"
+    },
+    {
+      "source_id": "biomarker_acetylcholinesterase_activity",
+      "relation_type": "evaluated_in",
+      "target_id": "study_neurotoxicity_following_exposure_review"
+    },
+    {
+      "source_id": "biomarker_caspase_3",
+      "relation_type": "evaluated_in",
+      "target_id": "study_neurotoxicity_following_exposure_review"
+    },
+    {
+      "source_id": "biomarker_tnf_alpha",
+      "relation_type": "evaluated_in",
+      "target_id": "study_neurotoxicity_following_exposure_review"
+    },
+    {
+      "source_id": "biomarker_il_6",
+      "relation_type": "evaluated_in",
+      "target_id": "study_neurotoxicity_following_exposure_review"
+    },
+    {
+      "source_id": "biomarker_catalase_activity",
+      "relation_type": "evaluated_in",
+      "target_id": "study_neurotoxicity_following_exposure_review"
+    },
+    {
+      "source_id": "biomarker_malondialdehyde_levels",
+      "relation_type": "evaluated_in",
+      "target_id": "study_neurotoxicity_following_exposure_review"
+    },
+    {
+      "source_id": "biomarker_dopamine_levels",
+      "relation_type": "evaluated_in",
+      "target_id": "study_neurotoxicity_following_exposure_review"
+    },
+    {
+      "source_id": "biomarker_superoxide_dismutase_activity",
+      "relation_type": "evaluated_in",
+      "target_id": "study_neurotoxicity_following_exposure_review"
+    },
+    {
+      "source_id": "biomarker_glutathione_s_transferase_activity",
+      "relation_type": "evaluated_in",
+      "target_id": "study_neurotoxicity_following_exposure_review"
+    },
+    {
+      "source_id": "biomarker_lipid_peroxidation",
+      "relation_type": "evaluated_in",
+      "target_id": "study_neurotoxicity_following_exposure_review"
+    },
+    {
+      "source_id": "biomarker_atp_levels",
+      "relation_type": "evaluated_in",
+      "target_id": "study_neurotoxicity_following_exposure_review"
+    },
+    {
+      "source_id": "biomarker_ldh_activity",
+      "relation_type": "evaluated_in",
+      "target_id": "study_neurotoxicity_following_exposure_review"
+    }
+  ]
+}

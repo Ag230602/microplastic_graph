@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Microplastics Knowledge Graph</title>
+  <style>
+    body { margin: 0; min-height: 100vh; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; color: #1f2933; background: #f7f5ef; display: grid; place-items: center; padding: 32px; }
+    main { max-width: 680px; width: 100%; }
+    h1 { font-size: 22px; margin: 0 0 6px; }
+    p.sub { color: #607080; margin: 0 0 24px; }
+    a.card { display: block; text-decoration: none; color: inherit; background: #fff; border: 1px solid #c9d2dc; border-radius: 10px; padding: 16px 18px; margin-bottom: 12px; transition: border-color .15s, transform .15s; }
+    a.card:hover { border-color: #2f6f9f; transform: translateY(-1px); }
+    a.card h2 { margin: 0 0 4px; font-size: 16px; }
+    a.card span { color: #607080; font-size: 13px; }
+    footer { color: #8794a1; font-size: 12px; margin-top: 18px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Microplastics Knowledge Graph</h1>
+    <p class="sub">Neurotoxicity Following Exposure to Micro and Nanoplastics — interactive graphs</p>
+
+    <a class="card" href="mpkg_graph.html">
+      <h2>Original extraction (v1)</h2>
+      <span>64 nodes / 105 edges — the initial knowledge graph</span>
+    </a>
+    <a class="card" href="mpkg_graph_v2.html">
+      <h2>Revised graph (v2)</h2>
+      <span>64 nodes / 119 edges — critique-corrected, ontology-compliant</span>
+    </a>
+    <a class="card" href="mpkg_critique_graph.html">
+      <h2>Critique structure</h2>
+      <span>Audit findings grouped by category for structural review</span>
+    </a>
+
+    <footer>Static site &middot; works directly on GitHub Pages.</footer>
+  </main>
+</body>
+</html>

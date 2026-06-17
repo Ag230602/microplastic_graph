@@ -1,0 +1,350 @@
+[
+  {
+    "source": "Study",
+    "relation_type": "includes",
+    "target": "Sample",
+    "description": "A study contains one or more collected samples."
+  },
+  {
+    "source": "Study",
+    "relation_type": "reports",
+    "target": "Observation",
+    "description": "A study reports empirical observations."
+  },
+  {
+    "source": "Study",
+    "relation_type": "supports",
+    "target": "Association",
+    "description": "A study provides evidence for interpreted associations."
+  },
+  {
+    "source": "Study",
+    "relation_type": "investigates",
+    "target": "ExposurePathway",
+    "description": "A study examines one or more exposure pathways."
+  },
+  {
+    "source": "Study",
+    "relation_type": "evaluates",
+    "target": "Mechanism",
+    "description": "A study investigates biological mechanisms."
+  },
+  {
+    "source": "Study",
+    "relation_type": "assesses",
+    "target": "ClinicalOutcome",
+    "description": "A study evaluates clinical or health outcomes."
+  },
+  {
+    "source": "Sample",
+    "relation_type": "part_of",
+    "target": "Study",
+    "description": "A sample belongs to a study."
+  },
+  {
+    "source": "Sample",
+    "relation_type": "collected_from",
+    "target": "EnvironmentalCompartment",
+    "description": "An environmental sample is collected from a physical compartment."
+  },
+  {
+    "source": "Sample",
+    "relation_type": "derived_from",
+    "target": "TissueOrgan",
+    "description": "A biological sample is derived from a conceptual tissue or organ."
+  },
+  {
+    "source": "Sample",
+    "relation_type": "processed_by",
+    "target": "Method",
+    "description": "A sample is analyzed using a method."
+  },
+  {
+    "source": "Sample",
+    "relation_type": "linked_to",
+    "target": "ExposurePathway",
+    "description": "A sample may represent an exposure-relevant biological or environmental context."
+  },
+  {
+    "source": "Observation",
+    "relation_type": "reported_in",
+    "target": "Study",
+    "description": "An observation is reported in a study."
+  },
+  {
+    "source": "Observation",
+    "relation_type": "observed_in",
+    "target": "Sample",
+    "description": "An observation is measured from a specific sample."
+  },
+  {
+    "source": "Observation",
+    "relation_type": "identified_by",
+    "target": "Method",
+    "description": "An observation is generated through a method."
+  },
+  {
+    "source": "Observation",
+    "relation_type": "has_polymer",
+    "target": "Polymer",
+    "description": "An observation identifies polymer composition."
+  },
+  {
+    "source": "Observation",
+    "relation_type": "has_shape",
+    "target": "Shape",
+    "description": "An observation identifies particle morphology."
+  },
+  {
+    "source": "Observation",
+    "relation_type": "has_size_class",
+    "target": "ParticleSizeClass",
+    "description": "An observation references a standardized particle size class."
+  },
+  {
+    "source": "Observation",
+    "relation_type": "located_in",
+    "target": "EnvironmentalCompartment",
+    "description": "An observation may be environmentally contextualized."
+  },
+  {
+    "source": "Source",
+    "relation_type": "emits_to",
+    "target": "EnvironmentalCompartment",
+    "description": "A source emits microplastics into an environmental compartment."
+  },
+  {
+    "source": "Source",
+    "relation_type": "generates_polymer",
+    "target": "Polymer",
+    "description": "A source commonly emits specific polymer types."
+  },
+  {
+    "source": "Source",
+    "relation_type": "has_typical_shape",
+    "target": "Shape",
+    "description": "A source is associated with characteristic particle morphologies."
+  },
+  {
+    "source": "Source",
+    "relation_type": "has_typical_size_class",
+    "target": "ParticleSizeClass",
+    "description": "A source is associated with characteristic particle size classes."
+  },
+  {
+    "source": "Source",
+    "relation_type": "regulated_by",
+    "target": "PolicyInstrument",
+    "description": "A source may be targeted by policy interventions."
+  },
+  {
+    "source": "EnvironmentalCompartment",
+    "relation_type": "contains",
+    "target": "Source",
+    "description": "An environmental compartment may contain pollution sources."
+  },
+  {
+    "source": "EnvironmentalCompartment",
+    "relation_type": "contains",
+    "target": "Sample",
+    "description": "An environmental compartment contains collected samples."
+  },
+  {
+    "source": "EnvironmentalCompartment",
+    "relation_type": "contains",
+    "target": "Observation",
+    "description": "Environmental observations are contextualized within compartments."
+  },
+  {
+    "source": "EnvironmentalCompartment",
+    "relation_type": "contributes_to",
+    "target": "ExposurePathway",
+    "description": "Environmental presence contributes to exposure routes."
+  },
+  {
+    "source": "Method",
+    "relation_type": "applied_to",
+    "target": "Sample",
+    "description": "A method is applied to samples."
+  },
+  {
+    "source": "Method",
+    "relation_type": "produces",
+    "target": "Observation",
+    "description": "A method generates observations."
+  },
+  {
+    "source": "Method",
+    "relation_type": "detects_polymer",
+    "target": "Polymer",
+    "description": "A method can identify polymer composition."
+  },
+  {
+    "source": "Method",
+    "relation_type": "detects_shape",
+    "target": "Shape",
+    "description": "A method can identify particle morphology."
+  },
+  {
+    "source": "Method",
+    "relation_type": "reliable_for",
+    "target": "ParticleSizeClass",
+    "description": "A method reliably detects certain particle size ranges."
+  },
+  {
+    "source": "Method",
+    "relation_type": "underdetects",
+    "target": "ParticleSizeClass",
+    "description": "A method may systematically miss certain particle sizes."
+  },
+  {
+    "source": "Method",
+    "relation_type": "overdetects",
+    "target": "ParticleSizeClass",
+    "description": "A method may bias toward certain particle sizes."
+  },
+  {
+    "source": "ExposurePathway",
+    "relation_type": "originates_from",
+    "target": "EnvironmentalCompartment",
+    "description": "Exposure pathways begin from environmental reservoirs."
+  },
+  {
+    "source": "ExposurePathway",
+    "relation_type": "targets",
+    "target": "TissueOrgan",
+    "description": "Exposure pathways lead to biological targets."
+  },
+  {
+    "source": "ExposurePathway",
+    "relation_type": "linked_population",
+    "target": "Study",
+    "description": "Exposure pathways are studied within specific populations."
+  },
+  {
+    "source": "ExposurePathway",
+    "relation_type": "initiates",
+    "target": "Mechanism",
+    "description": "Exposure can initiate biological mechanisms."
+  },
+  {
+    "source": "Mechanism",
+    "relation_type": "evidenced_by",
+    "target": "Biomarker",
+    "description": "Biomarkers provide measurable support for mechanisms."
+  },
+  {
+    "source": "Mechanism",
+    "relation_type": "affects",
+    "target": "TissueOrgan",
+    "description": "Mechanisms impact biological tissues or organs."
+  },
+  {
+    "source": "Mechanism",
+    "relation_type": "associated_with",
+    "target": "ClinicalOutcome",
+    "description": "Mechanisms may be linked to health outcomes through evidence."
+  },
+  {
+    "source": "Biomarker",
+    "relation_type": "measured_in",
+    "target": "TissueOrgan",
+    "description": "Biomarkers are measured in specific tissues or organs."
+  },
+  {
+    "source": "Biomarker",
+    "relation_type": "evaluated_in",
+    "target": "Study",
+    "description": "Biomarkers are evaluated within studies."
+  },
+  {
+    "source": "ClinicalOutcome",
+    "relation_type": "assessed_in",
+    "target": "Study",
+    "description": "Clinical outcomes are assessed in studies."
+  },
+  {
+    "source": "ClinicalOutcome",
+    "relation_type": "relevant_to",
+    "target": "TissueOrgan",
+    "description": "Clinical outcomes may pertain to particular organs."
+  },
+  {
+    "source": "Association",
+    "relation_type": "links",
+    "target": "Biomarker",
+    "description": "Association may include biomarker evidence."
+  },
+  {
+    "source": "Association",
+    "relation_type": "links",
+    "target": "Mechanism",
+    "description": "Association may include biological mechanisms."
+  },
+  {
+    "source": "Association",
+    "relation_type": "links",
+    "target": "ClinicalOutcome",
+    "description": "Association may include health outcomes."
+  },
+  {
+    "source": "Association",
+    "relation_type": "supported_by",
+    "target": "Study",
+    "description": "Associations are supported by one or more studies."
+  },
+  {
+    "source": "PolicyInstrument",
+    "relation_type": "regulates",
+    "target": "Source",
+    "description": "Policies regulate sources of microplastics."
+  },
+  {
+    "source": "PolicyInstrument",
+    "relation_type": "regulates",
+    "target": "Polymer",
+    "description": "Policies may regulate specific polymers."
+  },
+  {
+    "source": "PolicyInstrument",
+    "relation_type": "targets",
+    "target": "EnvironmentalCompartment",
+    "description": "Policies may target environmental domains."
+  },
+  {
+    "source": "PolicyInstrument",
+    "relation_type": "mandates",
+    "target": "Method",
+    "description": "Policies may require analytical methods."
+  },
+  {
+    "source": "PolicyInstrument",
+    "relation_type": "requires_reporting_of",
+    "target": "Observation",
+    "description": "Policies may require reporting of measured outcomes."
+  },
+  {
+    "source": "Polymer",
+    "relation_type": "detected_in",
+    "target": "Observation",
+    "description": "Polymers are identified through observations."
+  },
+  {
+    "source": "Shape",
+    "relation_type": "detected_in",
+    "target": "Observation",
+    "description": "Shapes are identified through observations."
+  },
+  {
+    "source": "ParticleSizeClass",
+    "relation_type": "referenced_in",
+    "target": "Observation",
+    "description": "Particle size classes are referenced by observations."
+  },
+  {
+    "source": "TissueOrgan",
+    "relation_type": "sampled_by",
+    "target": "Sample",
+    "description": "Biological tissues may be represented through samples."
+  }
+]
