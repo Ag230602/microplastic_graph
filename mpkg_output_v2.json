@@ -338,6 +338,53 @@
       "assumptions_notes": "The conclusions explicitly mention retrograde transport after nasal exposure as an exposure route to assess."
     },
     {
+      "id": "exposure_waterborne",
+      "type": "ExposurePathway",
+      "pathway_label": "waterborne uptake (ingestion/gill contact)",
+      "route": "oral",
+      "population_context": "aquatic organisms (fish, mussels, clams, crustacean larvae)",
+      "assumptions_notes": "Aquatic species were exposed to microplastics suspended in their surrounding water; particles were recovered from gut lumen, digestive gland, gills, and hemolymph."
+    },
+    {
+      "id": "exposure_soil_contact",
+      "type": "ExposurePathway",
+      "pathway_label": "soil contact and ingestion",
+      "route": "dermal",
+      "population_context": "soil invertebrates (earthworm)",
+      "assumptions_notes": "Earthworms were exposed to LDPE particles within artificial soil; uptake was confirmed and skin damage observed.",
+      "citations_ref": ["[85]"]
+    },
+    {
+      "id": "compartment_drinking_water",
+      "type": "EnvironmentalCompartment",
+      "label": "drinking water",
+      "subcompartment": "freshwater for human consumption"
+    },
+    {
+      "id": "compartment_food",
+      "type": "EnvironmentalCompartment",
+      "label": "food",
+      "subcompartment": "dietary intake matrix"
+    },
+    {
+      "id": "compartment_soil",
+      "type": "EnvironmentalCompartment",
+      "label": "soil",
+      "subcompartment": "artificial soil (earthworm exposure medium)"
+    },
+    {
+      "id": "compartment_marine_water",
+      "type": "EnvironmentalCompartment",
+      "label": "marine water",
+      "subcompartment": "seawater exposure medium for marine fish and invertebrates"
+    },
+    {
+      "id": "compartment_freshwater",
+      "type": "EnvironmentalCompartment",
+      "label": "freshwater",
+      "subcompartment": "freshwater exposure medium for zebra mussels and Asian clams"
+    },
+    {
       "id": "obs_mouse_liver_5um_ps_concentration",
       "type": "Observation",
       "metric_type": "concentration",
@@ -886,6 +933,23 @@
     { "source_id": "evidence_mouse_brain_cytokines", "relation_type": "supports", "target_id": "obs_mouse_brain_tnf_il6_upregulated" },
     { "source_id": "evidence_earthworm_uptake", "relation_type": "supports", "target_id": "obs_earthworm_polyethylene_uptake" },
     { "source_id": "evidence_zebra_mussel_accumulation", "relation_type": "supports", "target_id": "obs_zebra_mussel_polystyrene_microbeads_accumulation" },
-    { "source_id": "evidence_zebra_mussel_no_genotoxicity", "relation_type": "supports", "target_id": "obs_zebra_mussel_no_genotoxic_effects" }
+    { "source_id": "evidence_zebra_mussel_no_genotoxicity", "relation_type": "supports", "target_id": "obs_zebra_mussel_no_genotoxic_effects" },
+    { "source_id": "compartment_drinking_water", "relation_type": "contributes_to", "target_id": "exposure_oral" },
+    { "source_id": "compartment_food", "relation_type": "contributes_to", "target_id": "exposure_oral" },
+    { "source_id": "compartment_soil", "relation_type": "contributes_to", "target_id": "exposure_soil_contact" },
+    { "source_id": "compartment_marine_water", "relation_type": "contributes_to", "target_id": "exposure_waterborne" },
+    { "source_id": "compartment_freshwater", "relation_type": "contributes_to", "target_id": "exposure_waterborne" },
+    { "source_id": "exposure_oral", "relation_type": "originates_from", "target_id": "compartment_drinking_water" },
+    { "source_id": "exposure_oral", "relation_type": "originates_from", "target_id": "compartment_food" },
+    { "source_id": "exposure_soil_contact", "relation_type": "originates_from", "target_id": "compartment_soil" },
+    { "source_id": "exposure_waterborne", "relation_type": "originates_from", "target_id": "compartment_marine_water" },
+    { "source_id": "exposure_waterborne", "relation_type": "originates_from", "target_id": "compartment_freshwater" },
+    { "source_id": "exposure_soil_contact", "relation_type": "exposes", "target_id": "host_earthworm" },
+    { "source_id": "exposure_waterborne", "relation_type": "exposes", "target_id": "host_european_seabass" },
+    { "source_id": "exposure_waterborne", "relation_type": "exposes", "target_id": "host_scrobicularia" },
+    { "source_id": "exposure_waterborne", "relation_type": "exposes", "target_id": "host_mediterranean_mussel" },
+    { "source_id": "exposure_waterborne", "relation_type": "exposes", "target_id": "host_zebra_mussel" },
+    { "source_id": "exposure_waterborne", "relation_type": "exposes", "target_id": "host_corbicula" },
+    { "source_id": "exposure_waterborne", "relation_type": "exposes", "target_id": "host_barnacle_brineshrimp_larvae" }
   ]
 }

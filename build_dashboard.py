@@ -49,6 +49,7 @@ TEMPLATE = r"""<!doctype html>
     --study:#2f6f9f; --observation:#238b6e; --association:#b65f24; --biomarker:#8b5fbf;
     --mechanism:#c3475b; --method:#4b78c2; --polymer:#8f6a2a; --size:#5f6f89;
     --tissue:#7c6175; --host:#2a9d8f; --evidence:#c9a227; --other:#5f7080;
+    --reservoir:#3a8fb7;
   }
   *{box-sizing:border-box}
   body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -136,7 +137,7 @@ const colorByType = {
   Biomarker:'var(--biomarker)',Mechanism:'var(--mechanism)',Method:'var(--method)',
   Polymer:'var(--polymer)',ParticleSizeClass:'var(--size)',TissueOrgan:'var(--tissue)',
   Shape:'var(--other)',ExposurePathway:'var(--other)',ClinicalOutcome:'var(--mechanism)',
-  HostPopulation:'var(--host)',Evidence:'var(--evidence)'
+  HostPopulation:'var(--host)',Evidence:'var(--evidence)',EnvironmentalCompartment:'var(--reservoir)'
 };
 const esc = v => String(v).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
