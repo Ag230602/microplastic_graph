@@ -21,6 +21,8 @@
       --polymer: #8f6a2a;
       --size: #5f6f89;
       --tissue: #7c6175;
+      --host: #2a9d8f;
+      --evidence: #c9a227;
       --other: #5f7080;
     }
     * { box-sizing: border-box; }
@@ -103,7 +105,8 @@
     const colorByType = {
       Study: 'var(--study)', Observation: 'var(--observation)', Association: 'var(--association)', Biomarker: 'var(--biomarker)',
       Mechanism: 'var(--mechanism)', Sample: 'var(--sample)', Method: 'var(--method)', Polymer: 'var(--polymer)',
-      ParticleSizeClass: 'var(--size)', TissueOrgan: 'var(--tissue)', Shape: 'var(--other)', ExposurePathway: 'var(--other)', ClinicalOutcome: 'var(--mechanism)'
+      ParticleSizeClass: 'var(--size)', TissueOrgan: 'var(--tissue)', Shape: 'var(--other)', ExposurePathway: 'var(--other)', ClinicalOutcome: 'var(--mechanism)',
+      HostPopulation: 'var(--host)', Evidence: 'var(--evidence)'
     };
     const svg = document.getElementById('graph');
     const details = document.getElementById('details');

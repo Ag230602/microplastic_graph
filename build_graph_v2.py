@@ -9,9 +9,10 @@ OUT = os.path.join(HERE, "mpkg_graph_v2.json")
 
 
 def label_for(ent):
-    for key in ("title", "name", "label", "pathway_label", "method_class", "metric_type", "relationship"):
+    for key in ("title", "name", "label", "pathway_label", "method_class", "metric_type", "text", "relationship"):
         if ent.get(key):
-            return str(ent[key])
+            val = str(ent[key])
+            return (val[:60] + "\u2026") if len(val) > 63 else val
     return ent["id"]
 
 

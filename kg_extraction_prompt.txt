@@ -340,6 +340,35 @@ ONTOLOGY: ENTITIES SCHEMA (entities_v1.json)
     }
   },
   {
+    "title": "Evidence",
+    "description": "A verbatim supporting statement extracted from a primary study that grounds an observation or claim, enabling provenance and scientific traceability (which exact sentence supports this claim).",
+    "type": "object",
+    "required": ["id", "type", "text"],
+    "additionalProperties": false,
+    "properties": {
+      "id": { "type": "string" },
+      "type": { "const": "Evidence" },
+      "text": { "type": "string", "description": "Verbatim supporting sentence from the source." },
+      "study_ref": { "type": "string", "description": "Identifier or citation of the study the evidence comes from." },
+      "section": { "type": "string" },
+      "page": { "type": "string" },
+      "quote_verbatim": { "type": "boolean" },
+      "evidence_type": {
+        "type": "string",
+        "enum": ["in_vitro", "in_vivo", "human_observational", "review"]
+      },
+      "confidence": {
+        "type": "string",
+        "enum": ["low", "medium", "high"]
+      },
+      "notes": { "type": "string" },
+      "citations_ref": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  {
     "title": "ExposurePathway",
     "description": "A route of human or biota exposure linking environmental presence to biological contact.",
     "type": "object",
@@ -381,6 +410,38 @@ ONTOLOGY: ENTITIES SCHEMA (entities_v1.json)
         "items": {
           "type": "string"
         }
+      }
+    }
+  },
+  {
+    "title": "HostPopulation",
+    "description": "An organism or human population in which microplastic exposure and effects are studied. A first-class entity because health effects depend on who is exposed; a result in mouse, rat, or earthworm cannot be automatically generalized to humans, pregnant women, or children.",
+    "type": "object",
+    "required": ["id", "type", "label"],
+    "additionalProperties": false,
+    "properties": {
+      "id": { "type": "string" },
+      "type": { "const": "HostPopulation" },
+      "label": { "type": "string" },
+      "organism_class": {
+        "type": "string",
+        "enum": ["human", "mammal", "fish", "invertebrate", "in_vitro_cell", "other"]
+      },
+      "scientific_name": { "type": "string" },
+      "life_stage": { "type": "string" },
+      "subpopulation": { "type": "string" },
+      "model_type": {
+        "type": "string",
+        "enum": ["in_vivo", "in_vitro", "observational", "other"]
+      },
+      "translational_relevance": {
+        "type": "string",
+        "enum": ["low", "medium", "high", "unknown"]
+      },
+      "notes": { "type": "string" },
+      "citations_ref": {
+        "type": "array",
+        "items": { "type": "string" }
       }
     }
   },
@@ -1027,6 +1088,42 @@ ONTOLOGY: RELATIONSHIPS SCHEMA (relationships_v1.json)
     "relation_type": "assesses",
     "target": "ClinicalOutcome",
     "description": "A study evaluates clinical or health outcomes."
+  },
+  {
+    "source": "Study",
+    "relation_type": "investigates",
+    "target": "HostPopulation",
+    "description": "A study investigates effects in a specific host population (species or human group)."
+  },
+  {
+    "source": "Study",
+    "relation_type": "provides",
+    "target": "Evidence",
+    "description": "A study provides a verbatim supporting evidence statement."
+  },
+  {
+    "source": "Evidence",
+    "relation_type": "supports",
+    "target": "Observation",
+    "description": "An evidence statement supports a measured observation."
+  },
+  {
+    "source": "ExposurePathway",
+    "relation_type": "exposes",
+    "target": "HostPopulation",
+    "description": "An exposure pathway delivers microplastics to a host population."
+  },
+  {
+    "source": "HostPopulation",
+    "relation_type": "experiences",
+    "target": "ClinicalOutcome",
+    "description": "A host population experiences a clinical or health outcome."
+  },
+  {
+    "source": "HostPopulation",
+    "relation_type": "exhibits",
+    "target": "Biomarker",
+    "description": "A host population exhibits a measurable biomarker change."
   },
   {
     "source": "Sample",

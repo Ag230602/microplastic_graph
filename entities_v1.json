@@ -131,6 +131,35 @@
     }
   },
   {
+    "title": "Evidence",
+    "description": "A verbatim supporting statement extracted from a primary study that grounds an observation or claim, enabling provenance and scientific traceability (which exact sentence supports this claim).",
+    "type": "object",
+    "required": ["id", "type", "text"],
+    "additionalProperties": false,
+    "properties": {
+      "id": { "type": "string" },
+      "type": { "const": "Evidence" },
+      "text": { "type": "string", "description": "Verbatim supporting sentence from the source." },
+      "study_ref": { "type": "string", "description": "Identifier or citation of the study the evidence comes from." },
+      "section": { "type": "string" },
+      "page": { "type": "string" },
+      "quote_verbatim": { "type": "boolean" },
+      "evidence_type": {
+        "type": "string",
+        "enum": ["in_vitro", "in_vivo", "human_observational", "review"]
+      },
+      "confidence": {
+        "type": "string",
+        "enum": ["low", "medium", "high"]
+      },
+      "notes": { "type": "string" },
+      "citations_ref": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  {
     "title": "ExposurePathway",
     "description": "A route of human or biota exposure linking environmental presence to biological contact.",
     "type": "object",
@@ -147,6 +176,38 @@
       "intake_metric": { "type": "string" },
       "population_context": { "type": "string" },
       "assumptions_notes": { "type": "string" },
+      "citations_ref": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  {
+    "title": "HostPopulation",
+    "description": "An organism or human population in which microplastic exposure and effects are studied. A first-class entity because health effects depend on who is exposed; a result in mouse, rat, or earthworm cannot be automatically generalized to humans, pregnant women, or children.",
+    "type": "object",
+    "required": ["id", "type", "label"],
+    "additionalProperties": false,
+    "properties": {
+      "id": { "type": "string" },
+      "type": { "const": "HostPopulation" },
+      "label": { "type": "string" },
+      "organism_class": {
+        "type": "string",
+        "enum": ["human", "mammal", "fish", "invertebrate", "in_vitro_cell", "other"]
+      },
+      "scientific_name": { "type": "string" },
+      "life_stage": { "type": "string" },
+      "subpopulation": { "type": "string" },
+      "model_type": {
+        "type": "string",
+        "enum": ["in_vivo", "in_vitro", "observational", "other"]
+      },
+      "translational_relevance": {
+        "type": "string",
+        "enum": ["low", "medium", "high", "unknown"]
+      },
+      "notes": { "type": "string" },
       "citations_ref": {
         "type": "array",
         "items": { "type": "string" }
