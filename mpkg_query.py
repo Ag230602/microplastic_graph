@@ -68,6 +68,26 @@ class Graph:
                 return str(n[k])
         return nid
 
+    def outgoing(self, nid, relation=None, target_type=None):
+        rows = []
+        for rt, tgt in self.out[nid]:
+            if relation and rt != relation:
+                continue
+            if target_type and self.nodes.get(tgt, {}).get("type") != target_type:
+                continue
+            rows.append(tgt)
+        return rows
+
+    def incoming(self, nid, relation=None, source_type=None):
+        rows = []
+        for rt, src in self.inc[nid]:
+            if relation and rt != relation:
+                continue
+            if source_type and self.nodes.get(src, {}).get("type") != source_type:
+                continue
+            rows.append(src)
+        return rows
+
     def path(self, src, dst, max_hops=6):
         """Shortest undirected path of node ids between src and dst, or None."""
         if src == dst:
@@ -94,31 +114,116 @@ def load():
         return Graph(json.load(fh))
 
 
+def _norm(text):
+    return str(text or "").lower().replace("α", "alpha").replace("κ", "kappa")
+
+
+def evidence_for_observation(g: Graph, obs_id):
+    rows = []
+    for ev_id in g.incoming(obs_id, "supports", "Evidence"):
+        ev = g.nodes[ev_id]
+        studies = g.incoming(ev_id, "provides", "Study")
+        rows.append({
+            "study": g.label(studies[0]) if studies else ev.get("study_ref", ""),
+            "study_id": studies[0] if studies else ev.get("study_ref", ""),
+            "evidence_id": ev_id,
+            "evidence": ev.get("text", ""),
+            "section": ev.get("section", ""),
+            "confidence": ev.get("confidence", ""),
+            "observation_id": obs_id,
+            "observation": g.nodes.get(obs_id, {}).get("notes", ""),
+        })
+    return rows
+
+
+def evidence_for_biomarker(g: Graph, biomarker_id):
+    biomarker = g.nodes[biomarker_id]
+    needles = [_norm(biomarker.get("name")), _norm(biomarker.get("id", "").replace("biomarker_", ""))]
+    rows = []
+    seen = set()
+    study_ids = set(g.incoming(biomarker_id, "reports", "Study"))
+    study_ids.update(g.outgoing(biomarker_id, "evaluated_in", "Study"))
+    for study_id in study_ids:
+        for ev_id in g.outgoing(study_id, "provides", "Evidence"):
+            ev = g.nodes[ev_id]
+            haystack = _norm(ev.get("text", ""))
+            if not any(n and n in haystack for n in needles):
+                continue
+            key = (study_id, ev_id)
+            if key in seen:
+                continue
+            seen.add(key)
+            rows.append({
+                "study": g.label(study_id),
+                "study_id": study_id,
+                "evidence_id": ev_id,
+                "evidence": ev.get("text", ""),
+                "section": ev.get("section", ""),
+                "confidence": ev.get("confidence", ""),
+            })
+    return rows
+
+
 # --- Benchmark queries ---------------------------------------------------------
 
 def q1_polymers_for_mechanism(g: Graph, mechanism_label="oxidative_stress"):
-    """Polymers connected to a mechanism through any evidence path."""
+    """Polymers connected to a mechanism, with direct observation evidence."""
     mechs = [m for m in g.of_type("Mechanism") if m.get("label") == mechanism_label]
     results = []
     for poly in g.of_type("Polymer"):
         best = None
+        evidence = []
         for m in mechs:
             p = g.path(poly["id"], m["id"])
             if p and (best is None or len(p) < len(best)):
                 best = p
+        for obs_id in g.incoming(poly["id"], "has_polymer", "Observation"):
+            for row in evidence_for_observation(g, obs_id):
+                if row["evidence_id"] not in {r["evidence_id"] for r in evidence}:
+                    evidence.append(row)
         if best:
-            results.append((g.label(poly["id"]), [g.label(x) for x in best]))
-    return results
+            results.append({
+                "polymer": g.label(poly["id"]),
+                "path": [g.label(x) for x in best],
+                "evidence_count": len(evidence),
+                "supporting_evidence": evidence,
+            })
+    return sorted(results, key=lambda r: (-r["evidence_count"], r["polymer"]))
 
 
 def q2_affected_tissues(g: Graph):
-    counts = defaultdict(int)
-    for r in g.edges:
-        if r["relation_type"] in ("affects", "measured_in", "relevant_to"):
-            tgt = g.nodes.get(r["target_id"])
-            if tgt and tgt["type"] == "TissueOrgan":
-                counts[g.label(r["target_id"])] += 1
-    return sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))
+    rows = []
+    for tissue in g.of_type("TissueOrgan"):
+        evidence = []
+        studies = set()
+        links = 0
+        for src in g.incoming(tissue["id"], source_type="Observation"):
+            links += 1
+            for row in evidence_for_observation(g, src):
+                evidence.append(row)
+                if row.get("study"):
+                    studies.add(row["study"])
+        for src in g.incoming(tissue["id"], source_type="Biomarker"):
+            links += 1
+            for study_id in g.incoming(src, "reports", "Study"):
+                studies.add(g.label(study_id))
+        for src in g.incoming(tissue["id"], source_type="Mechanism"):
+            links += 1
+        seen = set()
+        unique_evidence = []
+        for row in evidence:
+            if row["evidence_id"] in seen:
+                continue
+            seen.add(row["evidence_id"])
+            unique_evidence.append(row)
+        rows.append({
+            "tissue": g.label(tissue["id"]),
+            "links": links,
+            "evidence_count": len(unique_evidence),
+            "supporting_studies": sorted(studies),
+            "supporting_evidence": unique_evidence,
+        })
+    return sorted(rows, key=lambda r: (-r["evidence_count"], -r["links"], r["tissue"]))
 
 
 def q3_biomarkers_for_mechanism(g: Graph, mechanism_label="inflammation"):
@@ -128,8 +233,15 @@ def q3_biomarkers_for_mechanism(g: Graph, mechanism_label="inflammation"):
             continue
         for rt, tgt in g.out[m["id"]]:
             if rt == "evidenced_by" and g.nodes.get(tgt, {}).get("type") == "Biomarker":
-                out.append(g.label(tgt))
-    return sorted(set(out))
+                evidence = evidence_for_biomarker(g, tgt)
+                studies = sorted({row["study"] for row in evidence} | {g.label(s) for s in g.incoming(tgt, "reports", "Study")})
+                out.append({
+                    "biomarker": g.label(tgt),
+                    "supporting_studies": studies,
+                    "evidence_count": len(evidence),
+                    "supporting_evidence": evidence,
+                })
+    return sorted(out, key=lambda r: r["biomarker"])
 
 
 def q4_drinking_water_human_cardiovascular(g: Graph):
@@ -148,13 +260,15 @@ def q4_drinking_water_human_cardiovascular(g: Graph):
             if p:
                 chains.append([g.label(x) for x in p])
     return {
+        "human_evidence": "limited",
         "human_hosts": [g.label(h["id"]) for h in human],
         "cardiovascular_outcomes_in_graph": [g.label(o["id"]) for o in cv_outcomes],
         "drinking_water_nodes_in_graph": [g.label(n["id"]) for n in dw_nodes],
+        "supporting_studies": [],
         "supporting_chains": chains,
-        "verdict": ("Insufficient direct human evidence: the graph contains no "
-                    "drinking-water reservoir, no cardiovascular outcome, and no "
-                    "human exposure->outcome chain for this endpoint."
+        "verdict": ("Human evidence: limited. The graph contains drinking-water exposure context, "
+                    "but no direct human cardiovascular outcome node and no drinking-water -> human "
+                    "cardiovascular evidence chain for this corpus."
                     if not chains else "Evidence chain(s) found (see supporting_chains)."),
     }
 
@@ -302,24 +416,34 @@ def _print_header(title):
 
 def run_all(g: Graph):
     _print_header("Q1  Which polymers are linked to oxidative stress?")
-    for poly, path in q1_polymers_for_mechanism(g, "oxidative_stress"):
-        print(f"  - {poly}")
-        print(f"      path: {' -> '.join(path)}")
+    for row in q1_polymers_for_mechanism(g, "oxidative_stress"):
+        print(f"  - {row['polymer']}  ({row['evidence_count']} evidence node(s))")
+        print(f"      path: {' -> '.join(row['path'])}")
+        for ev in row["supporting_evidence"][:2]:
+            print(f"      evidence: {ev['study']} :: {ev['evidence']}")
 
     _print_header("Q2  Which tissues/organs are most frequently affected?")
-    for tissue, n in q2_affected_tissues(g):
-        print(f"  - {tissue}  ({n} link(s))")
+    for row in q2_affected_tissues(g):
+        print(f"  - {row['tissue']}  ({row['evidence_count']} evidence node(s), {row['links']} link(s))")
+        if row["supporting_studies"]:
+            print(f"      studies: {', '.join(row['supporting_studies'][:3])}")
 
     _print_header("Q3  Which biomarkers support inflammation?")
-    for b in q3_biomarkers_for_mechanism(g, "inflammation"):
-        print(f"  - {b}")
+    for row in q3_biomarkers_for_mechanism(g, "inflammation"):
+        print(f"  - {row['biomarker']}  ({row['evidence_count']} evidence node(s))")
+        if row["supporting_studies"]:
+            print(f"      studies: {', '.join(row['supporting_studies'])}")
+        for ev in row["supporting_evidence"][:1]:
+            print(f"      evidence: {ev['evidence']}")
 
     _print_header("Q4  Drinking-water MPs -> human cardiovascular outcomes?")
     res = q4_drinking_water_human_cardiovascular(g)
     print("  verdict:", res["verdict"])
+    print("  human evidence          :", res["human_evidence"])
     print("  human hosts in graph     :", res["human_hosts"])
     print("  CV outcomes in graph     :", res["cardiovascular_outcomes_in_graph"] or "none")
     print("  drinking-water nodes     :", res["drinking_water_nodes_in_graph"] or "none")
+    print("  supporting studies       :", res["supporting_studies"] or "none")
 
     _print_header("Evidence weighting / confidence scoring (per Association)")
     for r in evidence_weighting(g):
@@ -343,14 +467,12 @@ def main(argv):
     cmd = argv[0]
     if cmd == "q1":
         mech = argv[1] if len(argv) > 1 else "oxidative_stress"
-        for poly, path in q1_polymers_for_mechanism(g, mech):
-            print(poly, "::", " -> ".join(path))
+        print(json.dumps(q1_polymers_for_mechanism(g, mech), indent=2, ensure_ascii=False))
     elif cmd == "q2":
-        for tissue, n in q2_affected_tissues(g):
-            print(f"{tissue}\t{n}")
+        print(json.dumps(q2_affected_tissues(g), indent=2, ensure_ascii=False))
     elif cmd == "q3":
         mech = argv[1] if len(argv) > 1 else "inflammation"
-        print("\n".join(q3_biomarkers_for_mechanism(g, mech)))
+        print(json.dumps(q3_biomarkers_for_mechanism(g, mech), indent=2, ensure_ascii=False))
     elif cmd == "q4":
         print(json.dumps(q4_drinking_water_human_cardiovascular(g), indent=2))
     elif cmd == "weighting":

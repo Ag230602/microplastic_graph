@@ -173,7 +173,7 @@ const A = DATA.analysis, S = A.summary;
   let h='<div class="cards">'+cards.map(([n,l])=>`<div class="card"><div class="n">${n}</div><div class="l">${l}</div></div>`).join('')+'</div>';
   h+=`<div class="panel"><h3>What this project delivers</h3>
     <p style="font-size:13.5px;line-height:1.7;color:#374">An <b>evidence-aware environmental-health knowledge graph</b> that preserves the full scientific reasoning chain:
-    <code>Study &rarr; Evidence &rarr; Observation &rarr; ExposurePathway &rarr; HostPopulation &rarr; Mechanism &rarr; Biomarker &rarr; ClinicalOutcome</code>.
+    <code>Study &rarr; Evidence &rarr; Observation &rarr; Environmental Reservoir &rarr; Agent &rarr; ExposurePathway &rarr; HostPopulation &rarr; Mechanism &rarr; Biomarker &rarr; ClinicalOutcome</code>.
     Every claim is traceable to the exact sentence in the source paper, host populations are first-class nodes, and the graph answers benchmark scientific questions.</p></div>`;
   const nt=Object.entries(S.node_types).sort((a,b)=>b[1]-a[1]);
   const rt=Object.entries(S.rel_types).sort((a,b)=>b[1]-a[1]);
@@ -188,21 +188,24 @@ const A = DATA.analysis, S = A.summary;
 (function(){
   const el=document.getElementById('tab-queries');
   let h='';
-  h+='<div class="panel"><h3><span class="tag">Q1</span>Which polymers are linked to oxidative stress?</h3>';
-  h+=A.q1_polymers_oxidative_stress.map(([poly,path])=>
-     `<div class="chain"><b>${esc(poly)}</b><br>${path.map(esc).join(' &rarr; ')}</div>`).join('<hr style="border:0;border-top:1px solid var(--line)">');
+    h+='<div class="panel"><h3><span class="tag">Q1</span>Which polymers are linked to oxidative stress?</h3>';
+    h+=A.q1_polymers_oxidative_stress.map(row=>
+      `<div class="chain"><b>${esc(row.polymer)}</b> <span class="pill high">${row.evidence_count} evidence</span><br>${row.path.map(esc).join(' &rarr; ')}
+      ${row.supporting_evidence.slice(0,2).map(ev=>`<div class="quote">&ldquo;${esc(ev.evidence)}&rdquo;<br><span style="font-style:normal;color:#667">${esc(ev.study)}</span></div>`).join('')}</div>`).join('<hr style="border:0;border-top:1px solid var(--line)">');
   h+='</div>';
-  h+='<div class="panel"><h3><span class="tag">Q2</span>Which tissues/organs are most frequently affected?</h3><table><tr><th>Tissue</th><th>Links</th></tr>'+
-     A.q2_affected_tissues.map(([t,n])=>`<tr><td>${esc(t)}</td><td>${n}</td></tr>`).join('')+'</table></div>';
-  h+='<div class="panel"><h3><span class="tag">Q3</span>Which biomarkers support inflammation?</h3><p>'+
-     A.q3_biomarkers_inflammation.map(b=>`<span class="pill high">${esc(b)}</span>`).join(' ')+'</p></div>';
+    h+='<div class="panel"><h3><span class="tag">Q2</span>Which tissues/organs are most frequently affected?</h3><table><tr><th>Tissue</th><th>Evidence</th><th>Links</th><th>Studies</th></tr>'+
+      A.q2_affected_tissues.map(row=>`<tr><td>${esc(row.tissue)}</td><td>${row.evidence_count}</td><td>${row.links}</td><td>${row.supporting_studies.slice(0,3).map(esc).join('<br>')||'none'}</td></tr>`).join('')+'</table></div>';
+    h+='<div class="panel"><h3><span class="tag">Q3</span>Which biomarkers support inflammation?</h3>'+
+      A.q3_biomarkers_inflammation.map(row=>`<div class="chain"><span class="pill high">${esc(row.biomarker)}</span> <span class="pill moderate">${row.evidence_count} evidence</span><br>${row.supporting_studies.map(esc).join(', ')||'no direct study'}${row.supporting_evidence.slice(0,1).map(ev=>`<div class="quote">&ldquo;${esc(ev.evidence)}&rdquo;</div>`).join('')}</div>`).join('')+'</div>';
   const q4=A.q4_drinking_water_human_cv;
   h+=`<div class="panel"><h3><span class="tag">Q4</span>Drinking-water MPs &rarr; human cardiovascular outcomes?</h3>
       <div class="verdict">${esc(q4.verdict)}</div>
       <table style="margin-top:10px">
+      <tr><td>Human evidence</td><td>${esc(q4.human_evidence)}</td></tr>
       <tr><td>Human hosts in graph</td><td>${q4.human_hosts.map(esc).join(', ')||'none'}</td></tr>
       <tr><td>Cardiovascular outcomes</td><td>${q4.cardiovascular_outcomes_in_graph.map(esc).join(', ')||'none'}</td></tr>
       <tr><td>Drinking-water nodes</td><td>${q4.drinking_water_nodes_in_graph.map(esc).join(', ')||'none'}</td></tr>
+      <tr><td>Supporting studies</td><td>${q4.supporting_studies.map(esc).join(', ')||'none'}</td></tr>
       </table></div>`;
   el.innerHTML=h;
 })();

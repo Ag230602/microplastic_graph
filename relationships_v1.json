@@ -13,6 +13,18 @@
   },
   {
     "source": "Study",
+    "relation_type": "reports",
+    "target": "Biomarker",
+    "description": "A study reports a measured biomarker."
+  },
+  {
+    "source": "Study",
+    "relation_type": "reports",
+    "target": "ClinicalOutcome",
+    "description": "A study reports a clinical or organism-level outcome."
+  },
+  {
+    "source": "Study",
     "relation_type": "supports",
     "target": "Association",
     "description": "A study provides evidence for interpreted associations."
@@ -144,6 +156,18 @@
     "description": "An observation may be environmentally contextualized."
   },
   {
+    "source": "Observation",
+    "relation_type": "about",
+    "target": "EnvironmentalCompartment",
+    "description": "An observation is about an environmental reservoir or compartment."
+  },
+  {
+    "source": "Observation",
+    "relation_type": "affects",
+    "target": "TissueOrgan",
+    "description": "An observation reports particle accumulation or effects in a tissue or organ."
+  },
+  {
     "source": "Source",
     "relation_type": "emits_to",
     "target": "EnvironmentalCompartment",
@@ -190,6 +214,12 @@
     "relation_type": "contains",
     "target": "Observation",
     "description": "Environmental observations are contextualized within compartments."
+  },
+  {
+    "source": "EnvironmentalCompartment",
+    "relation_type": "contains",
+    "target": "Polymer",
+    "description": "Environmental reservoirs contain polymer agents relevant to exposure."
   },
   {
     "source": "EnvironmentalCompartment",
@@ -264,6 +294,18 @@
     "description": "Exposure can initiate biological mechanisms."
   },
   {
+    "source": "Polymer",
+    "relation_type": "enters_via",
+    "target": "ExposurePathway",
+    "description": "Polymer agents enter hosts through exposure pathways."
+  },
+  {
+    "source": "HostPopulation",
+    "relation_type": "activates",
+    "target": "Mechanism",
+    "description": "A host population can exhibit activation of a biological mechanism after exposure."
+  },
+  {
     "source": "Mechanism",
     "relation_type": "evidenced_by",
     "target": "Biomarker",
@@ -292,6 +334,12 @@
     "relation_type": "evaluated_in",
     "target": "Study",
     "description": "Biomarkers are evaluated within studies."
+  },
+  {
+    "source": "Biomarker",
+    "relation_type": "leads_to",
+    "target": "ClinicalOutcome",
+    "description": "A biomarker-supported biological process may lead to a clinical or organism-level outcome in the evidence chain."
   },
   {
     "source": "ClinicalOutcome",

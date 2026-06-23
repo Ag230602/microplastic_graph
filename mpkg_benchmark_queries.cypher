@@ -1,80 +1,85 @@
 // ===========================================================================
-// Microplastics Knowledge Graph (v2) - Benchmark scientific queries (Cypher)
+// Microplastics Knowledge Graph (v2) - Evidence-aware benchmark queries
 // Load mpkg_graph_v2.cypher into Neo4j first, then run these.
-// These satisfy Requirement 4 (benchmark queries) and Phase 3 (ranking/RAG).
 // ===========================================================================
 
 // ---------------------------------------------------------------------------
-// Q1  Which polymers are linked to a mechanism (e.g. oxidative stress)?
-// Path used by this review KG: Polymer <-(has_polymer)- Observation
-//                              <-(reports)- Study -(evaluates)-> Mechanism
+// Q1  Which polymers are linked to oxidative stress, with supporting evidence?
 // ---------------------------------------------------------------------------
-MATCH (p:Polymer)<-[:HAS_POLYMER]-(o:Observation)<-[:REPORTS]-(s:Study)
-      -[:EVALUATES]->(m:Mechanism {label: 'oxidative_stress'})
-RETURN DISTINCT p.name AS polymer
-ORDER BY polymer;
+MATCH (m:Mechanism {label: 'oxidative_stress'})<-[:ACTIVATES]-(h:HostPopulation)<-[:EXPOSES]-(xp:ExposurePathway)<-[:ENTERS_VIA]-(p:Polymer)
+OPTIONAL MATCH (p)<-[:HAS_POLYMER]-(o:Observation)<-[:SUPPORTS]-(e:Evidence)<-[:PROVIDES]-(s:Study)
+RETURN p.name AS polymer,
+       count(DISTINCT e) AS evidence_count,
+       collect(DISTINCT s.title) AS supporting_studies,
+       collect(DISTINCT e.text)[0..5] AS supporting_evidence
+ORDER BY evidence_count DESC, polymer;
 
 // ---------------------------------------------------------------------------
-// Q2  Which tissues/organs are most frequently affected?
+// Q2  Which tissues/organs are most frequently affected, with evidence counts?
 // ---------------------------------------------------------------------------
-MATCH (t:TissueOrgan)<-[r:AFFECTS|MEASURED_IN|RELEVANT_TO]-()
-RETURN t.label AS tissue, count(r) AS links
-ORDER BY links DESC, tissue;
+MATCH (t:TissueOrgan)
+OPTIONAL MATCH (t)<-[:AFFECTS]-(o:Observation)<-[:SUPPORTS]-(e:Evidence)<-[:PROVIDES]-(s:Study)
+OPTIONAL MATCH (t)<-[:MEASURED_IN]-(b:Biomarker)<-[:REPORTS]-(bs:Study)
+RETURN t.label AS tissue,
+       count(DISTINCT e) AS evidence_count,
+       count(DISTINCT o) + count(DISTINCT b) AS graph_links,
+       collect(DISTINCT coalesce(s.title, bs.title))[0..8] AS supporting_studies,
+       collect(DISTINCT e.text)[0..5] AS supporting_evidence
+ORDER BY evidence_count DESC, graph_links DESC, tissue;
 
 // ---------------------------------------------------------------------------
-// Q3  Which biomarkers support inflammation?
+// Q3  Which biomarkers support inflammatory mechanisms, with studies/evidence?
 // ---------------------------------------------------------------------------
-MATCH (m:Mechanism {label: 'inflammation'})-[:EVIDENCED_BY]->(b:Biomarker)
-RETURN b.name AS biomarker
+MATCH (:Mechanism {label: 'inflammation'})-[:EVIDENCED_BY]->(b:Biomarker)
+OPTIONAL MATCH (s:Study)-[:REPORTS]->(b)
+OPTIONAL MATCH (s)-[:PROVIDES]->(e:Evidence)
+WHERE e.text IS NULL OR toLower(e.text) CONTAINS toLower(replace(b.name, 'α', 'alpha')) OR toLower(e.text) CONTAINS toLower(b.name)
+RETURN b.name AS biomarker,
+       count(DISTINCT e) AS evidence_count,
+       collect(DISTINCT s.title) AS supporting_studies,
+       collect(DISTINCT e.text)[0..5] AS supporting_evidence
 ORDER BY biomarker;
 
 // ---------------------------------------------------------------------------
-// Q4  Drinking-water microplastics -> human cardiovascular outcomes?
-// Translational gap query: expected to return NOTHING for this corpus,
-// which is itself a scientifically valuable result.
+// Q4  What evidence links drinking-water MPs to human cardiovascular outcomes?
+// Expected result for this corpus: human evidence is limited / no direct chain.
 // ---------------------------------------------------------------------------
-MATCH path = (h:HostPopulation {organism_class: 'human'})
-             -[:EXPERIENCES]->(o:ClinicalOutcome)
-WHERE toLower(o.label) CONTAINS 'cardiovascular'
-RETURN path;
-// (No rows => insufficient direct human cardiovascular evidence in the graph.)
+MATCH (dw:EnvironmentalCompartment {label: 'drinking water'})-[:CONTRIBUTES_TO]->(xp:ExposurePathway)-[:EXPOSES]->(h:HostPopulation {organism_class: 'human'})
+OPTIONAL MATCH path = (dw)-[:CONTRIBUTES_TO]->(:ExposurePathway)-[:EXPOSES]->(h)-[:EXPERIENCES]->(cv:ClinicalOutcome)
+WHERE cv IS NULL OR toLower(cv.label) CONTAINS 'cardiovascular'
+RETURN 'limited' AS human_evidence,
+       collect(DISTINCT h.label) AS human_hosts,
+       collect(DISTINCT cv.label) AS cardiovascular_outcomes,
+       count(path) AS direct_evidence_chains,
+       CASE WHEN count(path) = 0
+            THEN 'No direct drinking-water -> human cardiovascular evidence chain in this corpus.'
+            ELSE 'Direct chain(s) found.'
+       END AS verdict;
 
 // ---------------------------------------------------------------------------
-// Provenance / evidence traceability:
-//   Which exact sentence supports an observation, and from which study?
+// Provenance traceability: exact sentence -> observation -> study.
 // ---------------------------------------------------------------------------
 MATCH (s:Study)-[:PROVIDES]->(e:Evidence)-[:SUPPORTS]->(o:Observation)
-RETURN s.title AS study, e.text AS supporting_sentence,
-       e.section AS section, e.confidence AS confidence, o.id AS observation
-ORDER BY study;
+RETURN s.title AS study,
+       e.text AS supporting_sentence,
+       e.section AS section,
+       e.confidence AS confidence,
+       o.id AS observation,
+       o.notes AS observation_summary
+ORDER BY study, observation;
 
 // ---------------------------------------------------------------------------
-// Human vs animal evidence ranking (by translational relevance)
+// Full reasoning chain for Graph-RAG retrieval.
 // ---------------------------------------------------------------------------
-MATCH (h:HostPopulation)
-OPTIONAL MATCH (h)-[:EXHIBITS]->(b:Biomarker)
-OPTIONAL MATCH (h)-[:EXPERIENCES]->(o:ClinicalOutcome)
-RETURN
-  CASE WHEN h.organism_class = 'human' THEN 'human' ELSE 'animal' END AS bucket,
-  count(DISTINCT h)  AS hosts,
-  count(DISTINCT b)  AS biomarkers,
-  count(DISTINCT o)  AS outcomes
-ORDER BY bucket;
-
-// ---------------------------------------------------------------------------
-// Which studies reported oxidative stress?  (systematic-review style)
-// ---------------------------------------------------------------------------
-MATCH (s:Study)-[:EVALUATES]->(m:Mechanism {label: 'oxidative_stress'})
-RETURN s.id AS study, s.design AS design, s.species AS species
-ORDER BY study;
-
-// ---------------------------------------------------------------------------
-// Full reasoning chain (Graph-RAG retrieval):
-//   Study -> Evidence -> Observation -> Polymer, plus Host -> Biomarker
-// ---------------------------------------------------------------------------
-MATCH (st:Study)-[:PROVIDES]->(ev:Evidence)-[:SUPPORTS]->(ob:Observation)
-OPTIONAL MATCH (ob)-[:HAS_POLYMER]->(pol:Polymer)
-OPTIONAL MATCH (st)-[:INVESTIGATES]->(host:HostPopulation)-[:EXHIBITS]->(bm:Biomarker)
-RETURN st.title AS study, ev.text AS evidence, ob.id AS observation,
-       collect(DISTINCT pol.name) AS polymers,
-       host.label AS host, collect(DISTINCT bm.name) AS biomarkers;
+MATCH (st:Study)-[:PROVIDES]->(ev:Evidence)-[:SUPPORTS]->(ob:Observation)-[:ABOUT]->(reservoir:EnvironmentalCompartment)-[:CONTAINS]->(agent:Polymer)-[:ENTERS_VIA]->(xp:ExposurePathway)-[:EXPOSES]->(host:HostPopulation)-[:ACTIVATES]->(mech:Mechanism)-[:EVIDENCED_BY]->(bm:Biomarker)-[:LEADS_TO]->(outcome:ClinicalOutcome)
+RETURN st.title AS study,
+       ev.text AS evidence,
+       ob.notes AS observation,
+       reservoir.label AS environmental_reservoir,
+       agent.name AS agent,
+       xp.pathway_label AS exposure_pathway,
+       host.label AS host_population,
+       mech.label AS mechanism,
+       bm.name AS biomarker,
+       outcome.label AS clinical_outcome
+LIMIT 50;

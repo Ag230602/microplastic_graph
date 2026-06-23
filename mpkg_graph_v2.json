@@ -1,8 +1,8 @@
 {
   "directed": true,
   "source_file": "mpkg_output_v2.json",
-  "node_count": 92,
-  "edge_count": 175,
+  "node_count": 115,
+  "edge_count": 304,
   "nodes": [
     {
       "id": "study_neurotoxicity_following_exposure_review",
@@ -77,6 +77,32 @@
         "synonyms": [
           "microbead"
         ]
+      }
+    },
+    {
+      "id": "shape_spherical",
+      "label": "spherical",
+      "type": "Shape",
+      "data": {
+        "id": "shape_spherical",
+        "type": "Shape",
+        "label": "spherical",
+        "synonyms": [
+          "spherical"
+        ]
+      }
+    },
+    {
+      "id": "size_0_1_to_5_um",
+      "label": "0.1-5 μm",
+      "type": "ParticleSizeClass",
+      "data": {
+        "id": "size_0_1_to_5_um",
+        "type": "ParticleSizeClass",
+        "label": "0.1-5 μm",
+        "min_micrometer": 0.1,
+        "max_micrometer": 5,
+        "bin_type": "micro"
       }
     },
     {
@@ -586,6 +612,96 @@
       }
     },
     {
+      "id": "tissue_kidney",
+      "label": "kidney",
+      "type": "TissueOrgan",
+      "data": {
+        "id": "tissue_kidney",
+        "type": "TissueOrgan",
+        "label": "kidney",
+        "vulnerability_notes": "Mouse kidney is reported as a particle-accumulation site after oral polystyrene microplastic exposure.",
+        "citations_ref": [
+          "[42]"
+        ]
+      }
+    },
+    {
+      "id": "tissue_gut",
+      "label": "gut",
+      "type": "TissueOrgan",
+      "data": {
+        "id": "tissue_gut",
+        "type": "TissueOrgan",
+        "label": "gut",
+        "vulnerability_notes": "Gut or digestive tract is repeatedly reported as a particle-accumulation site across mouse and aquatic invertebrate studies.",
+        "citations_ref": [
+          "[42]",
+          "[86]",
+          "[89]",
+          "[90]"
+        ]
+      }
+    },
+    {
+      "id": "tissue_gills",
+      "label": "gills",
+      "type": "TissueOrgan",
+      "data": {
+        "id": "tissue_gills",
+        "type": "TissueOrgan",
+        "label": "gills",
+        "vulnerability_notes": "Gills are reported as particle-detection sites in bivalve studies.",
+        "citations_ref": [
+          "[87]",
+          "[89]",
+          "[90]"
+        ]
+      }
+    },
+    {
+      "id": "tissue_hemolymph",
+      "label": "hemolymph",
+      "type": "TissueOrgan",
+      "data": {
+        "id": "tissue_hemolymph",
+        "type": "TissueOrgan",
+        "label": "hemolymph",
+        "vulnerability_notes": "Hemolymph or hemolymphatic sinuses are reported as particle-detection sites in bivalve studies.",
+        "citations_ref": [
+          "[86]",
+          "[87]",
+          "[89]",
+          "[90]"
+        ]
+      }
+    },
+    {
+      "id": "tissue_digestive_gland",
+      "label": "digestive gland",
+      "type": "TissueOrgan",
+      "data": {
+        "id": "tissue_digestive_gland",
+        "type": "TissueOrgan",
+        "label": "digestive gland",
+        "vulnerability_notes": "Digestive gland or gland lumen is reported as a particle-detection site in bivalve studies.",
+        "citations_ref": [
+          "[87]",
+          "[90]"
+        ]
+      }
+    },
+    {
+      "id": "tissue_lung",
+      "label": "lung",
+      "type": "TissueOrgan",
+      "data": {
+        "id": "tissue_lung",
+        "type": "TissueOrgan",
+        "label": "lung",
+        "vulnerability_notes": "Listed as a human exposure-relevant organ for future assessment; no direct lung outcome evidence is present in this review graph."
+      }
+    },
+    {
       "id": "exposure_oral",
       "label": "ingestion",
       "type": "ExposurePathway",
@@ -877,6 +993,19 @@
       }
     },
     {
+      "id": "obs_celegans_polystyrene_exposure_effects",
+      "label": "presence_absence",
+      "type": "Observation",
+      "data": {
+        "id": "obs_celegans_polystyrene_exposure_effects",
+        "type": "Observation",
+        "metric_type": "presence_absence",
+        "value": "reported",
+        "unit": "categorical",
+        "notes": "Caenorhabditis elegans exposed to spherical polystyrene microplastics (0.1-5 μm, 1 mg/L) showed movement effects, lowered survival rates, decreased average lifespan, and neuronal gene-expression changes; the review notes no direct proof of ingestion."
+      }
+    },
+    {
       "id": "assoc_nanoplastics_oxidative_stress",
       "label": "suggests",
       "type": "Association",
@@ -1039,6 +1168,97 @@
       }
     },
     {
+      "id": "study_ref_83_84",
+      "label": "Primary studies [83,84]: spherical polystyrene exposure in C…",
+      "type": "Study",
+      "data": {
+        "id": "study_ref_83_84",
+        "type": "Study",
+        "title": "Primary studies [83,84]: spherical polystyrene exposure in C. elegans",
+        "design": "in_vivo",
+        "species": "Caenorhabditis elegans",
+        "exposure_context": "spherical polystyrene microplastics, 0.1-5 um, 1 mg/L culture medium",
+        "evidence_strength": "limited",
+        "notes": "Primary studies cited by the review; movement, survival, lifespan, neuronal gene, and oxidative-stress findings were summarized, with no direct proof of ingestion.",
+        "citations_ref": [
+          "[83]",
+          "[84]"
+        ]
+      }
+    },
+    {
+      "id": "study_ref_87",
+      "label": "Primary study [87]: polystyrene microplastics in Scrobicular…",
+      "type": "Study",
+      "data": {
+        "id": "study_ref_87",
+        "type": "Study",
+        "title": "Primary study [87]: polystyrene microplastics in Scrobicularia plana",
+        "design": "in_vivo",
+        "species": "Scrobicularia plana",
+        "exposure_context": "20 um polystyrene microplastics, 1 mg/L, bivalve exposure",
+        "evidence_strength": "limited",
+        "notes": "Primary study cited by the review; particles were detected in hemolymph, digestive gland, and gills, with oxidative-stress biomarker changes.",
+        "citations_ref": [
+          "[87]"
+        ]
+      }
+    },
+    {
+      "id": "study_ref_89",
+      "label": "Primary study [89]: polyethylene and polystyrene particles i…",
+      "type": "Study",
+      "data": {
+        "id": "study_ref_89",
+        "type": "Study",
+        "title": "Primary study [89]: polyethylene and polystyrene particles in Mediterranean mussels",
+        "design": "in_vivo",
+        "species": "Mytilus galloprovincialis",
+        "exposure_context": "unpolluted and pyrene-contaminated polyethylene and polystyrene microplastics, 100 um, 1.5 g/L, seven days",
+        "evidence_strength": "limited",
+        "notes": "Primary study cited by the review; plastic particles were identified in hemolymph, gills, and intestines.",
+        "citations_ref": [
+          "[89]"
+        ]
+      }
+    },
+    {
+      "id": "study_ref_90",
+      "label": "Primary study [90]: polymeric microspheres in Asian clams",
+      "type": "Study",
+      "data": {
+        "id": "study_ref_90",
+        "type": "Study",
+        "title": "Primary study [90]: polymeric microspheres in Asian clams",
+        "design": "in_vivo",
+        "species": "Corbicula fluminea",
+        "exposure_context": "red fluorescent polymeric microspheres, 1-5 um, 0.2 or 0.7 mg/L, 96 hours",
+        "evidence_strength": "limited",
+        "notes": "Primary study cited by the review; particles were observed in digestive tract, gland lumen, connective tissue, hemolymphatic sinuses, and gill surfaces.",
+        "citations_ref": [
+          "[90]"
+        ]
+      }
+    },
+    {
+      "id": "study_ref_92",
+      "label": "Primary study [92]: fluorescent polystyrene particles in bar…",
+      "type": "Study",
+      "data": {
+        "id": "study_ref_92",
+        "type": "Study",
+        "title": "Primary study [92]: fluorescent polystyrene particles in barnacle and brine shrimp larvae",
+        "design": "in_vivo",
+        "species": "Amphibalanus amphitrite; Artemia franciscana",
+        "exposure_context": "0.1 um fluorescent polystyrene microparticles, 0.001-10 mg/L, 24-48 hours",
+        "evidence_strength": "limited",
+        "notes": "Primary study cited by the review; particles were detectable within larvae, with uncertainty about tissue penetration.",
+        "citations_ref": [
+          "[92]"
+        ]
+      }
+    },
+    {
       "id": "host_human",
       "label": "Human",
       "type": "HostPopulation",
@@ -1056,6 +1276,51 @@
           "[38]",
           "[39]"
         ]
+      }
+    },
+    {
+      "id": "host_pregnant_women",
+      "label": "Pregnant women",
+      "type": "HostPopulation",
+      "data": {
+        "id": "host_pregnant_women",
+        "type": "HostPopulation",
+        "label": "Pregnant women",
+        "organism_class": "human",
+        "scientific_name": "Homo sapiens",
+        "model_type": "observational",
+        "translational_relevance": "high",
+        "notes": "Sensitive human subgroup added for stratified evidence synthesis; this neurotoxicity review identifies human exposure as important but does not provide direct pregnant-women outcome evidence."
+      }
+    },
+    {
+      "id": "host_children",
+      "label": "Children",
+      "type": "HostPopulation",
+      "data": {
+        "id": "host_children",
+        "type": "HostPopulation",
+        "label": "Children",
+        "organism_class": "human",
+        "scientific_name": "Homo sapiens",
+        "model_type": "observational",
+        "translational_relevance": "high",
+        "notes": "Sensitive human subgroup added for stratified evidence synthesis; this neurotoxicity review identifies human exposure as important but does not provide direct child-specific outcome evidence."
+      }
+    },
+    {
+      "id": "host_older_adults",
+      "label": "Older adults",
+      "type": "HostPopulation",
+      "data": {
+        "id": "host_older_adults",
+        "type": "HostPopulation",
+        "label": "Older adults",
+        "organism_class": "human",
+        "scientific_name": "Homo sapiens",
+        "model_type": "observational",
+        "translational_relevance": "high",
+        "notes": "Sensitive human subgroup added for stratified evidence synthesis; this neurotoxicity review discusses neurological disease risk but does not provide direct older-adult outcome evidence."
       }
     },
     {
@@ -1330,6 +1595,115 @@
         "confidence": "high",
         "citations_ref": [
           "[86]"
+        ]
+      }
+    },
+    {
+      "id": "evidence_mouse_20um_plateau",
+      "label": "For 20 μm particles, the concentration was more consistent a…",
+      "type": "Evidence",
+      "data": {
+        "id": "evidence_mouse_20um_plateau",
+        "type": "Evidence",
+        "text": "For 20 μm particles, the concentration was more consistent across the organs, reaching a plateau at about 0.8.",
+        "study_ref": "study_ref_42",
+        "section": "8. Neurotoxic Effects in Rodents",
+        "quote_verbatim": true,
+        "evidence_type": "in_vivo",
+        "confidence": "high",
+        "citations_ref": [
+          "[42]"
+        ]
+      }
+    },
+    {
+      "id": "evidence_scrobicularia_particles",
+      "label": "In a different study involving the bivalve Scrobicularia pla…",
+      "type": "Evidence",
+      "data": {
+        "id": "evidence_scrobicularia_particles",
+        "type": "Evidence",
+        "text": "In a different study involving the bivalve Scrobicularia plana, exposure to 20 μm polystyrene microplastics at a concentration of 1 mg/L resulted in particles being detected in the hemolymph, digestive gland, and gills using light microscopy and infrared spectroscopy.",
+        "study_ref": "study_ref_87",
+        "section": "7. Neurotoxic Effects on Marine Invertebrates",
+        "quote_verbatim": true,
+        "evidence_type": "in_vivo",
+        "confidence": "high",
+        "citations_ref": [
+          "[87]"
+        ]
+      }
+    },
+    {
+      "id": "evidence_mediterranean_mussel_particles",
+      "label": "Exposure of the same species to both unpolluted and pyrene-c…",
+      "type": "Evidence",
+      "data": {
+        "id": "evidence_mediterranean_mussel_particles",
+        "type": "Evidence",
+        "text": "Exposure of the same species to both unpolluted and pyrene-contaminated polyethylene and polystyrene microplastics (100 μm, 1.5 g/L) over seven days led to the introduction of plastic particles within the hemolymph, gills, and intestines, identified through polarized light microscopy.",
+        "study_ref": "study_ref_89",
+        "section": "7. Neurotoxic Effects on Marine Invertebrates",
+        "quote_verbatim": true,
+        "evidence_type": "in_vivo",
+        "confidence": "high",
+        "citations_ref": [
+          "[89]"
+        ]
+      }
+    },
+    {
+      "id": "evidence_corbicula_particles",
+      "label": "Corbicula flumina (Asian Freshwater Mussels), when exposed t…",
+      "type": "Evidence",
+      "data": {
+        "id": "evidence_corbicula_particles",
+        "type": "Evidence",
+        "text": "Corbicula flumina (Asian Freshwater Mussels), when exposed to red fluorescent polymeric microspheres (composition unspecified; 1-5 μm, 0.2 or 0.7 mg/L) for 96 hours, showed plastic particles inside the digestive tract, gland's lumen, connective tissue, hemolymphatic sinuses, and the surface of the gills using light and fluorescent microscopy.",
+        "study_ref": "study_ref_90",
+        "section": "7. Neurotoxic Effects on Marine Invertebrates",
+        "quote_verbatim": true,
+        "evidence_type": "in_vivo",
+        "confidence": "high",
+        "citations_ref": [
+          "[90]"
+        ]
+      }
+    },
+    {
+      "id": "evidence_shrimp_particles",
+      "label": "The exposure of both striped shrimp (Amphibia lanu amphitrit…",
+      "type": "Evidence",
+      "data": {
+        "id": "evidence_shrimp_particles",
+        "type": "Evidence",
+        "text": "The exposure of both striped shrimp (Amphibia lanu amphitrite) and brine shrimp (Artemia Franciscan) larvae to 0.1 μm fluorescent polystyrene microparticles, at concentrations ranging from 0.001 to 10 mg/L, over periods of 24 to 48 hours led to plastic particles being detectable within them through fluorescence microscopy.",
+        "study_ref": "study_ref_92",
+        "section": "7. Neurotoxic Effects on Marine Invertebrates",
+        "quote_verbatim": true,
+        "evidence_type": "in_vivo",
+        "confidence": "high",
+        "citations_ref": [
+          "[92]"
+        ]
+      }
+    },
+    {
+      "id": "evidence_celegans_effects",
+      "label": "Caenorhabditis elegans were subjected to five different sphe…",
+      "type": "Evidence",
+      "data": {
+        "id": "evidence_celegans_effects",
+        "type": "Evidence",
+        "text": "Caenorhabditis elegans were subjected to five different spherical polystyrene microplastic sizes (0.1-5 μm) in a culture medium at 1 mg/L concentration. This led to excitotoxicity affecting their movement, lowered survival rates, and decreased average lifespan, with the most pronounced effects observed with exposure to 1.0 μm size particles.",
+        "study_ref": "study_ref_83_84",
+        "section": "7. Neurotoxic Effects on Marine Invertebrates",
+        "quote_verbatim": true,
+        "evidence_type": "in_vivo",
+        "confidence": "high",
+        "citations_ref": [
+          "[83]",
+          "[84]"
         ]
       }
     }
@@ -3432,6 +3806,1554 @@
         "source_id": "exposure_waterborne",
         "relation_type": "exposes",
         "target_id": "host_barnacle_brineshrimp_larvae"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_176",
+      "source": "study_neurotoxicity_following_exposure_review",
+      "target": "host_pregnant_women",
+      "label": "investigates",
+      "data": {
+        "source_id": "study_neurotoxicity_following_exposure_review",
+        "relation_type": "investigates",
+        "target_id": "host_pregnant_women"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_177",
+      "source": "study_neurotoxicity_following_exposure_review",
+      "target": "host_children",
+      "label": "investigates",
+      "data": {
+        "source_id": "study_neurotoxicity_following_exposure_review",
+        "relation_type": "investigates",
+        "target_id": "host_children"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_178",
+      "source": "study_neurotoxicity_following_exposure_review",
+      "target": "host_older_adults",
+      "label": "investigates",
+      "data": {
+        "source_id": "study_neurotoxicity_following_exposure_review",
+        "relation_type": "investigates",
+        "target_id": "host_older_adults"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_179",
+      "source": "exposure_oral",
+      "target": "host_pregnant_women",
+      "label": "exposes",
+      "data": {
+        "source_id": "exposure_oral",
+        "relation_type": "exposes",
+        "target_id": "host_pregnant_women"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_180",
+      "source": "exposure_oral",
+      "target": "host_children",
+      "label": "exposes",
+      "data": {
+        "source_id": "exposure_oral",
+        "relation_type": "exposes",
+        "target_id": "host_children"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_181",
+      "source": "exposure_oral",
+      "target": "host_older_adults",
+      "label": "exposes",
+      "data": {
+        "source_id": "exposure_oral",
+        "relation_type": "exposes",
+        "target_id": "host_older_adults"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_182",
+      "source": "exposure_inhalation",
+      "target": "host_pregnant_women",
+      "label": "exposes",
+      "data": {
+        "source_id": "exposure_inhalation",
+        "relation_type": "exposes",
+        "target_id": "host_pregnant_women"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_183",
+      "source": "exposure_inhalation",
+      "target": "host_children",
+      "label": "exposes",
+      "data": {
+        "source_id": "exposure_inhalation",
+        "relation_type": "exposes",
+        "target_id": "host_children"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_184",
+      "source": "exposure_inhalation",
+      "target": "host_older_adults",
+      "label": "exposes",
+      "data": {
+        "source_id": "exposure_inhalation",
+        "relation_type": "exposes",
+        "target_id": "host_older_adults"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_185",
+      "source": "exposure_nasal_retrograde",
+      "target": "host_pregnant_women",
+      "label": "exposes",
+      "data": {
+        "source_id": "exposure_nasal_retrograde",
+        "relation_type": "exposes",
+        "target_id": "host_pregnant_women"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_186",
+      "source": "exposure_nasal_retrograde",
+      "target": "host_children",
+      "label": "exposes",
+      "data": {
+        "source_id": "exposure_nasal_retrograde",
+        "relation_type": "exposes",
+        "target_id": "host_children"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_187",
+      "source": "exposure_nasal_retrograde",
+      "target": "host_older_adults",
+      "label": "exposes",
+      "data": {
+        "source_id": "exposure_nasal_retrograde",
+        "relation_type": "exposes",
+        "target_id": "host_older_adults"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_188",
+      "source": "study_ref_83_84",
+      "target": "host_c_elegans",
+      "label": "investigates",
+      "data": {
+        "source_id": "study_ref_83_84",
+        "relation_type": "investigates",
+        "target_id": "host_c_elegans"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_189",
+      "source": "study_ref_87",
+      "target": "host_scrobicularia",
+      "label": "investigates",
+      "data": {
+        "source_id": "study_ref_87",
+        "relation_type": "investigates",
+        "target_id": "host_scrobicularia"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_190",
+      "source": "study_ref_89",
+      "target": "host_mediterranean_mussel",
+      "label": "investigates",
+      "data": {
+        "source_id": "study_ref_89",
+        "relation_type": "investigates",
+        "target_id": "host_mediterranean_mussel"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_191",
+      "source": "study_ref_90",
+      "target": "host_corbicula",
+      "label": "investigates",
+      "data": {
+        "source_id": "study_ref_90",
+        "relation_type": "investigates",
+        "target_id": "host_corbicula"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_192",
+      "source": "study_ref_92",
+      "target": "host_barnacle_brineshrimp_larvae",
+      "label": "investigates",
+      "data": {
+        "source_id": "study_ref_92",
+        "relation_type": "investigates",
+        "target_id": "host_barnacle_brineshrimp_larvae"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_193",
+      "source": "study_ref_83_84",
+      "target": "obs_celegans_polystyrene_exposure_effects",
+      "label": "reports",
+      "data": {
+        "source_id": "study_ref_83_84",
+        "relation_type": "reports",
+        "target_id": "obs_celegans_polystyrene_exposure_effects"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_194",
+      "source": "study_ref_87",
+      "target": "obs_scrobicularia_polystyrene_particles_detected",
+      "label": "reports",
+      "data": {
+        "source_id": "study_ref_87",
+        "relation_type": "reports",
+        "target_id": "obs_scrobicularia_polystyrene_particles_detected"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_195",
+      "source": "study_ref_89",
+      "target": "obs_mediterranean_mussel_particles_detected",
+      "label": "reports",
+      "data": {
+        "source_id": "study_ref_89",
+        "relation_type": "reports",
+        "target_id": "obs_mediterranean_mussel_particles_detected"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_196",
+      "source": "study_ref_90",
+      "target": "obs_corbicula_polymeric_microspheres_detected",
+      "label": "reports",
+      "data": {
+        "source_id": "study_ref_90",
+        "relation_type": "reports",
+        "target_id": "obs_corbicula_polymeric_microspheres_detected"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_197",
+      "source": "study_ref_92",
+      "target": "obs_shrimp_polystyrene_particles_detected",
+      "label": "reports",
+      "data": {
+        "source_id": "study_ref_92",
+        "relation_type": "reports",
+        "target_id": "obs_shrimp_polystyrene_particles_detected"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_198",
+      "source": "study_ref_42",
+      "target": "obs_mouse_liver_5um_ps_concentration",
+      "label": "reports",
+      "data": {
+        "source_id": "study_ref_42",
+        "relation_type": "reports",
+        "target_id": "obs_mouse_liver_5um_ps_concentration"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_199",
+      "source": "study_ref_42",
+      "target": "obs_mouse_kidney_5um_ps_concentration",
+      "label": "reports",
+      "data": {
+        "source_id": "study_ref_42",
+        "relation_type": "reports",
+        "target_id": "obs_mouse_kidney_5um_ps_concentration"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_200",
+      "source": "study_ref_42",
+      "target": "obs_mouse_gut_5um_ps_concentration",
+      "label": "reports",
+      "data": {
+        "source_id": "study_ref_42",
+        "relation_type": "reports",
+        "target_id": "obs_mouse_gut_5um_ps_concentration"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_201",
+      "source": "study_ref_42",
+      "target": "obs_mouse_20um_ps_concentration_plateau",
+      "label": "reports",
+      "data": {
+        "source_id": "study_ref_42",
+        "relation_type": "reports",
+        "target_id": "obs_mouse_20um_ps_concentration_plateau"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_202",
+      "source": "study_ref_41",
+      "target": "obs_mouse_brain_caspase3_increased",
+      "label": "reports",
+      "data": {
+        "source_id": "study_ref_41",
+        "relation_type": "reports",
+        "target_id": "obs_mouse_brain_caspase3_increased"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_203",
+      "source": "study_ref_41",
+      "target": "obs_mouse_brain_tnf_il6_upregulated",
+      "label": "reports",
+      "data": {
+        "source_id": "study_ref_41",
+        "relation_type": "reports",
+        "target_id": "obs_mouse_brain_tnf_il6_upregulated"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_204",
+      "source": "study_ref_85",
+      "target": "obs_earthworm_polyethylene_uptake",
+      "label": "reports",
+      "data": {
+        "source_id": "study_ref_85",
+        "relation_type": "reports",
+        "target_id": "obs_earthworm_polyethylene_uptake"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_205",
+      "source": "study_ref_86",
+      "target": "obs_zebra_mussel_polystyrene_microbeads_accumulation",
+      "label": "reports",
+      "data": {
+        "source_id": "study_ref_86",
+        "relation_type": "reports",
+        "target_id": "obs_zebra_mussel_polystyrene_microbeads_accumulation"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_206",
+      "source": "study_ref_86",
+      "target": "obs_zebra_mussel_no_genotoxic_effects",
+      "label": "reports",
+      "data": {
+        "source_id": "study_ref_86",
+        "relation_type": "reports",
+        "target_id": "obs_zebra_mussel_no_genotoxic_effects"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_207",
+      "source": "study_ref_41",
+      "target": "biomarker_caspase_3",
+      "label": "reports",
+      "data": {
+        "source_id": "study_ref_41",
+        "relation_type": "reports",
+        "target_id": "biomarker_caspase_3"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_208",
+      "source": "study_ref_41",
+      "target": "biomarker_tnf_alpha",
+      "label": "reports",
+      "data": {
+        "source_id": "study_ref_41",
+        "relation_type": "reports",
+        "target_id": "biomarker_tnf_alpha"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_209",
+      "source": "study_ref_41",
+      "target": "biomarker_il_6",
+      "label": "reports",
+      "data": {
+        "source_id": "study_ref_41",
+        "relation_type": "reports",
+        "target_id": "biomarker_il_6"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_210",
+      "source": "study_ref_42",
+      "target": "biomarker_atp_levels",
+      "label": "reports",
+      "data": {
+        "source_id": "study_ref_42",
+        "relation_type": "reports",
+        "target_id": "biomarker_atp_levels"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_211",
+      "source": "study_ref_42",
+      "target": "biomarker_ldh_activity",
+      "label": "reports",
+      "data": {
+        "source_id": "study_ref_42",
+        "relation_type": "reports",
+        "target_id": "biomarker_ldh_activity"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_212",
+      "source": "study_ref_42",
+      "target": "biomarker_acetylcholinesterase_activity",
+      "label": "reports",
+      "data": {
+        "source_id": "study_ref_42",
+        "relation_type": "reports",
+        "target_id": "biomarker_acetylcholinesterase_activity"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_213",
+      "source": "study_ref_85",
+      "target": "biomarker_catalase_activity",
+      "label": "reports",
+      "data": {
+        "source_id": "study_ref_85",
+        "relation_type": "reports",
+        "target_id": "biomarker_catalase_activity"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_214",
+      "source": "study_ref_85",
+      "target": "biomarker_malondialdehyde_levels",
+      "label": "reports",
+      "data": {
+        "source_id": "study_ref_85",
+        "relation_type": "reports",
+        "target_id": "biomarker_malondialdehyde_levels"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_215",
+      "source": "study_ref_85",
+      "target": "biomarker_acetylcholinesterase_activity",
+      "label": "reports",
+      "data": {
+        "source_id": "study_ref_85",
+        "relation_type": "reports",
+        "target_id": "biomarker_acetylcholinesterase_activity"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_216",
+      "source": "study_ref_86",
+      "target": "biomarker_dopamine_levels",
+      "label": "reports",
+      "data": {
+        "source_id": "study_ref_86",
+        "relation_type": "reports",
+        "target_id": "biomarker_dopamine_levels"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_217",
+      "source": "study_ref_86",
+      "target": "biomarker_catalase_activity",
+      "label": "reports",
+      "data": {
+        "source_id": "study_ref_86",
+        "relation_type": "reports",
+        "target_id": "biomarker_catalase_activity"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_218",
+      "source": "study_ref_87",
+      "target": "biomarker_superoxide_dismutase_activity",
+      "label": "reports",
+      "data": {
+        "source_id": "study_ref_87",
+        "relation_type": "reports",
+        "target_id": "biomarker_superoxide_dismutase_activity"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_219",
+      "source": "study_ref_87",
+      "target": "biomarker_glutathione_s_transferase_activity",
+      "label": "reports",
+      "data": {
+        "source_id": "study_ref_87",
+        "relation_type": "reports",
+        "target_id": "biomarker_glutathione_s_transferase_activity"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_220",
+      "source": "study_ref_87",
+      "target": "biomarker_lipid_peroxidation",
+      "label": "reports",
+      "data": {
+        "source_id": "study_ref_87",
+        "relation_type": "reports",
+        "target_id": "biomarker_lipid_peroxidation"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_221",
+      "source": "study_ref_87",
+      "target": "biomarker_acetylcholinesterase_activity",
+      "label": "reports",
+      "data": {
+        "source_id": "study_ref_87",
+        "relation_type": "reports",
+        "target_id": "biomarker_acetylcholinesterase_activity"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_222",
+      "source": "study_ref_90",
+      "target": "biomarker_acetylcholinesterase_activity",
+      "label": "reports",
+      "data": {
+        "source_id": "study_ref_90",
+        "relation_type": "reports",
+        "target_id": "biomarker_acetylcholinesterase_activity"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_223",
+      "source": "study_ref_92",
+      "target": "biomarker_catalase_activity",
+      "label": "reports",
+      "data": {
+        "source_id": "study_ref_92",
+        "relation_type": "reports",
+        "target_id": "biomarker_catalase_activity"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_224",
+      "source": "study_ref_92",
+      "target": "biomarker_acetylcholinesterase_activity",
+      "label": "reports",
+      "data": {
+        "source_id": "study_ref_92",
+        "relation_type": "reports",
+        "target_id": "biomarker_acetylcholinesterase_activity"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_225",
+      "source": "study_ref_83_84",
+      "target": "outcome_lower_survival_lifespan",
+      "label": "reports",
+      "data": {
+        "source_id": "study_ref_83_84",
+        "relation_type": "reports",
+        "target_id": "outcome_lower_survival_lifespan"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_226",
+      "source": "study_neurotoxicity_following_exposure_review",
+      "target": "outcome_neurological_disorders",
+      "label": "reports",
+      "data": {
+        "source_id": "study_neurotoxicity_following_exposure_review",
+        "relation_type": "reports",
+        "target_id": "outcome_neurological_disorders"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_227",
+      "source": "study_neurotoxicity_following_exposure_review",
+      "target": "outcome_behavioral_changes",
+      "label": "reports",
+      "data": {
+        "source_id": "study_neurotoxicity_following_exposure_review",
+        "relation_type": "reports",
+        "target_id": "outcome_behavioral_changes"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_228",
+      "source": "study_ref_42",
+      "target": "evidence_mouse_20um_plateau",
+      "label": "provides",
+      "data": {
+        "source_id": "study_ref_42",
+        "relation_type": "provides",
+        "target_id": "evidence_mouse_20um_plateau"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_229",
+      "source": "study_ref_87",
+      "target": "evidence_scrobicularia_particles",
+      "label": "provides",
+      "data": {
+        "source_id": "study_ref_87",
+        "relation_type": "provides",
+        "target_id": "evidence_scrobicularia_particles"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_230",
+      "source": "study_ref_89",
+      "target": "evidence_mediterranean_mussel_particles",
+      "label": "provides",
+      "data": {
+        "source_id": "study_ref_89",
+        "relation_type": "provides",
+        "target_id": "evidence_mediterranean_mussel_particles"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_231",
+      "source": "study_ref_90",
+      "target": "evidence_corbicula_particles",
+      "label": "provides",
+      "data": {
+        "source_id": "study_ref_90",
+        "relation_type": "provides",
+        "target_id": "evidence_corbicula_particles"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_232",
+      "source": "study_ref_92",
+      "target": "evidence_shrimp_particles",
+      "label": "provides",
+      "data": {
+        "source_id": "study_ref_92",
+        "relation_type": "provides",
+        "target_id": "evidence_shrimp_particles"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_233",
+      "source": "study_ref_83_84",
+      "target": "evidence_celegans_effects",
+      "label": "provides",
+      "data": {
+        "source_id": "study_ref_83_84",
+        "relation_type": "provides",
+        "target_id": "evidence_celegans_effects"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_234",
+      "source": "evidence_mouse_liver_accumulation",
+      "target": "obs_mouse_kidney_5um_ps_concentration",
+      "label": "supports",
+      "data": {
+        "source_id": "evidence_mouse_liver_accumulation",
+        "relation_type": "supports",
+        "target_id": "obs_mouse_kidney_5um_ps_concentration"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_235",
+      "source": "evidence_mouse_liver_accumulation",
+      "target": "obs_mouse_gut_5um_ps_concentration",
+      "label": "supports",
+      "data": {
+        "source_id": "evidence_mouse_liver_accumulation",
+        "relation_type": "supports",
+        "target_id": "obs_mouse_gut_5um_ps_concentration"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_236",
+      "source": "evidence_mouse_20um_plateau",
+      "target": "obs_mouse_20um_ps_concentration_plateau",
+      "label": "supports",
+      "data": {
+        "source_id": "evidence_mouse_20um_plateau",
+        "relation_type": "supports",
+        "target_id": "obs_mouse_20um_ps_concentration_plateau"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_237",
+      "source": "evidence_scrobicularia_particles",
+      "target": "obs_scrobicularia_polystyrene_particles_detected",
+      "label": "supports",
+      "data": {
+        "source_id": "evidence_scrobicularia_particles",
+        "relation_type": "supports",
+        "target_id": "obs_scrobicularia_polystyrene_particles_detected"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_238",
+      "source": "evidence_mediterranean_mussel_particles",
+      "target": "obs_mediterranean_mussel_particles_detected",
+      "label": "supports",
+      "data": {
+        "source_id": "evidence_mediterranean_mussel_particles",
+        "relation_type": "supports",
+        "target_id": "obs_mediterranean_mussel_particles_detected"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_239",
+      "source": "evidence_corbicula_particles",
+      "target": "obs_corbicula_polymeric_microspheres_detected",
+      "label": "supports",
+      "data": {
+        "source_id": "evidence_corbicula_particles",
+        "relation_type": "supports",
+        "target_id": "obs_corbicula_polymeric_microspheres_detected"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_240",
+      "source": "evidence_shrimp_particles",
+      "target": "obs_shrimp_polystyrene_particles_detected",
+      "label": "supports",
+      "data": {
+        "source_id": "evidence_shrimp_particles",
+        "relation_type": "supports",
+        "target_id": "obs_shrimp_polystyrene_particles_detected"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_241",
+      "source": "evidence_celegans_effects",
+      "target": "obs_celegans_polystyrene_exposure_effects",
+      "label": "supports",
+      "data": {
+        "source_id": "evidence_celegans_effects",
+        "relation_type": "supports",
+        "target_id": "obs_celegans_polystyrene_exposure_effects"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_242",
+      "source": "obs_celegans_polystyrene_exposure_effects",
+      "target": "polymer_polystyrene",
+      "label": "has_polymer",
+      "data": {
+        "source_id": "obs_celegans_polystyrene_exposure_effects",
+        "relation_type": "has_polymer",
+        "target_id": "polymer_polystyrene"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_243",
+      "source": "obs_celegans_polystyrene_exposure_effects",
+      "target": "size_0_1_to_5_um",
+      "label": "has_size_class",
+      "data": {
+        "source_id": "obs_celegans_polystyrene_exposure_effects",
+        "relation_type": "has_size_class",
+        "target_id": "size_0_1_to_5_um"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_244",
+      "source": "obs_celegans_polystyrene_exposure_effects",
+      "target": "shape_spherical",
+      "label": "has_shape",
+      "data": {
+        "source_id": "obs_celegans_polystyrene_exposure_effects",
+        "relation_type": "has_shape",
+        "target_id": "shape_spherical"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_245",
+      "source": "obs_mouse_liver_5um_ps_concentration",
+      "target": "compartment_food",
+      "label": "about",
+      "data": {
+        "source_id": "obs_mouse_liver_5um_ps_concentration",
+        "relation_type": "about",
+        "target_id": "compartment_food"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_246",
+      "source": "obs_mouse_kidney_5um_ps_concentration",
+      "target": "compartment_food",
+      "label": "about",
+      "data": {
+        "source_id": "obs_mouse_kidney_5um_ps_concentration",
+        "relation_type": "about",
+        "target_id": "compartment_food"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_247",
+      "source": "obs_mouse_gut_5um_ps_concentration",
+      "target": "compartment_food",
+      "label": "about",
+      "data": {
+        "source_id": "obs_mouse_gut_5um_ps_concentration",
+        "relation_type": "about",
+        "target_id": "compartment_food"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_248",
+      "source": "obs_mouse_20um_ps_concentration_plateau",
+      "target": "compartment_food",
+      "label": "about",
+      "data": {
+        "source_id": "obs_mouse_20um_ps_concentration_plateau",
+        "relation_type": "about",
+        "target_id": "compartment_food"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_249",
+      "source": "obs_earthworm_polyethylene_uptake",
+      "target": "compartment_soil",
+      "label": "about",
+      "data": {
+        "source_id": "obs_earthworm_polyethylene_uptake",
+        "relation_type": "about",
+        "target_id": "compartment_soil"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_250",
+      "source": "obs_zebra_mussel_polystyrene_microbeads_accumulation",
+      "target": "compartment_freshwater",
+      "label": "about",
+      "data": {
+        "source_id": "obs_zebra_mussel_polystyrene_microbeads_accumulation",
+        "relation_type": "about",
+        "target_id": "compartment_freshwater"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_251",
+      "source": "obs_zebra_mussel_no_genotoxic_effects",
+      "target": "compartment_freshwater",
+      "label": "about",
+      "data": {
+        "source_id": "obs_zebra_mussel_no_genotoxic_effects",
+        "relation_type": "about",
+        "target_id": "compartment_freshwater"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_252",
+      "source": "obs_scrobicularia_polystyrene_particles_detected",
+      "target": "compartment_marine_water",
+      "label": "about",
+      "data": {
+        "source_id": "obs_scrobicularia_polystyrene_particles_detected",
+        "relation_type": "about",
+        "target_id": "compartment_marine_water"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_253",
+      "source": "obs_mediterranean_mussel_particles_detected",
+      "target": "compartment_marine_water",
+      "label": "about",
+      "data": {
+        "source_id": "obs_mediterranean_mussel_particles_detected",
+        "relation_type": "about",
+        "target_id": "compartment_marine_water"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_254",
+      "source": "obs_corbicula_polymeric_microspheres_detected",
+      "target": "compartment_freshwater",
+      "label": "about",
+      "data": {
+        "source_id": "obs_corbicula_polymeric_microspheres_detected",
+        "relation_type": "about",
+        "target_id": "compartment_freshwater"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_255",
+      "source": "obs_shrimp_polystyrene_particles_detected",
+      "target": "compartment_marine_water",
+      "label": "about",
+      "data": {
+        "source_id": "obs_shrimp_polystyrene_particles_detected",
+        "relation_type": "about",
+        "target_id": "compartment_marine_water"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_256",
+      "source": "obs_celegans_polystyrene_exposure_effects",
+      "target": "compartment_food",
+      "label": "about",
+      "data": {
+        "source_id": "obs_celegans_polystyrene_exposure_effects",
+        "relation_type": "about",
+        "target_id": "compartment_food"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_257",
+      "source": "compartment_drinking_water",
+      "target": "polymer_polystyrene",
+      "label": "contains",
+      "data": {
+        "source_id": "compartment_drinking_water",
+        "relation_type": "contains",
+        "target_id": "polymer_polystyrene"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_258",
+      "source": "compartment_drinking_water",
+      "target": "polymer_polyethylene",
+      "label": "contains",
+      "data": {
+        "source_id": "compartment_drinking_water",
+        "relation_type": "contains",
+        "target_id": "polymer_polyethylene"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_259",
+      "source": "compartment_food",
+      "target": "polymer_polystyrene",
+      "label": "contains",
+      "data": {
+        "source_id": "compartment_food",
+        "relation_type": "contains",
+        "target_id": "polymer_polystyrene"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_260",
+      "source": "compartment_food",
+      "target": "polymer_polyethylene",
+      "label": "contains",
+      "data": {
+        "source_id": "compartment_food",
+        "relation_type": "contains",
+        "target_id": "polymer_polyethylene"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_261",
+      "source": "compartment_soil",
+      "target": "polymer_low_density_polyethylene",
+      "label": "contains",
+      "data": {
+        "source_id": "compartment_soil",
+        "relation_type": "contains",
+        "target_id": "polymer_low_density_polyethylene"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_262",
+      "source": "compartment_marine_water",
+      "target": "polymer_polystyrene",
+      "label": "contains",
+      "data": {
+        "source_id": "compartment_marine_water",
+        "relation_type": "contains",
+        "target_id": "polymer_polystyrene"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_263",
+      "source": "compartment_marine_water",
+      "target": "polymer_polyethylene",
+      "label": "contains",
+      "data": {
+        "source_id": "compartment_marine_water",
+        "relation_type": "contains",
+        "target_id": "polymer_polyethylene"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_264",
+      "source": "compartment_freshwater",
+      "target": "polymer_polystyrene",
+      "label": "contains",
+      "data": {
+        "source_id": "compartment_freshwater",
+        "relation_type": "contains",
+        "target_id": "polymer_polystyrene"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_265",
+      "source": "polymer_polystyrene",
+      "target": "exposure_oral",
+      "label": "enters_via",
+      "data": {
+        "source_id": "polymer_polystyrene",
+        "relation_type": "enters_via",
+        "target_id": "exposure_oral"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_266",
+      "source": "polymer_polystyrene",
+      "target": "exposure_waterborne",
+      "label": "enters_via",
+      "data": {
+        "source_id": "polymer_polystyrene",
+        "relation_type": "enters_via",
+        "target_id": "exposure_waterborne"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_267",
+      "source": "polymer_polyethylene",
+      "target": "exposure_oral",
+      "label": "enters_via",
+      "data": {
+        "source_id": "polymer_polyethylene",
+        "relation_type": "enters_via",
+        "target_id": "exposure_oral"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_268",
+      "source": "polymer_polyethylene",
+      "target": "exposure_waterborne",
+      "label": "enters_via",
+      "data": {
+        "source_id": "polymer_polyethylene",
+        "relation_type": "enters_via",
+        "target_id": "exposure_waterborne"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_269",
+      "source": "polymer_low_density_polyethylene",
+      "target": "exposure_soil_contact",
+      "label": "enters_via",
+      "data": {
+        "source_id": "polymer_low_density_polyethylene",
+        "relation_type": "enters_via",
+        "target_id": "exposure_soil_contact"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_270",
+      "source": "polymer_amino_modified_polystyrene",
+      "target": "exposure_oral",
+      "label": "enters_via",
+      "data": {
+        "source_id": "polymer_amino_modified_polystyrene",
+        "relation_type": "enters_via",
+        "target_id": "exposure_oral"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_271",
+      "source": "host_mouse",
+      "target": "mechanism_inflammation",
+      "label": "activates",
+      "data": {
+        "source_id": "host_mouse",
+        "relation_type": "activates",
+        "target_id": "mechanism_inflammation"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_272",
+      "source": "host_mouse",
+      "target": "mechanism_apoptosis",
+      "label": "activates",
+      "data": {
+        "source_id": "host_mouse",
+        "relation_type": "activates",
+        "target_id": "mechanism_apoptosis"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_273",
+      "source": "host_mouse",
+      "target": "mechanism_metabolic_disturbance",
+      "label": "activates",
+      "data": {
+        "source_id": "host_mouse",
+        "relation_type": "activates",
+        "target_id": "mechanism_metabolic_disturbance"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_274",
+      "source": "host_mouse",
+      "target": "mechanism_oxidative_stress",
+      "label": "activates",
+      "data": {
+        "source_id": "host_mouse",
+        "relation_type": "activates",
+        "target_id": "mechanism_oxidative_stress"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_275",
+      "source": "host_earthworm",
+      "target": "mechanism_oxidative_stress",
+      "label": "activates",
+      "data": {
+        "source_id": "host_earthworm",
+        "relation_type": "activates",
+        "target_id": "mechanism_oxidative_stress"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_276",
+      "source": "host_c_elegans",
+      "target": "mechanism_oxidative_stress",
+      "label": "activates",
+      "data": {
+        "source_id": "host_c_elegans",
+        "relation_type": "activates",
+        "target_id": "mechanism_oxidative_stress"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_277",
+      "source": "host_scrobicularia",
+      "target": "mechanism_oxidative_stress",
+      "label": "activates",
+      "data": {
+        "source_id": "host_scrobicularia",
+        "relation_type": "activates",
+        "target_id": "mechanism_oxidative_stress"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_278",
+      "source": "biomarker_acetylcholinesterase_activity",
+      "target": "outcome_behavioral_changes",
+      "label": "leads_to",
+      "data": {
+        "source_id": "biomarker_acetylcholinesterase_activity",
+        "relation_type": "leads_to",
+        "target_id": "outcome_behavioral_changes"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_279",
+      "source": "biomarker_caspase_3",
+      "target": "outcome_neurological_disorders",
+      "label": "leads_to",
+      "data": {
+        "source_id": "biomarker_caspase_3",
+        "relation_type": "leads_to",
+        "target_id": "outcome_neurological_disorders"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_280",
+      "source": "biomarker_tnf_alpha",
+      "target": "outcome_neurological_disorders",
+      "label": "leads_to",
+      "data": {
+        "source_id": "biomarker_tnf_alpha",
+        "relation_type": "leads_to",
+        "target_id": "outcome_neurological_disorders"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_281",
+      "source": "biomarker_il_6",
+      "target": "outcome_neurological_disorders",
+      "label": "leads_to",
+      "data": {
+        "source_id": "biomarker_il_6",
+        "relation_type": "leads_to",
+        "target_id": "outcome_neurological_disorders"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_282",
+      "source": "biomarker_catalase_activity",
+      "target": "outcome_neurological_disorders",
+      "label": "leads_to",
+      "data": {
+        "source_id": "biomarker_catalase_activity",
+        "relation_type": "leads_to",
+        "target_id": "outcome_neurological_disorders"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_283",
+      "source": "biomarker_malondialdehyde_levels",
+      "target": "outcome_neurological_disorders",
+      "label": "leads_to",
+      "data": {
+        "source_id": "biomarker_malondialdehyde_levels",
+        "relation_type": "leads_to",
+        "target_id": "outcome_neurological_disorders"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_284",
+      "source": "biomarker_lipid_peroxidation",
+      "target": "outcome_neurological_disorders",
+      "label": "leads_to",
+      "data": {
+        "source_id": "biomarker_lipid_peroxidation",
+        "relation_type": "leads_to",
+        "target_id": "outcome_neurological_disorders"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_285",
+      "source": "obs_mouse_liver_5um_ps_concentration",
+      "target": "tissue_liver",
+      "label": "affects",
+      "data": {
+        "source_id": "obs_mouse_liver_5um_ps_concentration",
+        "relation_type": "affects",
+        "target_id": "tissue_liver"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_286",
+      "source": "obs_mouse_kidney_5um_ps_concentration",
+      "target": "tissue_kidney",
+      "label": "affects",
+      "data": {
+        "source_id": "obs_mouse_kidney_5um_ps_concentration",
+        "relation_type": "affects",
+        "target_id": "tissue_kidney"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_287",
+      "source": "obs_mouse_gut_5um_ps_concentration",
+      "target": "tissue_gut",
+      "label": "affects",
+      "data": {
+        "source_id": "obs_mouse_gut_5um_ps_concentration",
+        "relation_type": "affects",
+        "target_id": "tissue_gut"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_288",
+      "source": "obs_mouse_20um_ps_concentration_plateau",
+      "target": "tissue_liver",
+      "label": "affects",
+      "data": {
+        "source_id": "obs_mouse_20um_ps_concentration_plateau",
+        "relation_type": "affects",
+        "target_id": "tissue_liver"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_289",
+      "source": "obs_mouse_20um_ps_concentration_plateau",
+      "target": "tissue_kidney",
+      "label": "affects",
+      "data": {
+        "source_id": "obs_mouse_20um_ps_concentration_plateau",
+        "relation_type": "affects",
+        "target_id": "tissue_kidney"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_290",
+      "source": "obs_mouse_20um_ps_concentration_plateau",
+      "target": "tissue_gut",
+      "label": "affects",
+      "data": {
+        "source_id": "obs_mouse_20um_ps_concentration_plateau",
+        "relation_type": "affects",
+        "target_id": "tissue_gut"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_291",
+      "source": "obs_zebra_mussel_polystyrene_microbeads_accumulation",
+      "target": "tissue_gut",
+      "label": "affects",
+      "data": {
+        "source_id": "obs_zebra_mussel_polystyrene_microbeads_accumulation",
+        "relation_type": "affects",
+        "target_id": "tissue_gut"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_292",
+      "source": "obs_zebra_mussel_polystyrene_microbeads_accumulation",
+      "target": "tissue_hemolymph",
+      "label": "affects",
+      "data": {
+        "source_id": "obs_zebra_mussel_polystyrene_microbeads_accumulation",
+        "relation_type": "affects",
+        "target_id": "tissue_hemolymph"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_293",
+      "source": "obs_scrobicularia_polystyrene_particles_detected",
+      "target": "tissue_hemolymph",
+      "label": "affects",
+      "data": {
+        "source_id": "obs_scrobicularia_polystyrene_particles_detected",
+        "relation_type": "affects",
+        "target_id": "tissue_hemolymph"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_294",
+      "source": "obs_scrobicularia_polystyrene_particles_detected",
+      "target": "tissue_digestive_gland",
+      "label": "affects",
+      "data": {
+        "source_id": "obs_scrobicularia_polystyrene_particles_detected",
+        "relation_type": "affects",
+        "target_id": "tissue_digestive_gland"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_295",
+      "source": "obs_scrobicularia_polystyrene_particles_detected",
+      "target": "tissue_gills",
+      "label": "affects",
+      "data": {
+        "source_id": "obs_scrobicularia_polystyrene_particles_detected",
+        "relation_type": "affects",
+        "target_id": "tissue_gills"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_296",
+      "source": "obs_mediterranean_mussel_particles_detected",
+      "target": "tissue_hemolymph",
+      "label": "affects",
+      "data": {
+        "source_id": "obs_mediterranean_mussel_particles_detected",
+        "relation_type": "affects",
+        "target_id": "tissue_hemolymph"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_297",
+      "source": "obs_mediterranean_mussel_particles_detected",
+      "target": "tissue_gills",
+      "label": "affects",
+      "data": {
+        "source_id": "obs_mediterranean_mussel_particles_detected",
+        "relation_type": "affects",
+        "target_id": "tissue_gills"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_298",
+      "source": "obs_mediterranean_mussel_particles_detected",
+      "target": "tissue_gut",
+      "label": "affects",
+      "data": {
+        "source_id": "obs_mediterranean_mussel_particles_detected",
+        "relation_type": "affects",
+        "target_id": "tissue_gut"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_299",
+      "source": "obs_corbicula_polymeric_microspheres_detected",
+      "target": "tissue_gut",
+      "label": "affects",
+      "data": {
+        "source_id": "obs_corbicula_polymeric_microspheres_detected",
+        "relation_type": "affects",
+        "target_id": "tissue_gut"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_300",
+      "source": "obs_corbicula_polymeric_microspheres_detected",
+      "target": "tissue_digestive_gland",
+      "label": "affects",
+      "data": {
+        "source_id": "obs_corbicula_polymeric_microspheres_detected",
+        "relation_type": "affects",
+        "target_id": "tissue_digestive_gland"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_301",
+      "source": "obs_corbicula_polymeric_microspheres_detected",
+      "target": "tissue_hemolymph",
+      "label": "affects",
+      "data": {
+        "source_id": "obs_corbicula_polymeric_microspheres_detected",
+        "relation_type": "affects",
+        "target_id": "tissue_hemolymph"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_302",
+      "source": "obs_corbicula_polymeric_microspheres_detected",
+      "target": "tissue_gills",
+      "label": "affects",
+      "data": {
+        "source_id": "obs_corbicula_polymeric_microspheres_detected",
+        "relation_type": "affects",
+        "target_id": "tissue_gills"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_303",
+      "source": "obs_mouse_brain_caspase3_increased",
+      "target": "tissue_brain",
+      "label": "affects",
+      "data": {
+        "source_id": "obs_mouse_brain_caspase3_increased",
+        "relation_type": "affects",
+        "target_id": "tissue_brain"
+      },
+      "valid": true
+    },
+    {
+      "id": "edge_304",
+      "source": "obs_mouse_brain_tnf_il6_upregulated",
+      "target": "tissue_brain",
+      "label": "affects",
+      "data": {
+        "source_id": "obs_mouse_brain_tnf_il6_upregulated",
+        "relation_type": "affects",
+        "target_id": "tissue_brain"
       },
       "valid": true
     }

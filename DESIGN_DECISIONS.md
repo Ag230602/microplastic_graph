@@ -1,42 +1,85 @@
 # MPKG Pipeline — Design Decisions & Prompt Compliance
 
-Paper: *Neurotoxicity Following Exposure to Micro and Nanoplastics*
+Paper: *Neurotoxicity Following Exposure to Micro and Nanoplastics*  
 Ontology: `entities_v1.json` + `relationships_v1.json`
 
-## Pipeline artifacts
-| Stage | Prompt | Output |
-|---|---|---|
-| 1. Extraction | KG Extraction (GPT-5.5) | `mpkg_output_v1.json` (64 entities, 105 relationships) |
-| 2. Critique | Critique (Claude Opus) | `mpkg_critique_v1.json` (10-category audit) |
-| 3. Revision | Revision (GPT-5.5) | `mpkg_output_v2.json` (64 entities, 119 relationships) |
+## Current State
 
-Interactive viewers: `mpkg_graph.html` (v1), `mpkg_graph_v2.html` (v2), `mpkg_critique_graph.html` (critique).
+`mpkg_output_v2.json` is the source of truth for the evidence-aware graph:
 
-## Prompt-compliance summary
-- **Extraction:** Output is valid `{entities, relationships}`; only ontology types used; Observation vs. Association kept distinct; quantities preserved exactly (e.g., 0.2 / 1.0 / 1.4 mg/g).
-- **Critique:** Exact 10-key schema; compared against both the paper and the ontology; conservative (missing preferred over unsupported).
-- **Revision:** Strict `{entities, relationships}` JSON; ontology-compliant additions only; ontology violations and quantitative errors corrected.
+- 115 entities
+- 304 relationships
+- 10 Study nodes
+- 12 Evidence nodes
+- 14 Observation nodes
+- 14 HostPopulation nodes
+- 8 TissueOrgan nodes
 
-## Documented design decisions
+All 14 Observation nodes are directly supported by Evidence nodes.
 
-### R-1 — Three article-supported entities not carried into v2 (intentional)
-Removed in revision: `size_0_1_to_5_um` (0.1–5 µm), `size_40_nm` (40 nm), `shape_spherical` (spherical).
+## Key Design Decisions
 
-- These sizes/shape **are** mentioned in the article (C. elegans: spherical polystyrene, 0.1–5 µm, 1 mg/L; rat: 40 nm polystyrene, 1–10 mg/kg/day).
-- However, both studies report only **interpreted Associations** (movement/survival/lifespan effects; a null behavior/weight finding) and **no measured Observation**.
-- In the ontology, `has_size_class`, `has_shape`, and `has_polymer` originate **only from `Observation`** nodes. With no Observation for these two studies, there is no ontology-valid edge to attach the entities.
-- Including them would leave permanently disconnected nodes (a critique finding for v1). They were therefore dropped to keep the graph fully connected and ontology-clean.
+### Evidence-Aware Provenance
 
-**Trade-off / alternative:** A stricter reading of the Revision rule "preserve all valid entities" would re-add these three and create two new exposure-concentration `Observation` nodes (C. elegans 1 mg/L; rat 1–10 mg/kg/day) to anchor them. This is available on request; current v2 favors a connected, edge-justified graph.
+Raw source statements are represented as `Evidence` nodes. These connect through:
 
-### R-2 — Correctly removed (not supported)
-- `size_50_nm`, `size_0_11_um`: not present in the provided article text (0.11 µm appears to be a misread of the 0.1 µm shrimp particle).
-- `size_1_0_um`: exact duplicate of `size_1_um`.
+`Study -> provides -> Evidence -> supports -> Observation`
 
-### R-3 — Quantitative/ontology corrections applied in v2
-- `Observation.unit` misuse ("presence reported" / "reported direction") → `categorical`, with descriptive text moved to `notes`.
-- Earthworm polymer corrected from generic polyethylene to **low-density polyethylene (LDPE)** per the article.
-- 20 µm plateau value `0.8 mg/g`: unit is inferred from the same study's 5 µm reporting basis; this is disclosed in the node `notes`.
+This is the main novelty of the graph and allows each observation-level claim to be traced to an exact sentence.
+
+### Primary Study Modeling
+
+The review article remains a Study node, but key cited studies are also modeled as individual Study nodes: `[41]`, `[42]`, `[83,84]`, `[85]`, `[86]`, `[87]`, `[89]`, `[90]`, and `[92]`.
+
+Primary study nodes provide Evidence, investigate HostPopulation nodes, and report observations/biomarkers/outcomes where supported by the review text.
+
+### HostPopulation Modeling
+
+HostPopulation is first-class because microplastic health evidence is population-dependent. The graph includes the requested Human, Mouse, Rat, Earthworm, C. elegans, Pregnant women, Children, and Older adults nodes. Sensitive human subgroups are included as stratification targets, with notes clarifying that the current review does not provide direct subgroup-specific outcome evidence.
+
+### Observation vs Evidence
+
+Evidence nodes store exact statements. Observation nodes store structured claims derived from those statements. This prevents raw quoted evidence from being conflated with interpreted graph claims.
+
+### Explicit Reasoning Chain
+
+The relationship schema and graph now support the requested chain:
+
+`Study -> Evidence -> Observation -> Environmental Reservoir -> Agent -> Exposure Pathway -> Host Population -> Biological Mechanism -> Biomarker -> Clinical Outcome`
+
+Local ontology labels use `EnvironmentalCompartment` for environmental reservoir and `Polymer` for agent.
+
+### Benchmark Queries
+
+The benchmark query layer is implemented in both Python and Cypher:
+
+- `mpkg_query.py` runs directly over JSON and powers the dashboard.
+- `mpkg_benchmark_queries.cypher` demonstrates the same questions in Neo4j.
+
+The queries return evidence counts, supporting studies, and supporting sentences where available.
+
+## Conservative Evidence Handling
+
+- Direct human cardiovascular evidence is not invented. Q4 returns a limited-evidence gap result.
+- Pregnant women, Children, and Older adults are not assigned unsupported outcomes or biomarkers.
+- The graph keeps review-level conclusions low-confidence/limited where the review itself is cautious.
 
 ## Validation
-`mpkg_output_v2.json`: 64 entities, 119 relationships, no duplicate IDs, no dangling references, no orphan entities, all relationship types ontology-approved.
+
+Regeneration commands used:
+
+```bash
+python3 -m py_compile build_graph_v2.py mpkg_to_cypher.py build_dashboard.py mpkg_query.py build_standalone.py
+python3 build_graph_v2.py
+python3 mpkg_to_cypher.py
+python3 build_dashboard.py
+python3 build_standalone.py
+python3 mpkg_query.py
+```
+
+Verified after update:
+
+- no duplicate entity IDs
+- no dangling relationships
+- all Observation nodes have direct Evidence support
+- benchmark query commands return valid JSON/output
