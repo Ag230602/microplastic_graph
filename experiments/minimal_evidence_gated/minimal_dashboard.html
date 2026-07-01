@@ -64,14 +64,16 @@
       border-radius: 8px;
       padding: 16px;
       margin-bottom: 14px;
+      min-width: 0;
     }
     .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
     .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
     .card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px; }
     .n { font-size: 28px; font-weight: 800; color: var(--blue); }
     .l { color: var(--muted); font-size: 12px; }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
     th, td { border-bottom: 1px solid var(--line); padding: 9px; text-align: left; vertical-align: top; }
+    td, th, code, pre { overflow-wrap: anywhere; }
     th { background: #fafafa; }
     code { background: #f1f4f7; padding: 2px 5px; border-radius: 4px; }
     pre { white-space: pre-wrap; word-break: break-word; background: #fafafa; border: 1px solid var(--line); border-radius: 6px; padding: 10px; font-size: 12px; line-height: 1.45; }
@@ -129,7 +131,7 @@
     .check { border: 1px solid var(--line); border-radius: 8px; padding: 11px; background: #fbfaf6; }
     .check b { display: block; margin-bottom: 4px; }
     .graph-tools { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 12px; }
-    .graph-layout { display: grid; grid-template-columns: 1fr 330px; gap: 12px; align-items: stretch; }
+    .graph-layout { display: grid; grid-template-columns: 1fr; gap: 12px; align-items: stretch; }
     .graph-intro { display: grid; grid-template-columns: minmax(260px, 1fr) minmax(260px, .85fr); gap: 12px; align-items: stretch; margin-bottom: 12px; }
     .scope-strip { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
     .scope-pill { border: 1px solid var(--line); border-radius: 999px; padding: 6px 10px; background: #fff; font-size: 12px; color: var(--muted); }
@@ -141,7 +143,13 @@
     .legend span { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12px; }
     .swatch { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
     .dimmed { opacity: 0.12; }
+    .related-edge { stroke: var(--blue); stroke-width: 2.4; opacity: 1; }
+    .related-label { fill: var(--blue); font-weight: 750; font-size: 10px; }
     .selected-node circle { stroke: #111827; stroke-width: 3; }
+    .relation-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; margin-top: 10px; }
+    .relation-card { border: 1px solid var(--line); border-radius: 8px; padding: 11px; background: #fbfaf6; }
+    .relation-card b { display: block; margin-bottom: 5px; }
+    #nodeDetails { max-height: 460px; overflow: auto; }
     label { display: block; color: var(--muted); font-size: 12px; margin-bottom: 5px; }
     input, textarea, button.run {
       width: 100%;
@@ -163,7 +171,7 @@
     }
     textarea { min-height: 76px; resize: vertical; }
     button.run { cursor: pointer; background: var(--blue); color: #fff; border-color: var(--blue); font-weight: 750; margin-top: 8px; }
-    svg { width: 100%; height: 540px; background: #fbfaf6; border: 1px solid var(--line); border-radius: 8px; display: block; }
+    svg { width: 100%; height: 620px; background: #fbfaf6; border: 1px solid var(--line); border-radius: 8px; display: block; }
     .link { stroke: #93a1ad; stroke-width: 1.4; marker-end: url(#arrow); }
     .link-label { font-size: 9px; fill: #607080; }
     .g-node circle { stroke: #fff; stroke-width: 1.5; }
@@ -375,9 +383,10 @@ function graph(data) {
       <div><label for="viewMode">Graph layout</label><select id="viewMode"><option value="evidenceFlow">Evidence flow</option><option value="evidenceType">Evidence layers</option><option value="clinical">Clinical outcome view</option></select></div>
       <div><label for="tierFilter">Relationship tier</label><select id="tierFilter"><option value="">All relationships</option><option value="Tier 1">Tier 1 structural</option><option value="Tier 2">Tier 2 scientific reasoning</option></select></div>
       <div><label for="evidenceFilter">Evidence strength</label><select id="evidenceFilter"><option value="">All evidence strengths</option><option value="Animal">Animal</option><option value="Human">Human</option><option value="In-vitro">In-vitro</option><option value="Review">Review</option></select></div>
+      <div><label>&nbsp;</label><button class="run" id="resetGraph" type="button">Show Full Graph</button></div>
     </div>
     <div class="legend" id="graphLegend"></div>
-    <div class="graph-layout"><svg id="svg" viewBox="0 0 1120 560" preserveAspectRatio="xMidYMid meet"><defs><marker id="arrow" viewBox="0 -5 10 10" refX="16" refY="0" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,-5L10,0L0,5" fill="#93a1ad"></path></marker></defs></svg><div class="panel" id="nodeDetails"><h2>Select a Node</h2><p class="small">Node evidence and relationship details will appear here.</p></div></div>
+    <div class="graph-layout"><svg id="svg" viewBox="0 0 1180 640" preserveAspectRatio="xMidYMid meet"><defs><marker id="arrow" viewBox="0 -5 10 10" refX="16" refY="0" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,-5L10,0L0,5" fill="#93a1ad"></path></marker></defs></svg><div class="panel" id="nodeDetails"><h2>Select a Node</h2><p class="small">Click any node to focus its relationships. The relation cards and evidence details will appear here without leaving the frame.</p></div></div>
   </div>`;
   const svg = document.getElementById('svg');
   const ns = 'http://www.w3.org/2000/svg';
@@ -406,6 +415,7 @@ function graph(data) {
   const viewMode = document.getElementById('viewMode');
   const tierFilter = document.getElementById('tierFilter');
   const evidenceFilter = document.getElementById('evidenceFilter');
+  const resetGraph = document.getElementById('resetGraph');
   const details = document.getElementById('nodeDetails');
   const legend = document.getElementById('graphLegend');
   [...new Set(nodes.map(node => node.type))].sort().forEach(type => {
@@ -455,7 +465,29 @@ function graph(data) {
   function selectNode(node) {
     nodeEls.forEach(item => item.group.classList.toggle('selected-node', item.node.id === node.id));
     const connected = data.relationships.filter(rel => rel.source_node === node.id || rel.target_node === node.id);
-    details.innerHTML = `<h2>${esc(node.name)}</h2><p><span class="pill">${esc(node.type)}</span> <span class="pill info">confidence ${esc(node.confidence)}</span></p><p>${esc(node.definition)}</p><h3>Evidence</h3><div class="quote">${esc(node.example_sentence)}</div><p class="small">Publication: ${esc(node.supporting_publication)}<br>PMID: ${esc(node.pmid)}<br>DOI: ${esc(node.doi)}</p><h3>Connected Relationships</h3><table><tr><th>Relation</th><th>Direction</th><th>Confidence</th></tr>${connected.map(rel => `<tr><td>${esc(rel.relationship_name)}<br><span class="small">${relationshipTier(rel.relationship_name)}</span></td><td><code>${esc(rel.source_node)}</code> -&gt; <code>${esc(rel.target_node)}</code></td><td>${esc(rel.confidence)}</td></tr>`).join('')}</table>`;
+    const neighbors = new Set(connected.flatMap(rel => [rel.source_node, rel.target_node]));
+    nodeEls.forEach(item => item.group.classList.toggle('dimmed', item.node.id !== node.id && !neighbors.has(item.node.id)));
+    edgeEls.forEach(({path, label, rel}) => {
+      const related = rel.source_node === node.id || rel.target_node === node.id;
+      path.classList.toggle('dimmed', !related);
+      label.classList.toggle('dimmed', !related);
+      path.classList.toggle('related-edge', related);
+      label.classList.toggle('related-label', related);
+    });
+    details.innerHTML = `<h2>${esc(node.name)}</h2><p><span class="pill">${esc(node.type)}</span> <span class="pill info">confidence ${esc(node.confidence)}</span></p><p>${esc(node.definition)}</p><h3>Evidence</h3><div class="quote">${esc(node.example_sentence)}</div><p class="small">Publication: ${esc(node.supporting_publication)}<br>PMID: ${esc(node.pmid)}<br>DOI: ${esc(node.doi)}</p><h3>Connected Relationships (${connected.length})</h3><div class="relation-cards">${connected.map(rel => `<div class="relation-card"><b>${esc(rel.relationship_name)} <span class="pill info">${relationshipTier(rel.relationship_name)}</span></b><p class="small"><code>${esc(rel.source_node)}</code> → <code>${esc(rel.target_node)}</code></p><p>${esc(rel.scientific_meaning)}</p><div class="quote">${esc(rel.evidence_sentence)}</div><p class="small">Study: ${esc(rel.supporting_study)}<br>Confidence: ${esc(rel.confidence)}<br>Strength: ${esc(rel.relationship_strength)}</p></div>`).join('')}</div>`;
+  }
+
+  function resetGraphFocus() {
+    graphSearch.value = '';
+    typeFilter.value = '';
+    tierFilter.value = '';
+    evidenceFilter.value = '';
+    nodeEls.forEach(({group}) => group.classList.remove('dimmed', 'selected-node'));
+    edgeEls.forEach(({path, label}) => {
+      path.classList.remove('dimmed', 'related-edge');
+      label.classList.remove('dimmed', 'related-label');
+    });
+    details.innerHTML = '<h2>Full Graph View</h2><p class="small">The whole flowchart is visible. Click any node to focus its relationships and evidence details.</p>';
   }
   function applyGraphFilters() {
     const query = graphSearch.value.trim().toLowerCase();
@@ -498,6 +530,7 @@ function graph(data) {
   viewMode.addEventListener('change', () => { updateGraphLayout(); applyGraphFilters(); });
   tierFilter.addEventListener('change', applyGraphFilters);
   evidenceFilter.addEventListener('change', applyGraphFilters);
+  resetGraph.addEventListener('click', resetGraphFocus);
   applyGraphFilters();
 }
 
@@ -675,11 +708,11 @@ function positionNodes(mode, nodes) {
       'Environmental Reservoir': 555,
       Agent: 665,
       'Exposure Pathway': 775,
-      'Host Population': 875,
-      Tissue: 875,
-      Mechanism: 980,
-      Biomarker: 1010,
-      'Clinical Outcome': 1050
+      'Host Population': 865,
+      Tissue: 865,
+      Mechanism: 950,
+      Biomarker: 1000,
+      'Clinical Outcome': 1015
     },
     evidenceType: {
       Publication: 90,
@@ -689,11 +722,11 @@ function positionNodes(mode, nodes) {
       'Environmental Reservoir': 620,
       Agent: 620,
       'Exposure Pathway': 760,
-      'Host Population': 895,
-      Tissue: 895,
-      Mechanism: 1020,
-      Biomarker: 1020,
-      'Clinical Outcome': 1020
+      'Host Population': 875,
+      Tissue: 875,
+      Mechanism: 985,
+      Biomarker: 985,
+      'Clinical Outcome': 1015
     },
     clinical: {
       Publication: 80,
@@ -703,11 +736,11 @@ function positionNodes(mode, nodes) {
       'Environmental Reservoir': 515,
       Agent: 620,
       'Exposure Pathway': 720,
-      'Host Population': 820,
-      Tissue: 920,
-      Mechanism: 1000,
-      Biomarker: 1000,
-      'Clinical Outcome': 1060
+      'Host Population': 800,
+      Tissue: 895,
+      Mechanism: 970,
+      Biomarker: 970,
+      'Clinical Outcome': 1015
     }
   };
   const columns = layouts[mode] || layouts.evidenceFlow;
