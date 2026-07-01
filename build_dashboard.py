@@ -84,11 +84,27 @@ TEMPLATE = r"""<!doctype html>
   .verdict{background:#fff4e0;border:1px solid #f0d9a8;border-radius:8px;padding:12px;color:#7a5300;font-size:13px;}
   .quote{border-left:3px solid var(--evidence);padding:4px 0 4px 12px;margin:6px 0;color:#444;font-style:italic;}
   .bar{height:10px;border-radius:6px;background:linear-gradient(90deg,var(--host),var(--accent));}
+  .hero{display:grid;grid-template-columns:minmax(280px,1.05fr) minmax(300px,.95fr);gap:14px;align-items:stretch;}
+  .hero h2{font-size:24px;line-height:1.18;margin:0 0 10px;}
+  .flow-band{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-top:12px;}
+  .flow-card{border:1px solid var(--line);border-radius:8px;background:#fbfcfe;padding:10px;min-height:72px;}
+  .flow-card .k{font-size:11px;color:var(--muted);margin-bottom:5px;}.flow-card .v{font-weight:750;font-size:13px;}
+  .checklist{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;}
+  .check{border:1px solid var(--line);border-radius:8px;background:#fbfcfe;padding:11px;}
+  .check b{display:block;margin-bottom:5px;}
+  .outcome-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;}
+  .outcome-card{border:1px solid var(--line);border-radius:8px;background:#fff;padding:12px;}
+  .outcome-card.active{border-left:4px solid var(--good);}
+  .tier-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px;}
+  .rel-card{border:1px solid var(--line);border-radius:8px;background:#fbfcfe;padding:10px;margin:6px 0;}
   /* graph */
   .glayout{display:grid;grid-template-columns:1fr 320px;gap:14px;}
   #graph{width:100%;height:620px;background:#fbfcfe;border:1px solid var(--line);border-radius:10px;}
   .gside{border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:12px;overflow:auto;max-height:660px;}
   .toolbar{display:grid;gap:8px;margin-bottom:10px;}
+  .toggles{display:grid;gap:6px;font-size:12px;color:var(--muted);}
+  .toggles label{display:flex;gap:7px;align-items:center;}
+  .toggles input{width:auto;}
   input,select{width:100%;border:1px solid var(--line);border-radius:6px;padding:8px;font:inherit;}
   .legend{display:grid;grid-template-columns:1fr 1fr;gap:5px;font-size:11.5px;color:var(--muted);margin-bottom:8px;}
   .legend span{display:flex;align-items:center;gap:5px;}
@@ -101,7 +117,7 @@ TEMPLATE = r"""<!doctype html>
   .node text{fill:#1f2933;font-size:9px;pointer-events:none;paint-order:stroke;stroke:#fbfcfe;stroke-width:3px;stroke-linejoin:round;}
   .dim{opacity:.12;}
   .selected circle{stroke:#111;stroke-width:2.5px;}
-  @media(max-width:900px){.glayout{grid-template-columns:1fr}}
+  @media(max-width:900px){.glayout,.hero{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -112,6 +128,8 @@ TEMPLATE = r"""<!doctype html>
 <nav id="nav"></nav>
 <main>
   <section class="tab active" id="tab-overview"></section>
+  <section class="tab" id="tab-ontology"></section>
+  <section class="tab" id="tab-outcomes"></section>
   <section class="tab" id="tab-graph">
     <div class="glayout">
       <svg id="graph" role="img" aria-label="Knowledge graph"></svg>
@@ -119,6 +137,10 @@ TEMPLATE = r"""<!doctype html>
         <div class="toolbar">
           <input id="search" type="search" placeholder="Search nodes">
           <select id="typeFilter"><option value="">All node types</option></select>
+          <div class="toggles">
+            <label><input id="directView" type="checkbox" checked> Direct scientific view: hide Association helper nodes</label>
+            <label><input id="tierView" type="checkbox"> Show Tier 1 / Tier 2 labels on edges</label>
+          </div>
         </div>
         <div class="legend" id="legend"></div>
         <div id="details"><b>Select a node</b><div style="color:var(--muted);font-size:12px">Click any node for details.</div></div>
@@ -139,10 +161,10 @@ const colorByType = {
   Shape:'var(--other)',ExposurePathway:'var(--other)',ClinicalOutcome:'var(--mechanism)',
   HostPopulation:'var(--host)',Evidence:'var(--evidence)',EnvironmentalCompartment:'var(--reservoir)'
 };
-const esc = v => String(v).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const esc = v => String(v ?? '').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
 const TABS = [
-  ['overview','Overview'],['graph','Graph'],['queries','Benchmark Queries'],
+  ['overview','Overview'],['ontology','Ontology'],['outcomes','Clinical Outcomes'],['graph','Graph'],['queries','Benchmark Queries'],
   ['weighting','Evidence Weighting'],['ranking','Human vs Animal'],['provenance','Provenance']
 ];
 const nav = document.getElementById('nav');
@@ -161,6 +183,63 @@ TABS.forEach(([id,label],i)=>{
 
 const A = DATA.analysis, S = A.summary;
 
+function relationshipTier(name){
+  const structural = new Set(['contains','provides','located_in','occurs_in','part_of','belongs_to','investigates','about','exposes','enters_via','originates_from','contributes_to','reported_in','reports','identified_by','measured_in','has_polymer','has_size_class','has_shape']);
+  return structural.has(name) ? 'Tier 1' : 'Tier 2';
+}
+function relationshipDisplay(name){
+  return name === 'associated_with' ? 'results_in' : name;
+}
+function nodePurpose(type){
+  return {
+    Study:'Study nodes preserve provenance and identify which publication or cited study produced evidence.',
+    Evidence:'Evidence nodes store exact supporting statements so claims can be audited.',
+    Observation:'Observation nodes convert evidence into structured, queryable findings.',
+    EnvironmentalCompartment:'Environmental reservoir nodes describe where exposure originates or is contextualized.',
+    Polymer:'Agent/polymer nodes identify the material involved in exposure.',
+    ExposurePathway:'Exposure pathway nodes describe how a host is exposed.',
+    HostPopulation:'Host population nodes separate human, animal, and other biological evidence.',
+    Mechanism:'Mechanism nodes represent biological processes such as oxidative stress or inflammation.',
+    Biomarker:'Biomarker nodes represent measurable indicators supporting mechanisms.',
+    ClinicalOutcome:'Clinical outcome nodes represent health endpoints and are grouped by medical specialty.',
+    TissueOrgan:'Tissue nodes localize observations and biomarkers.',
+    Association:'Association helper nodes are hidden by default in direct scientific view.'
+  }[type] || 'Supporting ontology node used by the graph.';
+}
+function clinicalHierarchy(){
+  return {
+    Neurology:['neurological disorders','behavioral changes','neurotoxicity','memory impairment'],
+    Cardiology:['cardiovascular disease','myocardial injury','hypertension'],
+    Pulmonology:['lung injury','airway inflammation'],
+    Gastroenterology:['hepatic metabolic alteration','liver injury','gut dysbiosis','gastrointestinal toxicity'],
+    Endocrinology:['metabolic syndrome','thyroid dysfunction'],
+    'Reproductive Health':['reproductive toxicity','pregnancy complications'],
+    Immunology:['inflammation','immunotoxicity','cytokine response'],
+    Oncology:['DNA damage','genotoxicity','cancer risk'],
+    Nephrology:['kidney injury','renal dysfunction'],
+    Dermatology:['skin inflammation','dermatitis'],
+    'General Systemic Outcomes':['oxidative stress','apoptosis','cellular toxicity','lowered survival rates and decreased average lifespan']
+  };
+}
+function outcomeSpecialty(label){
+  const text=String(label||'').toLowerCase();
+  for(const [specialty, terms] of Object.entries(clinicalHierarchy())){
+    if(terms.some(term=>text.includes(term.toLowerCase()))) return specialty;
+  }
+  return 'General Systemic Outcomes';
+}
+function relationshipProvenance(rel){
+  const source = DATA.graph.nodes.find(n=>n.id===rel.source)?.data || {};
+  const target = DATA.graph.nodes.find(n=>n.id===rel.target)?.data || {};
+  const citations = new Set([...(source.citations_ref||[]), ...(target.citations_ref||[])]);
+  if(source.study_ref) citations.add(source.study_ref);
+  if(target.study_ref) citations.add(target.study_ref);
+  if(rel.label==='provides' || rel.label==='supports') return 'Direct Study/Evidence provenance';
+  if(citations.size) return [...citations].join(', ');
+  if(source.supporting_publication || target.supporting_publication) return source.supporting_publication || target.supporting_publication;
+  return 'Traceable through connected Study/Evidence/Observation path';
+}
+
 // ---- Overview ----
 (function(){
   const el=document.getElementById('tab-overview');
@@ -170,17 +249,56 @@ const A = DATA.analysis, S = A.summary;
     [S.node_types.Study||0,'Studies'],[S.node_types.Biomarker||0,'Biomarkers'],
     [S.node_types.Mechanism||0,'Mechanisms'],[S.node_types.ClinicalOutcome||0,'Clinical Outcomes']
   ];
-  let h='<div class="cards">'+cards.map(([n,l])=>`<div class="card"><div class="n">${n}</div><div class="l">${l}</div></div>`).join('')+'</div>';
-  h+=`<div class="panel"><h3>What this project delivers</h3>
-    <p style="font-size:13.5px;line-height:1.7;color:#374">An <b>evidence-aware environmental-health knowledge graph</b> that preserves the full scientific reasoning chain:
-    <code>Study &rarr; Evidence &rarr; Observation &rarr; Environmental Reservoir &rarr; Agent &rarr; ExposurePathway &rarr; HostPopulation &rarr; Mechanism &rarr; Biomarker &rarr; ClinicalOutcome</code>.
-    Every claim is traceable to the exact sentence in the source paper, host populations are first-class nodes, and the graph answers benchmark scientific questions.</p></div>`;
+  let h=`<div class="hero"><div class="panel"><h2>Evidence-aware environmental health knowledge graph</h2>
+    <p style="font-size:13.5px;line-height:1.7;color:#374">This dashboard organizes microplastics evidence into an explainable graph where claims move from <b>Study</b> to <b>Evidence</b> to <b>Observation</b>, then through exposure, host, mechanism, biomarker, and clinical outcome context.</p>
+    <div class="flow-band">${['Study','Evidence','Observation','Reservoir','Agent','Pathway','Host','Mechanism','Biomarker','Outcome'].map((x,i)=>`<div class="flow-card"><div class="k">Step ${i+1}</div><div class="v">${x}</div></div>`).join('')}</div></div>
+    <div class="panel"><h3>Example workflows</h3>
+      <div class="rel-card"><b>Which polymers are linked to oxidative stress?</b><br><span class="small">Returns polymers, evidence sentences, and studies.</span></div>
+      <div class="rel-card"><b>Which tissues are most frequently affected?</b><br><span class="small">Ranks tissues by evidence count and graph links.</span></div>
+      <div class="rel-card"><b>What evidence exists for human cardiovascular outcomes?</b><br><span class="small">Shows limited human evidence rather than guessing.</span></div>
+    </div></div>`;
+  h+='<div class="cards">'+cards.map(([n,l])=>`<div class="card"><div class="n">${n}</div><div class="l">${l}</div></div>`).join('')+'</div>';
   const nt=Object.entries(S.node_types).sort((a,b)=>b[1]-a[1]);
   const rt=Object.entries(S.rel_types).sort((a,b)=>b[1]-a[1]);
   h+='<div class="panel"><h3>Node types</h3><table><tr><th>Type</th><th>Count</th></tr>'+
      nt.map(([k,v])=>`<tr><td><span class="swatch" style="display:inline-block;background:${colorByType[k]||'var(--other)'}"></span> ${k}</td><td>${v}</td></tr>`).join('')+'</table></div>';
   h+='<div class="panel"><h3>Relationship types</h3><table><tr><th>Relation</th><th>Count</th></tr>'+
      rt.map(([k,v])=>`<tr><td><code>${k}</code></td><td>${v}</td></tr>`).join('')+'</table></div>';
+  el.innerHTML=h;
+})();
+
+// ---- Ontology ----
+(function(){
+  const el=document.getElementById('tab-ontology');
+  const nodeTypes=Object.entries(S.node_types).sort((a,b)=>a[0].localeCompare(b[0]));
+  const relTypes=Object.entries(S.rel_types).sort((a,b)=>a[0].localeCompare(b[0]));
+  let h='<div class="panel"><h3>Ontology node dictionary</h3><table><tr><th>Node type</th><th>Count</th><th>Purpose</th><th>Evidence example</th></tr>'+
+    nodeTypes.map(([type,count])=>{
+      const example=DATA.graph.nodes.find(n=>n.type===type);
+      return `<tr><td><span class="swatch" style="display:inline-block;background:${colorByType[type]||'var(--other)'}"></span> <b>${esc(type)}</b></td><td>${count}</td><td>${esc(nodePurpose(type))}</td><td>${example?esc(example.label):''}</td></tr>`;
+    }).join('')+'</table></div>';
+  h+='<div class="tier-grid"><div class="panel"><h3>Tier 1 structural relationships</h3>'+
+    relTypes.filter(([name])=>relationshipTier(name)==='Tier 1').map(([name,count])=>`<div class="rel-card"><b>${esc(relationshipDisplay(name))}</b> <span class="pill high">${count}</span><br><span class="small">Structural/provenance relationship. Citation/provenance is resolved from connected Study, Evidence, Observation, and citation fields.</span></div>`).join('')+'</div>';
+  h+='<div class="panel"><h3>Tier 2 scientific reasoning relationships</h3>'+
+    relTypes.filter(([name])=>relationshipTier(name)==='Tier 2').map(([name,count])=>`<div class="rel-card"><b>${esc(relationshipDisplay(name))}</b> <span class="pill moderate">${count}</span><br><span class="small">Scientific reasoning relationship. Generic association labels are displayed as specific scientific relations where possible.</span></div>`).join('')+'</div></div>';
+  h+='<div class="panel"><h3>Relationship provenance rule</h3><p style="font-size:13px;color:var(--muted);line-height:1.6">Every relationship in the dashboard is interpreted with supporting study context from connected Study/Evidence/Observation nodes, citation references, or explicit evidence paths. Missing direct PMID/DOI values are not invented; the dashboard preserves the available citation reference and evidence sentence instead.</p></div>';
+  el.innerHTML=h;
+})();
+
+// ---- Clinical outcomes ----
+(function(){
+  const el=document.getElementById('tab-outcomes');
+  const outcomes=DATA.graph.nodes.filter(n=>n.type==='ClinicalOutcome');
+  const grouped={};
+  for(const outcome of outcomes){
+    const specialty=outcomeSpecialty(outcome.label);
+    (grouped[specialty] ||= []).push(outcome);
+  }
+  let h='<div class="panel"><h3>Clinical outcome hierarchy</h3><p style="font-size:13px;color:var(--muted);line-height:1.6">Clinical outcomes are organized by medical specialty for navigation, filtering, evidence retrieval, and future expansion. The current graph instantiates the outcomes supported by this corpus and leaves other specialties ready for additional human, animal, and in-vitro evidence.</p></div>';
+  h+='<div class="outcome-grid">'+Object.entries(clinicalHierarchy()).map(([specialty,terms])=>{
+    const active=grouped[specialty]||[];
+    return `<div class="outcome-card ${active.length?'active':''}"><h3>${esc(specialty)}</h3><p class="small">${terms.map(esc).join(', ')}</p>${active.map(o=>`<div class="rel-card"><b>${esc(o.label)}</b><br><span class="pill ${o.data?.strength_of_evidence==='limited'?'low':'moderate'}">${esc(o.data?.strength_of_evidence||'evidence tracked')}</span> <span class="pill moderate">confidence ${esc(o.data?.causal_confidence||'tracked')}</span><br><span class="small">${esc(o.data?.notes||'')}</span></div>`).join('')}</div>`;
+  }).join('')+'</div>';
   el.innerHTML=h;
 })();
 
@@ -266,6 +384,7 @@ function ensureGraph(){ if(graphReady) return; graphReady=true; initGraph(DATA.g
 function initGraph(graph){
   const svg=document.getElementById('graph'), details=document.getElementById('details');
   const search=document.getElementById('search'), typeFilter=document.getElementById('typeFilter');
+  const directView=document.getElementById('directView'), tierView=document.getElementById('tierView');
   const types=[...new Set(graph.nodes.map(n=>n.type))].sort();
   const legend=document.getElementById('legend');
   for(const t of types){
@@ -287,7 +406,7 @@ function initGraph(graph){
   const trunc=(v,m)=>v.length>m?v.slice(0,m-1)+'...':v;
   const edgeEls=links.map(link=>{
     const p=document.createElementNS(ns,'path');p.classList.add('link');p.setAttribute('marker-end','url(#arrow)');eL.appendChild(p);
-    const t=document.createElementNS(ns,'text');t.classList.add('link-label');t.textContent=link.label;lL.appendChild(t);
+    const t=document.createElementNS(ns,'text');t.classList.add('link-label');t.textContent=relationshipDisplay(link.label);lL.appendChild(t);
     return{path:p,label:t,link};});
   const nodeEls=nodes.map(node=>{
     const grp=document.createElementNS(ns,'g');grp.classList.add('node');
@@ -295,7 +414,7 @@ function initGraph(graph){
     const t=document.createElementNS(ns,'text');t.setAttribute('x',rad(node)+4);t.setAttribute('y',3);t.textContent=trunc(node.label,32);
     grp.append(c,t);grp.addEventListener('click',()=>sel(node));nL.appendChild(grp);return{group:grp,node};});
   seed(nodes,W(),H());layout(nodes,links,W(),H(),420);tick();
-  search.oninput=filt;typeFilter.onchange=filt;
+  search.oninput=filt;typeFilter.onchange=filt;directView.onchange=filt;tierView.onchange=()=>{edgeEls.forEach(({label,link})=>label.textContent=tierView.checked?`${relationshipDisplay(link.label)} (${relationshipTier(link.label).replace('Tier ','T')})`:relationshipDisplay(link.label));};
   let pan=false,last=null;
   svg.addEventListener('pointerdown',e=>{if(e.target.closest('.node'))return;pan=true;last={x:e.clientX,y:e.clientY};svg.setPointerCapture(e.pointerId);});
   svg.addEventListener('pointermove',e=>{if(!pan)return;tf.x+=e.clientX-last.x;tf.y+=e.clientY-last.y;last={x:e.clientX,y:e.clientY};upd();});
@@ -308,10 +427,11 @@ function initGraph(graph){
       label.setAttribute('x',(link.source.x+link.target.x)/2);label.setAttribute('y',(link.source.y+link.target.y)/2-4);}
     for(const{group,node}of nodeEls)group.setAttribute('transform','translate('+node.x+','+node.y+')');}
   function sel(node){selected=node;
-    details.innerHTML='<b>'+esc(node.label)+'</b><div style="color:var(--muted);font-size:12px">'+esc(node.type)+' &middot; '+esc(node.id)+'</div><pre>'+esc(JSON.stringify(node.data,null,2))+'</pre>';filt();}
+    const connected=links.filter(l=>l.source.id===node.id||l.target.id===node.id);
+    details.innerHTML='<b>'+esc(node.label)+'</b><div style="color:var(--muted);font-size:12px">'+esc(node.type)+' &middot; '+esc(node.id)+'</div><pre>'+esc(JSON.stringify(node.data,null,2))+'</pre><div style="font-size:12px"><b>Connected relationship provenance</b>'+connected.slice(0,8).map(l=>`<div class="rel-card"><b>${esc(relationshipDisplay(l.label))}</b> <span class="pill ${relationshipTier(l.label)==='Tier 1'?'high':'moderate'}">${relationshipTier(l.label)}</span><br><code>${esc(l.source.id)}</code> &rarr; <code>${esc(l.target.id)}</code><br><span class="small">${esc(relationshipProvenance(l))}</span></div>`).join('')+'</div>';filt();}
   function filt(){
     const q=search.value.trim().toLowerCase(),ty=typeFilter.value;
-    const vis=new Set(nodes.filter(n=>{const t=(n.id+' '+n.label+' '+n.type).toLowerCase();return(!q||t.includes(q))&&(!ty||n.type===ty);}).map(n=>n.id));
+    const vis=new Set(nodes.filter(n=>{const t=(n.id+' '+n.label+' '+n.type).toLowerCase();const directOk=!directView.checked||n.type!=='Association';return directOk&&(!q||t.includes(q))&&(!ty||n.type===ty);}).map(n=>n.id));
     const rel=selected?adj.get(selected.id):null;
     for(const it of nodeEls){const f=!vis.has(it.node.id),u=selected&&it.node.id!==selected.id&&!rel.has(it.node.id);
       it.group.classList.toggle('dim',f||u);it.group.classList.toggle('selected',selected&&it.node.id===selected.id);}
