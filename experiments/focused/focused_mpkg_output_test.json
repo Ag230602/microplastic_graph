@@ -1,0 +1,1025 @@
+{
+  "experiment": "focused evidence-first anti-hallucination test",
+  "source_graph": "mpkg_output_v2.json",
+  "selection_rule": "6 selected Evidence nodes plus only their provenance and local reasoning-chain context",
+  "selected_evidence": [
+    "evidence_mouse_liver_accumulation",
+    "evidence_mouse_brain_cytokines",
+    "evidence_mouse_brain_caspase3",
+    "evidence_earthworm_uptake",
+    "evidence_zebra_mussel_accumulation",
+    "evidence_celegans_effects"
+  ],
+  "entities": [
+    {
+      "id": "study_neurotoxicity_following_exposure_review",
+      "type": "Study",
+      "title": "Neurotoxicity Following Exposure to Micro and Nanoplastics",
+      "design": "review",
+      "exposure_context": "neurotoxic implications of nanoplastics across various species and in vitro settings",
+      "notes": "The review includes studies published between 2015 and 2024."
+    },
+    {
+      "id": "polymer_polystyrene",
+      "type": "Polymer",
+      "name": "polystyrene",
+      "synonyms": [
+        "PS"
+      ]
+    },
+    {
+      "id": "polymer_amino_modified_polystyrene",
+      "type": "Polymer",
+      "name": "amino-modified polystyrene",
+      "synonyms": [
+        "PS-NH2"
+      ]
+    },
+    {
+      "id": "polymer_low_density_polyethylene",
+      "type": "Polymer",
+      "name": "low-density polyethylene",
+      "synonyms": [
+        "LDPE"
+      ]
+    },
+    {
+      "id": "shape_bead",
+      "type": "Shape",
+      "label": "bead",
+      "synonyms": [
+        "microbead"
+      ]
+    },
+    {
+      "id": "shape_spherical",
+      "type": "Shape",
+      "label": "spherical",
+      "synonyms": [
+        "spherical"
+      ]
+    },
+    {
+      "id": "size_0_1_to_5_um",
+      "type": "ParticleSizeClass",
+      "label": "0.1-5 μm",
+      "min_micrometer": 0.1,
+      "max_micrometer": 5,
+      "bin_type": "micro"
+    },
+    {
+      "id": "size_100_to_200_um",
+      "type": "ParticleSizeClass",
+      "label": "100-200 μm",
+      "min_micrometer": 100,
+      "max_micrometer": 200,
+      "bin_type": "micro"
+    },
+    {
+      "id": "size_1_um",
+      "type": "ParticleSizeClass",
+      "label": "1 μm",
+      "min_micrometer": 1,
+      "max_micrometer": 1,
+      "bin_type": "micro"
+    },
+    {
+      "id": "size_10_um",
+      "type": "ParticleSizeClass",
+      "label": "10 μm",
+      "min_micrometer": 10,
+      "max_micrometer": 10,
+      "bin_type": "micro"
+    },
+    {
+      "id": "size_5_um",
+      "type": "ParticleSizeClass",
+      "label": "5 μm",
+      "min_micrometer": 5,
+      "max_micrometer": 5,
+      "bin_type": "micro"
+    },
+    {
+      "id": "method_fluorescence_spectrometer",
+      "type": "Method",
+      "method_class": "fluorescence spectrometer analysis",
+      "identification_capability": "confirmed absorption and presence of particles in freeze-dried tissues"
+    },
+    {
+      "id": "method_confocal_microscopy",
+      "type": "Method",
+      "method_class": "confocal microscopy",
+      "identification_capability": "observed accumulation of particles"
+    },
+    {
+      "id": "biomarker_caspase_3",
+      "type": "Biomarker",
+      "name": "caspase-3 signals",
+      "tissue_matrix": "mouse brain tissue",
+      "direction_of_change": "increase",
+      "citations_ref": [
+        "[41]"
+      ]
+    },
+    {
+      "id": "biomarker_tnf_alpha",
+      "type": "Biomarker",
+      "name": "TNF-α",
+      "tissue_matrix": "mouse brain tissue",
+      "direction_of_change": "increase",
+      "citations_ref": [
+        "[41]"
+      ]
+    },
+    {
+      "id": "biomarker_il_6",
+      "type": "Biomarker",
+      "name": "IL-6",
+      "tissue_matrix": "mouse brain tissue",
+      "direction_of_change": "increase",
+      "citations_ref": [
+        "[41]"
+      ]
+    },
+    {
+      "id": "mechanism_inflammation",
+      "type": "Mechanism",
+      "label": "inflammation",
+      "evidence_type": "review",
+      "key_biomarkers": [
+        "TNF-α",
+        "IL-6"
+      ],
+      "notes": "The paper reports upregulated TNF-α and IL-6 in mouse brain tissues exposed to PS-NH2."
+    },
+    {
+      "id": "mechanism_apoptosis",
+      "type": "Mechanism",
+      "label": "other",
+      "evidence_type": "review",
+      "key_biomarkers": [
+        "caspase-3 signals"
+      ],
+      "notes": "Apoptosis (neuron cell death): caspase-3, a marker for neuron cell apoptosis, showed increased signals in mouse brain tissues exposed to PS-NH2.",
+      "citations_ref": [
+        "[41]"
+      ]
+    },
+    {
+      "id": "outcome_lower_survival_lifespan",
+      "type": "ClinicalOutcome",
+      "label": "lowered survival rates and decreased average lifespan",
+      "outcome_type": "other",
+      "strength_of_evidence": "limited",
+      "causal_confidence": "low",
+      "notes": "Caenorhabditis elegans exposed to spherical polystyrene microplastics showed lowered survival rates and decreased average lifespan."
+    },
+    {
+      "id": "tissue_brain",
+      "type": "TissueOrgan",
+      "label": "brain",
+      "species": "mouse",
+      "vulnerability_notes": "Mouse brain tissues exposed to PS-NH2 showed increased caspase-3 signals and upregulated TNF-α and IL-6.",
+      "citations_ref": [
+        "[41]"
+      ]
+    },
+    {
+      "id": "tissue_liver",
+      "type": "TissueOrgan",
+      "label": "liver",
+      "species": "mouse",
+      "vulnerability_notes": "Mouse liver showed dose-dependent alterations in energy metabolism, including reduced ATP levels and elevated LDH activity.",
+      "citations_ref": [
+        "[42]"
+      ]
+    },
+    {
+      "id": "tissue_kidney",
+      "type": "TissueOrgan",
+      "label": "kidney",
+      "vulnerability_notes": "Mouse kidney is reported as a particle-accumulation site after oral polystyrene microplastic exposure.",
+      "citations_ref": [
+        "[42]"
+      ]
+    },
+    {
+      "id": "tissue_gut",
+      "type": "TissueOrgan",
+      "label": "gut",
+      "vulnerability_notes": "Gut or digestive tract is repeatedly reported as a particle-accumulation site across mouse and aquatic invertebrate studies.",
+      "citations_ref": [
+        "[42]",
+        "[86]",
+        "[89]",
+        "[90]"
+      ]
+    },
+    {
+      "id": "tissue_hemolymph",
+      "type": "TissueOrgan",
+      "label": "hemolymph",
+      "vulnerability_notes": "Hemolymph or hemolymphatic sinuses are reported as particle-detection sites in bivalve studies.",
+      "citations_ref": [
+        "[86]",
+        "[87]",
+        "[89]",
+        "[90]"
+      ]
+    },
+    {
+      "id": "exposure_oral",
+      "type": "ExposurePathway",
+      "pathway_label": "ingestion",
+      "route": "oral",
+      "population_context": "humans, fish, and mammals",
+      "assumptions_notes": "The conclusions list ingestion among exposure routes; particles can be taken in by aquatic beings and mammals."
+    },
+    {
+      "id": "exposure_waterborne",
+      "type": "ExposurePathway",
+      "pathway_label": "waterborne uptake (ingestion/gill contact)",
+      "route": "oral",
+      "population_context": "aquatic organisms (fish, mussels, clams, crustacean larvae)",
+      "assumptions_notes": "Aquatic species were exposed to microplastics suspended in their surrounding water; particles were recovered from gut lumen, digestive gland, gills, and hemolymph."
+    },
+    {
+      "id": "exposure_soil_contact",
+      "type": "ExposurePathway",
+      "pathway_label": "soil contact and ingestion",
+      "route": "dermal",
+      "population_context": "soil invertebrates (earthworm)",
+      "assumptions_notes": "Earthworms were exposed to LDPE particles within artificial soil; uptake was confirmed and skin damage observed.",
+      "citations_ref": [
+        "[85]"
+      ]
+    },
+    {
+      "id": "compartment_food",
+      "type": "EnvironmentalCompartment",
+      "label": "food",
+      "subcompartment": "dietary intake matrix"
+    },
+    {
+      "id": "compartment_soil",
+      "type": "EnvironmentalCompartment",
+      "label": "soil",
+      "subcompartment": "artificial soil (earthworm exposure medium)"
+    },
+    {
+      "id": "compartment_freshwater",
+      "type": "EnvironmentalCompartment",
+      "label": "freshwater",
+      "subcompartment": "freshwater exposure medium for zebra mussels and Asian clams"
+    },
+    {
+      "id": "obs_mouse_liver_5um_ps_concentration",
+      "type": "Observation",
+      "metric_type": "concentration",
+      "value": "approximately 0.2",
+      "unit": "mg/g",
+      "notes": "During the initial week of exposure, 5 μm polystyrene particle concentrations stabilized at approximately 0.2 mg/g in liver."
+    },
+    {
+      "id": "obs_mouse_kidney_5um_ps_concentration",
+      "type": "Observation",
+      "metric_type": "concentration",
+      "value": "approximately 1.0",
+      "unit": "mg/g",
+      "notes": "During the initial week of exposure, 5 μm polystyrene particle concentrations stabilized at approximately 1.0 mg/g in kidney."
+    },
+    {
+      "id": "obs_mouse_gut_5um_ps_concentration",
+      "type": "Observation",
+      "metric_type": "concentration",
+      "value": "approximately 1.4",
+      "unit": "mg/g",
+      "notes": "During the initial week of exposure, 5 μm polystyrene particle concentrations stabilized at approximately 1.4 mg/g in gut."
+    },
+    {
+      "id": "obs_earthworm_polyethylene_uptake",
+      "type": "Observation",
+      "metric_type": "presence_absence",
+      "value": "detected",
+      "unit": "categorical",
+      "notes": "Polyethylene particle uptake was confirmed after 14-28 days at 1.5 g/kg soil."
+    },
+    {
+      "id": "obs_zebra_mussel_polystyrene_microbeads_accumulation",
+      "type": "Observation",
+      "metric_type": "presence_absence",
+      "value": "detected",
+      "unit": "categorical",
+      "notes": "Dreissena polymorpha exposed to pristine polystyrene microbeads of 1 μm and 10 μm at concentrations of 1 and 4 × 10^6 MPs/L for six days showed accumulation of particles within the gut lumen and further movement to tissues and hemolymph."
+    },
+    {
+      "id": "obs_mouse_brain_caspase3_increased",
+      "type": "Observation",
+      "metric_type": "presence_absence",
+      "value": "increased",
+      "unit": "categorical",
+      "notes": "Mouse brain tissues exposed to PS-NH2 showed increased caspase-3 signals."
+    },
+    {
+      "id": "obs_mouse_brain_tnf_il6_upregulated",
+      "type": "Observation",
+      "metric_type": "presence_absence",
+      "value": "increased",
+      "unit": "categorical",
+      "notes": "Mouse brain tissues exposed to PS-NH2 showed TNF-α and IL-6 upregulation."
+    },
+    {
+      "id": "obs_celegans_polystyrene_exposure_effects",
+      "type": "Observation",
+      "metric_type": "presence_absence",
+      "value": "reported",
+      "unit": "categorical",
+      "notes": "Caenorhabditis elegans exposed to spherical polystyrene microplastics (0.1-5 μm, 1 mg/L) showed movement effects, lowered survival rates, decreased average lifespan, and neuronal gene-expression changes; the review notes no direct proof of ingestion."
+    },
+    {
+      "id": "study_ref_41",
+      "type": "Study",
+      "title": "Primary study [41]: PS-NH2 neurotoxicity in mouse brain",
+      "design": "in_vivo",
+      "species": "mouse",
+      "evidence_strength": "limited",
+      "notes": "Primary study cited by the review. Mouse brain tissues exposed to PS-NH2 showed increased caspase-3 signals and upregulated TNF-alpha and IL-6.",
+      "citations_ref": [
+        "[41]"
+      ]
+    },
+    {
+      "id": "study_ref_42",
+      "type": "Study",
+      "title": "Primary study [42]: polystyrene microplastics in mice (oral gavage)",
+      "design": "in_vivo",
+      "species": "mouse",
+      "exposure_context": "chronic 30-day oral gavage, 5 and 20 um polystyrene microplastics",
+      "evidence_strength": "limited",
+      "notes": "The solely published mice in vivo study cited by the review; particles accumulated in gut, liver, and kidneys.",
+      "citations_ref": [
+        "[42]"
+      ]
+    },
+    {
+      "id": "study_ref_85",
+      "type": "Study",
+      "title": "Primary study [85]: LDPE neurotoxicity in earthworms (Eisenia fetida)",
+      "design": "in_vivo",
+      "species": "Eisenia fetida",
+      "exposure_context": "low-density polyethylene 100-200 um, 0.1-1.5 g/kg soil, up to 28 days",
+      "evidence_strength": "limited",
+      "notes": "Primary study cited by the review; confirmed polyethylene uptake and oxidative stress markers.",
+      "citations_ref": [
+        "[85]"
+      ]
+    },
+    {
+      "id": "study_ref_86",
+      "type": "Study",
+      "title": "Primary study [86]: polystyrene microbeads in zebra mussels (Dreissena polymorpha)",
+      "design": "in_vivo",
+      "species": "Dreissena polymorpha",
+      "exposure_context": "pristine polystyrene microbeads 1 and 10 um, 1 and 4 x 10^6 MPs/L, six days",
+      "evidence_strength": "limited",
+      "notes": "Primary study cited by the review; particles accumulated but caused no genotoxic effects.",
+      "citations_ref": [
+        "[86]"
+      ]
+    },
+    {
+      "id": "study_ref_83_84",
+      "type": "Study",
+      "title": "Primary studies [83,84]: spherical polystyrene exposure in C. elegans",
+      "design": "in_vivo",
+      "species": "Caenorhabditis elegans",
+      "exposure_context": "spherical polystyrene microplastics, 0.1-5 um, 1 mg/L culture medium",
+      "evidence_strength": "limited",
+      "notes": "Primary studies cited by the review; movement, survival, lifespan, neuronal gene, and oxidative-stress findings were summarized, with no direct proof of ingestion.",
+      "citations_ref": [
+        "[83]",
+        "[84]"
+      ]
+    },
+    {
+      "id": "host_mouse",
+      "type": "HostPopulation",
+      "label": "Mouse",
+      "organism_class": "mammal",
+      "scientific_name": "Mus musculus",
+      "model_type": "in_vivo",
+      "translational_relevance": "medium",
+      "notes": "Adult mice exposed to polystyrene microplastics (5 and 20 um) and PS-NH2.",
+      "citations_ref": [
+        "[41]",
+        "[42]"
+      ]
+    },
+    {
+      "id": "host_c_elegans",
+      "type": "HostPopulation",
+      "label": "C. elegans",
+      "organism_class": "invertebrate",
+      "scientific_name": "Caenorhabditis elegans",
+      "model_type": "in_vivo",
+      "translational_relevance": "low",
+      "notes": "Exposed to spherical polystyrene microplastics (0.1-5 um) at 1 mg/L; excitotoxicity, lowered survival, decreased lifespan.",
+      "citations_ref": [
+        "[83]",
+        "[84]"
+      ]
+    },
+    {
+      "id": "host_earthworm",
+      "type": "HostPopulation",
+      "label": "Earthworm",
+      "organism_class": "invertebrate",
+      "scientific_name": "Eisenia fetida",
+      "model_type": "in_vivo",
+      "translational_relevance": "low",
+      "notes": "Exposed to LDPE particles (100-200 um) in artificial soil; skin damage and oxidative stress markers.",
+      "citations_ref": [
+        "[85]"
+      ]
+    },
+    {
+      "id": "host_zebra_mussel",
+      "type": "HostPopulation",
+      "label": "Zebra mussel",
+      "organism_class": "invertebrate",
+      "scientific_name": "Dreissena polymorpha",
+      "model_type": "in_vivo",
+      "translational_relevance": "low",
+      "notes": "Exposed to polystyrene microbeads (1 and 10 um); particle accumulation, increased dopamine, no genotoxicity.",
+      "citations_ref": [
+        "[86]"
+      ]
+    },
+    {
+      "id": "evidence_mouse_liver_accumulation",
+      "type": "Evidence",
+      "text": "The exposure to polystyrene microplastics led to the absorption and presence of particles in the mice's gut, liver, and kidneys, confirmed via fluorescence spectrometer analysis of freeze-dried tissues.",
+      "study_ref": "study_ref_42",
+      "section": "8. Neurotoxic Effects in Rodents",
+      "quote_verbatim": true,
+      "evidence_type": "in_vivo",
+      "confidence": "high",
+      "citations_ref": [
+        "[42]"
+      ]
+    },
+    {
+      "id": "evidence_mouse_brain_caspase3",
+      "type": "Evidence",
+      "text": "Mouse brain tissues exposed to PS-NH2 showed increased caspase-3 signals, a marker for neuron cell apoptosis.",
+      "study_ref": "study_ref_41",
+      "section": "5. Effects on the Nervous System",
+      "quote_verbatim": true,
+      "evidence_type": "in_vivo",
+      "confidence": "high",
+      "citations_ref": [
+        "[41]"
+      ]
+    },
+    {
+      "id": "evidence_mouse_brain_cytokines",
+      "type": "Evidence",
+      "text": "Cytokines like TNF-alpha and IL-6 were upregulated in these tissues, hinting at inflammation caused by cytokine presence.",
+      "study_ref": "study_ref_41",
+      "section": "5. Effects on the Nervous System",
+      "quote_verbatim": true,
+      "evidence_type": "in_vivo",
+      "confidence": "high",
+      "citations_ref": [
+        "[41]"
+      ]
+    },
+    {
+      "id": "evidence_earthworm_uptake",
+      "type": "Evidence",
+      "text": "Upon analyzing and quantifying polyethylene particles, their uptake (after 14-28 days at 1.5 g/kg soil) was confirmed.",
+      "study_ref": "study_ref_85",
+      "section": "7. Neurotoxic Effects on Marine Invertebrates",
+      "quote_verbatim": true,
+      "evidence_type": "in_vivo",
+      "confidence": "high",
+      "citations_ref": [
+        "[85]"
+      ]
+    },
+    {
+      "id": "evidence_zebra_mussel_accumulation",
+      "type": "Evidence",
+      "text": "This led to the accumulation of particles within the gut lumen and further movement to tissues and hemolymph, as observed with confocal microscopy.",
+      "study_ref": "study_ref_86",
+      "section": "7. Neurotoxic Effects on Marine Invertebrates",
+      "quote_verbatim": true,
+      "evidence_type": "in_vivo",
+      "confidence": "high",
+      "citations_ref": [
+        "[86]"
+      ]
+    },
+    {
+      "id": "evidence_celegans_effects",
+      "type": "Evidence",
+      "text": "Caenorhabditis elegans were subjected to five different spherical polystyrene microplastic sizes (0.1-5 μm) in a culture medium at 1 mg/L concentration. This led to excitotoxicity affecting their movement, lowered survival rates, and decreased average lifespan, with the most pronounced effects observed with exposure to 1.0 μm size particles.",
+      "study_ref": "study_ref_83_84",
+      "section": "7. Neurotoxic Effects on Marine Invertebrates",
+      "quote_verbatim": true,
+      "evidence_type": "in_vivo",
+      "confidence": "high",
+      "citations_ref": [
+        "[83]",
+        "[84]"
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "source_id": "study_ref_42",
+      "relation_type": "provides",
+      "target_id": "evidence_mouse_liver_accumulation"
+    },
+    {
+      "source_id": "evidence_mouse_liver_accumulation",
+      "relation_type": "supports",
+      "target_id": "obs_mouse_liver_5um_ps_concentration"
+    },
+    {
+      "source_id": "evidence_mouse_liver_accumulation",
+      "relation_type": "supports",
+      "target_id": "obs_mouse_kidney_5um_ps_concentration"
+    },
+    {
+      "source_id": "evidence_mouse_liver_accumulation",
+      "relation_type": "supports",
+      "target_id": "obs_mouse_gut_5um_ps_concentration"
+    },
+    {
+      "source_id": "study_ref_41",
+      "relation_type": "provides",
+      "target_id": "evidence_mouse_brain_cytokines"
+    },
+    {
+      "source_id": "evidence_mouse_brain_cytokines",
+      "relation_type": "supports",
+      "target_id": "obs_mouse_brain_tnf_il6_upregulated"
+    },
+    {
+      "source_id": "study_ref_41",
+      "relation_type": "provides",
+      "target_id": "evidence_mouse_brain_caspase3"
+    },
+    {
+      "source_id": "evidence_mouse_brain_caspase3",
+      "relation_type": "supports",
+      "target_id": "obs_mouse_brain_caspase3_increased"
+    },
+    {
+      "source_id": "study_ref_85",
+      "relation_type": "provides",
+      "target_id": "evidence_earthworm_uptake"
+    },
+    {
+      "source_id": "evidence_earthworm_uptake",
+      "relation_type": "supports",
+      "target_id": "obs_earthworm_polyethylene_uptake"
+    },
+    {
+      "source_id": "study_ref_86",
+      "relation_type": "provides",
+      "target_id": "evidence_zebra_mussel_accumulation"
+    },
+    {
+      "source_id": "evidence_zebra_mussel_accumulation",
+      "relation_type": "supports",
+      "target_id": "obs_zebra_mussel_polystyrene_microbeads_accumulation"
+    },
+    {
+      "source_id": "study_ref_83_84",
+      "relation_type": "provides",
+      "target_id": "evidence_celegans_effects"
+    },
+    {
+      "source_id": "evidence_celegans_effects",
+      "relation_type": "supports",
+      "target_id": "obs_celegans_polystyrene_exposure_effects"
+    },
+    {
+      "source_id": "study_neurotoxicity_following_exposure_review",
+      "relation_type": "reports",
+      "target_id": "obs_mouse_liver_5um_ps_concentration"
+    },
+    {
+      "source_id": "study_neurotoxicity_following_exposure_review",
+      "relation_type": "reports",
+      "target_id": "obs_mouse_kidney_5um_ps_concentration"
+    },
+    {
+      "source_id": "study_neurotoxicity_following_exposure_review",
+      "relation_type": "reports",
+      "target_id": "obs_mouse_gut_5um_ps_concentration"
+    },
+    {
+      "source_id": "study_neurotoxicity_following_exposure_review",
+      "relation_type": "reports",
+      "target_id": "obs_earthworm_polyethylene_uptake"
+    },
+    {
+      "source_id": "study_neurotoxicity_following_exposure_review",
+      "relation_type": "reports",
+      "target_id": "obs_zebra_mussel_polystyrene_microbeads_accumulation"
+    },
+    {
+      "source_id": "study_neurotoxicity_following_exposure_review",
+      "relation_type": "reports",
+      "target_id": "obs_mouse_brain_caspase3_increased"
+    },
+    {
+      "source_id": "study_neurotoxicity_following_exposure_review",
+      "relation_type": "reports",
+      "target_id": "obs_mouse_brain_tnf_il6_upregulated"
+    },
+    {
+      "source_id": "obs_mouse_liver_5um_ps_concentration",
+      "relation_type": "identified_by",
+      "target_id": "method_fluorescence_spectrometer"
+    },
+    {
+      "source_id": "obs_mouse_kidney_5um_ps_concentration",
+      "relation_type": "identified_by",
+      "target_id": "method_fluorescence_spectrometer"
+    },
+    {
+      "source_id": "obs_mouse_gut_5um_ps_concentration",
+      "relation_type": "identified_by",
+      "target_id": "method_fluorescence_spectrometer"
+    },
+    {
+      "source_id": "obs_zebra_mussel_polystyrene_microbeads_accumulation",
+      "relation_type": "identified_by",
+      "target_id": "method_confocal_microscopy"
+    },
+    {
+      "source_id": "obs_mouse_liver_5um_ps_concentration",
+      "relation_type": "has_polymer",
+      "target_id": "polymer_polystyrene"
+    },
+    {
+      "source_id": "obs_mouse_kidney_5um_ps_concentration",
+      "relation_type": "has_polymer",
+      "target_id": "polymer_polystyrene"
+    },
+    {
+      "source_id": "obs_mouse_gut_5um_ps_concentration",
+      "relation_type": "has_polymer",
+      "target_id": "polymer_polystyrene"
+    },
+    {
+      "source_id": "obs_earthworm_polyethylene_uptake",
+      "relation_type": "has_polymer",
+      "target_id": "polymer_low_density_polyethylene"
+    },
+    {
+      "source_id": "obs_zebra_mussel_polystyrene_microbeads_accumulation",
+      "relation_type": "has_polymer",
+      "target_id": "polymer_polystyrene"
+    },
+    {
+      "source_id": "obs_mouse_brain_caspase3_increased",
+      "relation_type": "has_polymer",
+      "target_id": "polymer_amino_modified_polystyrene"
+    },
+    {
+      "source_id": "obs_mouse_brain_tnf_il6_upregulated",
+      "relation_type": "has_polymer",
+      "target_id": "polymer_amino_modified_polystyrene"
+    },
+    {
+      "source_id": "obs_mouse_liver_5um_ps_concentration",
+      "relation_type": "has_size_class",
+      "target_id": "size_5_um"
+    },
+    {
+      "source_id": "obs_mouse_kidney_5um_ps_concentration",
+      "relation_type": "has_size_class",
+      "target_id": "size_5_um"
+    },
+    {
+      "source_id": "obs_mouse_gut_5um_ps_concentration",
+      "relation_type": "has_size_class",
+      "target_id": "size_5_um"
+    },
+    {
+      "source_id": "obs_earthworm_polyethylene_uptake",
+      "relation_type": "has_size_class",
+      "target_id": "size_100_to_200_um"
+    },
+    {
+      "source_id": "obs_zebra_mussel_polystyrene_microbeads_accumulation",
+      "relation_type": "has_size_class",
+      "target_id": "size_1_um"
+    },
+    {
+      "source_id": "obs_zebra_mussel_polystyrene_microbeads_accumulation",
+      "relation_type": "has_size_class",
+      "target_id": "size_10_um"
+    },
+    {
+      "source_id": "obs_zebra_mussel_polystyrene_microbeads_accumulation",
+      "relation_type": "has_shape",
+      "target_id": "shape_bead"
+    },
+    {
+      "source_id": "study_ref_83_84",
+      "relation_type": "reports",
+      "target_id": "obs_celegans_polystyrene_exposure_effects"
+    },
+    {
+      "source_id": "study_ref_42",
+      "relation_type": "reports",
+      "target_id": "obs_mouse_liver_5um_ps_concentration"
+    },
+    {
+      "source_id": "study_ref_42",
+      "relation_type": "reports",
+      "target_id": "obs_mouse_kidney_5um_ps_concentration"
+    },
+    {
+      "source_id": "study_ref_42",
+      "relation_type": "reports",
+      "target_id": "obs_mouse_gut_5um_ps_concentration"
+    },
+    {
+      "source_id": "study_ref_41",
+      "relation_type": "reports",
+      "target_id": "obs_mouse_brain_caspase3_increased"
+    },
+    {
+      "source_id": "study_ref_41",
+      "relation_type": "reports",
+      "target_id": "obs_mouse_brain_tnf_il6_upregulated"
+    },
+    {
+      "source_id": "study_ref_85",
+      "relation_type": "reports",
+      "target_id": "obs_earthworm_polyethylene_uptake"
+    },
+    {
+      "source_id": "study_ref_86",
+      "relation_type": "reports",
+      "target_id": "obs_zebra_mussel_polystyrene_microbeads_accumulation"
+    },
+    {
+      "source_id": "obs_celegans_polystyrene_exposure_effects",
+      "relation_type": "has_polymer",
+      "target_id": "polymer_polystyrene"
+    },
+    {
+      "source_id": "obs_celegans_polystyrene_exposure_effects",
+      "relation_type": "has_size_class",
+      "target_id": "size_0_1_to_5_um"
+    },
+    {
+      "source_id": "obs_celegans_polystyrene_exposure_effects",
+      "relation_type": "has_shape",
+      "target_id": "shape_spherical"
+    },
+    {
+      "source_id": "obs_mouse_liver_5um_ps_concentration",
+      "relation_type": "about",
+      "target_id": "compartment_food"
+    },
+    {
+      "source_id": "obs_mouse_kidney_5um_ps_concentration",
+      "relation_type": "about",
+      "target_id": "compartment_food"
+    },
+    {
+      "source_id": "obs_mouse_gut_5um_ps_concentration",
+      "relation_type": "about",
+      "target_id": "compartment_food"
+    },
+    {
+      "source_id": "obs_earthworm_polyethylene_uptake",
+      "relation_type": "about",
+      "target_id": "compartment_soil"
+    },
+    {
+      "source_id": "obs_zebra_mussel_polystyrene_microbeads_accumulation",
+      "relation_type": "about",
+      "target_id": "compartment_freshwater"
+    },
+    {
+      "source_id": "obs_celegans_polystyrene_exposure_effects",
+      "relation_type": "about",
+      "target_id": "compartment_food"
+    },
+    {
+      "source_id": "obs_mouse_liver_5um_ps_concentration",
+      "relation_type": "affects",
+      "target_id": "tissue_liver"
+    },
+    {
+      "source_id": "obs_mouse_kidney_5um_ps_concentration",
+      "relation_type": "affects",
+      "target_id": "tissue_kidney"
+    },
+    {
+      "source_id": "obs_mouse_gut_5um_ps_concentration",
+      "relation_type": "affects",
+      "target_id": "tissue_gut"
+    },
+    {
+      "source_id": "obs_zebra_mussel_polystyrene_microbeads_accumulation",
+      "relation_type": "affects",
+      "target_id": "tissue_gut"
+    },
+    {
+      "source_id": "obs_zebra_mussel_polystyrene_microbeads_accumulation",
+      "relation_type": "affects",
+      "target_id": "tissue_hemolymph"
+    },
+    {
+      "source_id": "obs_mouse_brain_caspase3_increased",
+      "relation_type": "affects",
+      "target_id": "tissue_brain"
+    },
+    {
+      "source_id": "obs_mouse_brain_tnf_il6_upregulated",
+      "relation_type": "affects",
+      "target_id": "tissue_brain"
+    },
+    {
+      "source_id": "mechanism_inflammation",
+      "relation_type": "evidenced_by",
+      "target_id": "biomarker_tnf_alpha"
+    },
+    {
+      "source_id": "mechanism_inflammation",
+      "relation_type": "evidenced_by",
+      "target_id": "biomarker_il_6"
+    },
+    {
+      "source_id": "mechanism_apoptosis",
+      "relation_type": "evidenced_by",
+      "target_id": "biomarker_caspase_3"
+    },
+    {
+      "source_id": "biomarker_caspase_3",
+      "relation_type": "measured_in",
+      "target_id": "tissue_brain"
+    },
+    {
+      "source_id": "biomarker_tnf_alpha",
+      "relation_type": "measured_in",
+      "target_id": "tissue_brain"
+    },
+    {
+      "source_id": "biomarker_il_6",
+      "relation_type": "measured_in",
+      "target_id": "tissue_brain"
+    },
+    {
+      "source_id": "study_ref_41",
+      "relation_type": "investigates",
+      "target_id": "host_mouse"
+    },
+    {
+      "source_id": "study_ref_42",
+      "relation_type": "investigates",
+      "target_id": "host_mouse"
+    },
+    {
+      "source_id": "study_ref_85",
+      "relation_type": "investigates",
+      "target_id": "host_earthworm"
+    },
+    {
+      "source_id": "study_ref_86",
+      "relation_type": "investigates",
+      "target_id": "host_zebra_mussel"
+    },
+    {
+      "source_id": "study_neurotoxicity_following_exposure_review",
+      "relation_type": "investigates",
+      "target_id": "host_c_elegans"
+    },
+    {
+      "source_id": "exposure_oral",
+      "relation_type": "exposes",
+      "target_id": "host_mouse"
+    },
+    {
+      "source_id": "host_c_elegans",
+      "relation_type": "experiences",
+      "target_id": "outcome_lower_survival_lifespan"
+    },
+    {
+      "source_id": "host_mouse",
+      "relation_type": "exhibits",
+      "target_id": "biomarker_caspase_3"
+    },
+    {
+      "source_id": "host_mouse",
+      "relation_type": "exhibits",
+      "target_id": "biomarker_tnf_alpha"
+    },
+    {
+      "source_id": "host_mouse",
+      "relation_type": "exhibits",
+      "target_id": "biomarker_il_6"
+    },
+    {
+      "source_id": "compartment_food",
+      "relation_type": "contributes_to",
+      "target_id": "exposure_oral"
+    },
+    {
+      "source_id": "exposure_oral",
+      "relation_type": "originates_from",
+      "target_id": "compartment_food"
+    },
+    {
+      "source_id": "exposure_soil_contact",
+      "relation_type": "exposes",
+      "target_id": "host_earthworm"
+    },
+    {
+      "source_id": "exposure_waterborne",
+      "relation_type": "exposes",
+      "target_id": "host_zebra_mussel"
+    },
+    {
+      "source_id": "study_ref_83_84",
+      "relation_type": "investigates",
+      "target_id": "host_c_elegans"
+    },
+    {
+      "source_id": "study_ref_41",
+      "relation_type": "reports",
+      "target_id": "biomarker_caspase_3"
+    },
+    {
+      "source_id": "study_ref_41",
+      "relation_type": "reports",
+      "target_id": "biomarker_tnf_alpha"
+    },
+    {
+      "source_id": "study_ref_41",
+      "relation_type": "reports",
+      "target_id": "biomarker_il_6"
+    },
+    {
+      "source_id": "study_ref_83_84",
+      "relation_type": "reports",
+      "target_id": "outcome_lower_survival_lifespan"
+    },
+    {
+      "source_id": "compartment_food",
+      "relation_type": "contains",
+      "target_id": "polymer_polystyrene"
+    },
+    {
+      "source_id": "compartment_soil",
+      "relation_type": "contains",
+      "target_id": "polymer_low_density_polyethylene"
+    },
+    {
+      "source_id": "compartment_freshwater",
+      "relation_type": "contains",
+      "target_id": "polymer_polystyrene"
+    },
+    {
+      "source_id": "polymer_polystyrene",
+      "relation_type": "enters_via",
+      "target_id": "exposure_oral"
+    },
+    {
+      "source_id": "polymer_polystyrene",
+      "relation_type": "enters_via",
+      "target_id": "exposure_waterborne"
+    },
+    {
+      "source_id": "polymer_low_density_polyethylene",
+      "relation_type": "enters_via",
+      "target_id": "exposure_soil_contact"
+    },
+    {
+      "source_id": "polymer_amino_modified_polystyrene",
+      "relation_type": "enters_via",
+      "target_id": "exposure_oral"
+    },
+    {
+      "source_id": "host_mouse",
+      "relation_type": "activates",
+      "target_id": "mechanism_inflammation"
+    },
+    {
+      "source_id": "host_mouse",
+      "relation_type": "activates",
+      "target_id": "mechanism_apoptosis"
+    }
+  ]
+}
