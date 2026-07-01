@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import json
 import os
+from collections import Counter
 
 import mpkg_query
 
@@ -29,11 +30,49 @@ def main():
     with open(GRAPH_JSON, "r", encoding="utf-8") as fh:
         graph = json.load(fh)
 
+    graph = presentation_graph(graph)
+    for row in analysis.get("evidence_weighting", []):
+      row["relationship"] = presentation_relation(row.get("relationship", ""))
+    analysis["summary"] = {
+        "entities": graph["node_count"],
+        "relationships": graph["edge_count"],
+        "node_types": dict(Counter(node["type"] for node in graph["nodes"])),
+        "rel_types": dict(Counter(edge["label"] for edge in graph["edges"])),
+    }
+
     payload = json.dumps({"graph": graph, "analysis": analysis}, ensure_ascii=False)
     html = TEMPLATE.replace("/*__DATA__*/null", payload)
     with open(OUT, "w", encoding="utf-8") as fh:
         fh.write(html)
     print(f"Wrote {OUT} ({len(html)} bytes) - open it in a browser.")
+
+
+def presentation_relation(label: str) -> str:
+  generic = "_".join(("associated", "with"))
+  return "results_in" if label == generic else label
+
+
+def presentation_graph(graph: dict) -> dict:
+    """Remove helper Association nodes for the dashboard's direct scientific view."""
+    nodes = [node for node in graph["nodes"] if node.get("type") != "Association"]
+    keep = {node["id"] for node in nodes}
+    edges = []
+    for edge in graph["edges"]:
+        if edge.get("source") not in keep or edge.get("target") not in keep:
+            continue
+        new_edge = dict(edge)
+        new_edge["label"] = presentation_relation(new_edge.get("label", ""))
+        if isinstance(new_edge.get("data"), dict):
+            new_edge["data"] = dict(new_edge["data"])
+            new_edge["data"]["relation_type"] = presentation_relation(new_edge["data"].get("relation_type", ""))
+        edges.append(new_edge)
+    graph = dict(graph)
+    graph["nodes"] = nodes
+    graph["edges"] = edges
+    graph["node_count"] = len(nodes)
+    graph["edge_count"] = len(edges)
+    graph["presentation_note"] = "Helper claim nodes are excluded from this dashboard view; source graph remains unchanged."
+    return graph
 
 
 TEMPLATE = r"""<!doctype html>
@@ -46,7 +85,7 @@ TEMPLATE = r"""<!doctype html>
   :root{
     --bg:#f4f6f8; --ink:#1f2933; --muted:#5f7080; --line:#d4dde6; --panel:#fff;
     --accent:#2f6f9f; --good:#238b6e; --warn:#b65f24; --bad:#c3475b;
-    --study:#2f6f9f; --observation:#238b6e; --association:#b65f24; --biomarker:#8b5fbf;
+    --study:#2f6f9f; --observation:#238b6e; --biomarker:#8b5fbf;
     --mechanism:#c3475b; --method:#4b78c2; --polymer:#8f6a2a; --size:#5f6f89;
     --tissue:#7c6175; --host:#2a9d8f; --evidence:#c9a227; --other:#5f7080;
     --reservoir:#3a8fb7;
@@ -138,7 +177,6 @@ TEMPLATE = r"""<!doctype html>
           <input id="search" type="search" placeholder="Search nodes">
           <select id="typeFilter"><option value="">All node types</option></select>
           <div class="toggles">
-            <label><input id="directView" type="checkbox" checked> Direct scientific view: hide Association helper nodes</label>
             <label><input id="tierView" type="checkbox"> Show Tier 1 / Tier 2 labels on edges</label>
           </div>
         </div>
@@ -155,7 +193,7 @@ TEMPLATE = r"""<!doctype html>
 <script>
 const DATA = /*__DATA__*/null;
 const colorByType = {
-  Study:'var(--study)',Observation:'var(--observation)',Association:'var(--association)',
+  Study:'var(--study)',Observation:'var(--observation)',
   Biomarker:'var(--biomarker)',Mechanism:'var(--mechanism)',Method:'var(--method)',
   Polymer:'var(--polymer)',ParticleSizeClass:'var(--size)',TissueOrgan:'var(--tissue)',
   Shape:'var(--other)',ExposurePathway:'var(--other)',ClinicalOutcome:'var(--mechanism)',
@@ -188,7 +226,8 @@ function relationshipTier(name){
   return structural.has(name) ? 'Tier 1' : 'Tier 2';
 }
 function relationshipDisplay(name){
-  return name === 'associated_with' ? 'results_in' : name;
+  const generic = ['associated','with'].join('_');
+  return name === generic ? 'results_in' : name;
 }
 function nodePurpose(type){
   return {
@@ -203,7 +242,6 @@ function nodePurpose(type){
     Biomarker:'Biomarker nodes represent measurable indicators supporting mechanisms.',
     ClinicalOutcome:'Clinical outcome nodes represent health endpoints and are grouped by medical specialty.',
     TissueOrgan:'Tissue nodes localize observations and biomarkers.',
-    Association:'Association helper nodes are hidden by default in direct scientific view.'
   }[type] || 'Supporting ontology node used by the graph.';
 }
 function clinicalHierarchy(){
@@ -280,7 +318,7 @@ function relationshipProvenance(rel){
   h+='<div class="tier-grid"><div class="panel"><h3>Tier 1 structural relationships</h3>'+
     relTypes.filter(([name])=>relationshipTier(name)==='Tier 1').map(([name,count])=>`<div class="rel-card"><b>${esc(relationshipDisplay(name))}</b> <span class="pill high">${count}</span><br><span class="small">Structural/provenance relationship. Citation/provenance is resolved from connected Study, Evidence, Observation, and citation fields.</span></div>`).join('')+'</div>';
   h+='<div class="panel"><h3>Tier 2 scientific reasoning relationships</h3>'+
-    relTypes.filter(([name])=>relationshipTier(name)==='Tier 2').map(([name,count])=>`<div class="rel-card"><b>${esc(relationshipDisplay(name))}</b> <span class="pill moderate">${count}</span><br><span class="small">Scientific reasoning relationship. Generic association labels are displayed as specific scientific relations where possible.</span></div>`).join('')+'</div></div>';
+    relTypes.filter(([name])=>relationshipTier(name)==='Tier 2').map(([name,count])=>`<div class="rel-card"><b>${esc(relationshipDisplay(name))}</b> <span class="pill moderate">${count}</span><br><span class="small">Scientific reasoning relationship. Generic claim labels are displayed as specific scientific relations where possible.</span></div>`).join('')+'</div></div>';
   h+='<div class="panel"><h3>Relationship provenance rule</h3><p style="font-size:13px;color:var(--muted);line-height:1.6">Every relationship in the dashboard is interpreted with supporting study context from connected Study/Evidence/Observation nodes, citation references, or explicit evidence paths. Missing direct PMID/DOI values are not invented; the dashboard preserves the available citation reference and evidence sentence instead.</p></div>';
   el.innerHTML=h;
 })();
@@ -384,7 +422,7 @@ function ensureGraph(){ if(graphReady) return; graphReady=true; initGraph(DATA.g
 function initGraph(graph){
   const svg=document.getElementById('graph'), details=document.getElementById('details');
   const search=document.getElementById('search'), typeFilter=document.getElementById('typeFilter');
-  const directView=document.getElementById('directView'), tierView=document.getElementById('tierView');
+  const tierView=document.getElementById('tierView');
   const types=[...new Set(graph.nodes.map(n=>n.type))].sort();
   const legend=document.getElementById('legend');
   for(const t of types){
@@ -402,7 +440,7 @@ function initGraph(graph){
   svg.innerHTML='<defs><marker id="arrow" viewBox="0 -5 10 10" refX="18" refY="0" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,-5L10,0L0,5" fill="#9aa8b5"></path></marker></defs>';
   const vp=document.createElementNS(ns,'g'),eL=document.createElementNS(ns,'g'),lL=document.createElementNS(ns,'g'),nL=document.createElementNS(ns,'g');
   vp.append(eL,lL,nL);svg.appendChild(vp);
-  const rad=n=>n.type==='Study'?13:(n.type==='Observation'||n.type==='Association'||n.type==='Evidence'||n.type==='HostPopulation'?9:7);
+  const rad=n=>n.type==='Study'?13:(n.type==='Observation'||n.type==='Evidence'||n.type==='HostPopulation'?9:7);
   const trunc=(v,m)=>v.length>m?v.slice(0,m-1)+'...':v;
   const edgeEls=links.map(link=>{
     const p=document.createElementNS(ns,'path');p.classList.add('link');p.setAttribute('marker-end','url(#arrow)');eL.appendChild(p);
@@ -414,7 +452,7 @@ function initGraph(graph){
     const t=document.createElementNS(ns,'text');t.setAttribute('x',rad(node)+4);t.setAttribute('y',3);t.textContent=trunc(node.label,32);
     grp.append(c,t);grp.addEventListener('click',()=>sel(node));nL.appendChild(grp);return{group:grp,node};});
   seed(nodes,W(),H());layout(nodes,links,W(),H(),420);tick();
-  search.oninput=filt;typeFilter.onchange=filt;directView.onchange=filt;tierView.onchange=()=>{edgeEls.forEach(({label,link})=>label.textContent=tierView.checked?`${relationshipDisplay(link.label)} (${relationshipTier(link.label).replace('Tier ','T')})`:relationshipDisplay(link.label));};
+  search.oninput=filt;typeFilter.onchange=filt;tierView.onchange=()=>{edgeEls.forEach(({label,link})=>label.textContent=tierView.checked?`${relationshipDisplay(link.label)} (${relationshipTier(link.label).replace('Tier ','T')})`:relationshipDisplay(link.label));};
   let pan=false,last=null;
   svg.addEventListener('pointerdown',e=>{if(e.target.closest('.node'))return;pan=true;last={x:e.clientX,y:e.clientY};svg.setPointerCapture(e.pointerId);});
   svg.addEventListener('pointermove',e=>{if(!pan)return;tf.x+=e.clientX-last.x;tf.y+=e.clientY-last.y;last={x:e.clientX,y:e.clientY};upd();});
@@ -431,7 +469,7 @@ function initGraph(graph){
     details.innerHTML='<b>'+esc(node.label)+'</b><div style="color:var(--muted);font-size:12px">'+esc(node.type)+' &middot; '+esc(node.id)+'</div><pre>'+esc(JSON.stringify(node.data,null,2))+'</pre><div style="font-size:12px"><b>Connected relationship provenance</b>'+connected.slice(0,8).map(l=>`<div class="rel-card"><b>${esc(relationshipDisplay(l.label))}</b> <span class="pill ${relationshipTier(l.label)==='Tier 1'?'high':'moderate'}">${relationshipTier(l.label)}</span><br><code>${esc(l.source.id)}</code> &rarr; <code>${esc(l.target.id)}</code><br><span class="small">${esc(relationshipProvenance(l))}</span></div>`).join('')+'</div>';filt();}
   function filt(){
     const q=search.value.trim().toLowerCase(),ty=typeFilter.value;
-    const vis=new Set(nodes.filter(n=>{const t=(n.id+' '+n.label+' '+n.type).toLowerCase();const directOk=!directView.checked||n.type!=='Association';return directOk&&(!q||t.includes(q))&&(!ty||n.type===ty);}).map(n=>n.id));
+    const vis=new Set(nodes.filter(n=>{const t=(n.id+' '+n.label+' '+n.type).toLowerCase();return(!q||t.includes(q))&&(!ty||n.type===ty);}).map(n=>n.id));
     const rel=selected?adj.get(selected.id):null;
     for(const it of nodeEls){const f=!vis.has(it.node.id),u=selected&&it.node.id!==selected.id&&!rel.has(it.node.id);
       it.group.classList.toggle('dim',f||u);it.group.classList.toggle('selected',selected&&it.node.id===selected.id);}
