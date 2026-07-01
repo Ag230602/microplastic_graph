@@ -136,6 +136,16 @@ TEMPLATE = r"""<!doctype html>
   .outcome-card.active{border-left:4px solid var(--good);}
   .tier-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px;}
   .rel-card{border:1px solid var(--line);border-radius:8px;background:#fbfcfe;padding:10px;margin:6px 0;}
+  .viz-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;}
+  .viz-card{border:1px solid var(--line);border-radius:10px;background:#fff;padding:14px;}
+  .viz-card .big{font-size:28px;font-weight:800;color:var(--accent);}
+  .mini-bars{display:grid;gap:8px;margin-top:8px;}
+  .mini-row{display:grid;grid-template-columns:150px 1fr 42px;gap:8px;align-items:center;font-size:12px;}
+  .mini-track{height:9px;border-radius:999px;background:#e8edf1;overflow:hidden;}
+  .mini-fill{height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--good),var(--accent));}
+  .obs-card{border:1px solid var(--line);border-radius:10px;background:#fff;padding:12px;margin:10px 0;}
+  .obs-card h3{font-size:14px;margin:0 0 6px;}
+  .obs-meta{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;}
   /* graph */
   .glayout{display:grid;grid-template-columns:1fr 320px;gap:14px;}
   #graph{width:100%;height:620px;background:#fbfcfe;border:1px solid var(--line);border-radius:10px;}
@@ -169,6 +179,7 @@ TEMPLATE = r"""<!doctype html>
   <section class="tab active" id="tab-overview"></section>
   <section class="tab" id="tab-ontology"></section>
   <section class="tab" id="tab-outcomes"></section>
+  <section class="tab" id="tab-observations"></section>
   <section class="tab" id="tab-graph">
     <div class="glayout">
       <svg id="graph" role="img" aria-label="Knowledge graph"></svg>
@@ -202,7 +213,7 @@ const colorByType = {
 const esc = v => String(v ?? '').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
 const TABS = [
-  ['overview','Overview'],['ontology','Ontology'],['outcomes','Clinical Outcomes'],['graph','Graph'],['queries','Benchmark Queries'],
+  ['overview','Overview'],['ontology','Ontology'],['outcomes','Clinical Outcomes'],['observations','Observations'],['graph','Graph'],['queries','Benchmark Queries'],
   ['weighting','Evidence Weighting'],['ranking','Human vs Animal'],['provenance','Provenance']
 ];
 const nav = document.getElementById('nav');
@@ -277,6 +288,25 @@ function relationshipProvenance(rel){
   if(source.supporting_publication || target.supporting_publication) return source.supporting_publication || target.supporting_publication;
   return 'Traceable through connected Study/Evidence/Observation path';
 }
+function outgoing(nodeId, relation){
+  return DATA.graph.edges.filter(edge=>edge.source===nodeId && (!relation || edge.label===relation)).map(edge=>DATA.graph.nodes.find(node=>node.id===edge.target)).filter(Boolean);
+}
+function incoming(nodeId, relation){
+  return DATA.graph.edges.filter(edge=>edge.target===nodeId && (!relation || edge.label===relation)).map(edge=>DATA.graph.nodes.find(node=>node.id===edge.source)).filter(Boolean);
+}
+function countBy(items, keyFn){
+  const out={};
+  for(const item of items){
+    const key=keyFn(item)||'Unspecified';
+    out[key]=(out[key]||0)+1;
+  }
+  return Object.entries(out).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]));
+}
+function miniBars(rows, maxRows=8){
+  const top=rows.slice(0,maxRows);
+  const max=Math.max(...top.map(([,n])=>n),1);
+  return '<div class="mini-bars">'+top.map(([label,n])=>`<div class="mini-row"><div>${esc(label)}</div><div class="mini-track"><div class="mini-fill" style="width:${Math.round(n/max*100)}%"></div></div><div>${n}</div></div>`).join('')+'</div>';
+}
 
 // ---- Overview ----
 (function(){
@@ -337,6 +367,52 @@ function relationshipProvenance(rel){
     const active=grouped[specialty]||[];
     return `<div class="outcome-card ${active.length?'active':''}"><h3>${esc(specialty)}</h3><p class="small">${terms.map(esc).join(', ')}</p>${active.map(o=>`<div class="rel-card"><b>${esc(o.label)}</b><br><span class="pill ${o.data?.strength_of_evidence==='limited'?'low':'moderate'}">${esc(o.data?.strength_of_evidence||'evidence tracked')}</span> <span class="pill moderate">confidence ${esc(o.data?.causal_confidence||'tracked')}</span><br><span class="small">${esc(o.data?.notes||'')}</span></div>`).join('')}</div>`;
   }).join('')+'</div>';
+  el.innerHTML=h;
+})();
+
+// ---- Observations ----
+(function(){
+  const el=document.getElementById('tab-observations');
+  const observations=DATA.graph.nodes.filter(n=>n.type==='Observation');
+  const obsModels=observations.map(obs=>{
+    const evidence=incoming(obs.id,'supports').filter(n=>n.type==='Evidence');
+    const studies=incoming(obs.id,'reports').filter(n=>n.type==='Study');
+    const polymers=outgoing(obs.id,'has_polymer');
+    const tissues=outgoing(obs.id,'affects');
+    const reservoirs=outgoing(obs.id,'about');
+    const methods=outgoing(obs.id,'identified_by');
+    const sizes=outgoing(obs.id,'has_size_class');
+    return {obs,evidence,studies,polymers,tissues,reservoirs,methods,sizes};
+  });
+  const evidenceCovered=obsModels.filter(row=>row.evidence.length).length;
+  const tissueRows=countBy(obsModels.flatMap(row=>row.tissues), n=>n.label);
+  const polymerRows=countBy(obsModels.flatMap(row=>row.polymers), n=>n.label);
+  const reservoirRows=countBy(obsModels.flatMap(row=>row.reservoirs), n=>n.label);
+  let h=`<div class="panel"><h3>Observation interpretation layer</h3><p style="font-size:13px;color:var(--muted);line-height:1.6">Observation nodes are the bridge between exact evidence sentences and scientific interpretation. This page shows what we directly see in the paper and what each observation derives into: polymers, tissues, reservoirs, methods, sizes, studies, and supporting evidence.</p></div>`;
+  h+=`<div class="viz-grid">
+    <div class="viz-card"><div class="big">${observations.length}</div><div class="l">Observation nodes</div></div>
+    <div class="viz-card"><div class="big">${evidenceCovered}/${observations.length}</div><div class="l">Evidence-supported observations</div></div>
+    <div class="viz-card"><h3>Top tissues derived from observations</h3>${miniBars(tissueRows)}</div>
+    <div class="viz-card"><h3>Top polymers observed</h3>${miniBars(polymerRows)}</div>
+    <div class="viz-card"><h3>Reservoir/context links</h3>${miniBars(reservoirRows)}</div>
+  </div>`;
+  h+='<div class="panel"><h3>What each observation shows and derives</h3>'+
+    obsModels.map(row=>`<div class="obs-card"><h3>${esc(row.obs.label)}</h3><p>${esc(row.obs.data?.notes || row.obs.data?.value || row.obs.id)}</p>
+      <div class="obs-meta">
+        <span class="pill high">${row.evidence.length} evidence</span>
+        <span class="pill moderate">${row.studies.length} study report links</span>
+        <span class="pill">${row.polymers.length} polymer links</span>
+        <span class="pill">${row.tissues.length} tissue links</span>
+      </div>
+      <table><tr><th>Derived Field</th><th>Values</th></tr>
+        <tr><td>Supporting evidence</td><td>${row.evidence.map(n=>`<div class="quote">${esc(n.data?.text || n.label)}</div>`).join('')||'none'}</td></tr>
+        <tr><td>Studies</td><td>${row.studies.map(n=>esc(n.label)).join('<br>')||'none'}</td></tr>
+        <tr><td>Polymers / agents</td><td>${row.polymers.map(n=>esc(n.label)).join(', ')||'none'}</td></tr>
+        <tr><td>Tissues affected</td><td>${row.tissues.map(n=>esc(n.label)).join(', ')||'none'}</td></tr>
+        <tr><td>Reservoir / context</td><td>${row.reservoirs.map(n=>esc(n.label)).join(', ')||'none'}</td></tr>
+        <tr><td>Methods</td><td>${row.methods.map(n=>esc(n.label)).join(', ')||'none'}</td></tr>
+        <tr><td>Size classes</td><td>${row.sizes.map(n=>esc(n.label)).join(', ')||'none'}</td></tr>
+      </table></div>`).join('')+'</div>';
   el.innerHTML=h;
 })();
 
