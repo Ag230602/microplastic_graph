@@ -189,6 +189,7 @@
   <button class="tab" data-tab="agent">Agent</button>
   <button class="tab" data-tab="ontology">Ontology</button>
   <button class="tab" data-tab="outcomes">Outcomes</button>
+  <button class="tab" data-tab="observations">Observations</button>
   <button class="tab" data-tab="graph">Graph</button>
   <button class="tab" data-tab="evidence">Evidence</button>
   <button class="tab" data-tab="qa">Question Answering</button>
@@ -199,6 +200,7 @@
   <section id="agent" class="hidden"></section>
   <section id="ontology" class="hidden"></section>
   <section id="outcomes" class="hidden"></section>
+  <section id="observations" class="hidden"></section>
   <section id="graph" class="hidden"></section>
   <section id="evidence" class="hidden"></section>
   <section id="qa" class="hidden"></section>
@@ -229,6 +231,7 @@ function init(data) {
   agent(data);
   ontology(data);
   outcomes(data);
+  observations(data);
   graph(data);
   evidence(data);
   qa(data);
@@ -355,6 +358,25 @@ function outcomes(data) {
     <div class="panel"><h2>Clinical Outcome Hierarchy</h2><p>${esc(hierarchy.description)}</p><p>${hierarchy.filters_supported_by_dashboard.map(filter => `<span class="pill info">${esc(filter)}</span>`).join('')}</p></div>
     <div class="grid">${specialtyCards}</div>
     <div class="panel"><h2>Instantiated Outcome Nodes in This Minimal Graph</h2><table><tr><th>Outcome</th><th>Specialty / Organ System</th><th>Disease Category</th><th>Evidence</th><th>Biomarkers</th><th>Mechanisms</th><th>Mappings</th></tr>${outcomeRows}</table></div>`;
+}
+
+function observations(data) {
+  const obsNodes = data.entities.filter(entity => entity.type === 'Observation');
+  const obsRows = obsNodes.map(obs => {
+    const support = data.relationships.filter(rel => rel.relationship_name === 'supports' && rel.target_node === obs.id);
+    const derived = data.relationships.filter(rel => rel.source_node === obs.id || rel.target_node === obs.id);
+    const evidence = support.map(rel => data.entities.find(entity => entity.id === rel.source_node)).filter(Boolean);
+    return {obs, support, derived, evidence};
+  });
+  document.getElementById('observations').innerHTML = `
+    <div class="panel hero-note"><h2>Observation Interpretation Layer</h2><p>Observations are the bridge between exact evidence sentences and scientific interpretation. This page shows what is directly observed and what each observation derives into: evidence, tissue, mechanism, biomarker, and outcome context.</p></div>
+    <div class="cards">
+      <div class="card"><div class="n">${obsNodes.length}</div><div class="l">Observation nodes</div></div>
+      <div class="card"><div class="n">${obsRows.filter(row => row.support.length).length}/${obsNodes.length}</div><div class="l">Evidence-supported observations</div></div>
+      <div class="card"><div class="n">${data.relationships.filter(rel => rel.relationship_name === 'supports').length}</div><div class="l">Support links</div></div>
+      <div class="card"><div class="n">${data.relationships.filter(rel => rel.relationship_name === 'located_in' || rel.relationship_name === 'measured_in').length}</div><div class="l">Tissue/location links</div></div>
+    </div>
+    ${obsRows.map(row => `<div class="panel"><h2>${esc(row.obs.name)}</h2><p>${esc(row.obs.definition)}</p><div class="obs-meta"><span class="pill high">${row.support.length} evidence link(s)</span><span class="pill info">confidence ${esc(row.obs.confidence)}</span></div>${row.evidence.map(ev => `<div class="quote">${esc(ev.example_sentence)}</div>`).join('')}<h3>Derived Relationships</h3><div class="relation-cards">${row.derived.map(rel => `<div class="relation-card"><b>${esc(rel.relationship_name)} <span class="pill info">${relationshipTier(rel.relationship_name)}</span></b><p class="small"><code>${esc(rel.source_node)}</code> → <code>${esc(rel.target_node)}</code></p><p>${esc(rel.scientific_meaning)}</p><p class="small">Confidence: ${esc(rel.confidence)}<br>Strength: ${esc(rel.relationship_strength)}</p></div>`).join('')}</div></div>`).join('')}`;
 }
 
 function graph(data) {
