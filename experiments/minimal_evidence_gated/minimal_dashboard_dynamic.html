@@ -1,0 +1,808 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Minimal Evidence-Gated KG Agent</title>
+  <style>
+    :root {
+      --bg: #f7f5ef;
+      --panel: #ffffff;
+      --ink: #1f2933;
+      --muted: #607080;
+      --line: #c9d2dc;
+      --blue: #2f6f9f;
+      --green: #238b6e;
+      --gold: #b38b1e;
+      --red: #c3475b;
+      --purple: #7b61a8;
+      --teal: #2a9d8f;
+      --gray: #5f7080;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+    }
+    header {
+      padding: 18px 22px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--line);
+    }
+    h1 { margin: 0 0 6px; font-size: 22px; letter-spacing: 0; }
+    h2 { margin: 0 0 10px; font-size: 17px; letter-spacing: 0; }
+    h3 { margin: 0 0 8px; font-size: 14px; letter-spacing: 0; }
+    p { line-height: 1.58; }
+    .sub { color: var(--muted); font-size: 13px; line-height: 1.5; }
+    nav {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding: 12px 22px;
+      border-bottom: 1px solid var(--line);
+      background: #fbfaf6;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+    .tab {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 6px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font: inherit;
+      font-size: 13px;
+    }
+    .tab.active { border-color: var(--blue); color: var(--blue); font-weight: 700; }
+    main { padding: 18px 22px; max-width: 1240px; margin: 0 auto; }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 14px;
+      min-width: 0;
+    }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+    .card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px; }
+    .n { font-size: 28px; font-weight: 800; color: var(--blue); }
+    .l { color: var(--muted); font-size: 12px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
+    th, td { border-bottom: 1px solid var(--line); padding: 9px; text-align: left; vertical-align: top; }
+    td, th, code, pre { overflow-wrap: anywhere; }
+    th { background: #fafafa; }
+    code { background: #f1f4f7; padding: 2px 5px; border-radius: 4px; }
+    pre { white-space: pre-wrap; word-break: break-word; background: #fafafa; border: 1px solid var(--line); border-radius: 6px; padding: 10px; font-size: 12px; line-height: 1.45; }
+    .pill { display: inline-block; border-radius: 999px; padding: 3px 8px; font-size: 12px; font-weight: 700; background: #eef6f3; color: #136b55; margin: 2px 4px 2px 0; }
+    .warn { background: #fff5da; color: #775000; }
+    .low { background: #fdecec; color: #8b2430; }
+    .info { background: #eef3fb; color: #224f78; }
+    .chain { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .node { border: 1px solid var(--line); border-radius: 6px; padding: 8px; background: #fbfaf6; font-size: 13px; }
+    .arrow { color: var(--muted); }
+    .quote { border-left: 3px solid var(--gold); padding: 6px 0 6px 12px; margin-top: 8px; color: #444; font-style: italic; }
+    .hidden { display: none; }
+    .small { color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .step { border-left: 4px solid var(--blue); padding-left: 12px; }
+    .status-ok { border-left-color: var(--green); }
+    .status-warn { border-left-color: var(--gold); }
+    .status-missing { border-left-color: var(--red); }
+    .hero-note { border-left: 4px solid var(--green); background: #f4fbf8; }
+    .example-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 8px; margin: 10px 0 12px; }
+    .example-btn { border: 1px solid var(--line); border-radius: 7px; padding: 10px; background: #fff; text-align: left; cursor: pointer; font: inherit; font-size: 13px; color: var(--ink); }
+    .example-btn:hover { border-color: var(--blue); color: var(--blue); }
+    .answer-card { border: 1px solid var(--line); border-radius: 8px; padding: 14px; background: #fbfaf6; margin-bottom: 12px; }
+    .answer-card.pass { border-left: 5px solid var(--green); }
+    .answer-card.block { border-left: 5px solid var(--red); }
+    .overview-hero { display: grid; grid-template-columns: minmax(280px, 1.1fr) minmax(320px, .9fr); gap: 16px; align-items: stretch; }
+    .hero-title { font-size: 26px; line-height: 1.18; margin: 0 0 10px; }
+    .signal-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .signal { border: 1px solid var(--line); border-radius: 8px; padding: 12px; background: #fbfaf6; }
+    .signal b { display: block; font-size: 18px; color: var(--blue); margin-bottom: 2px; }
+    .pipeline-visual { display: grid; gap: 8px; }
+    .pipeline-row { display: grid; grid-template-columns: 150px 1fr; gap: 10px; align-items: center; }
+    .pipe-label { color: var(--muted); font-size: 12px; }
+    .pipe-bar { height: 12px; border-radius: 999px; background: #e8edf1; overflow: hidden; }
+    .pipe-bar span { display: block; height: 100%; border-radius: inherit; background: var(--blue); }
+    .flow-band { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }
+    .flow-card { border: 1px solid var(--line); border-radius: 8px; padding: 10px; background: #fff; min-height: 70px; }
+    .flow-card .k { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+    .flow-card .v { font-weight: 750; }
+    .review-hero { display: grid; grid-template-columns: minmax(280px, 1fr) minmax(260px, .75fr); gap: 14px; }
+    .score-ring { width: 142px; height: 142px; border-radius: 50%; display: grid; place-items: center; margin: 6px auto 12px; background: conic-gradient(var(--gold) 0 60%, #e8edf1 60% 100%); }
+    .score-ring div { width: 104px; height: 104px; border-radius: 50%; background: #fff; display: grid; place-items: center; text-align: center; font-weight: 800; color: var(--ink); }
+    .lane-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
+    .lane { border: 1px solid var(--line); border-radius: 9px; background: #fff; overflow: hidden; }
+    .lane h3 { padding: 11px 12px; margin: 0; border-bottom: 1px solid var(--line); background: #fbfaf6; }
+    .lane-body { padding: 12px; }
+    .timeline { display: grid; gap: 10px; }
+    .timeline-step { display: grid; grid-template-columns: 28px 1fr; gap: 10px; align-items: start; }
+    .dot { width: 24px; height: 24px; border-radius: 50%; background: var(--blue); color: #fff; display: grid; place-items: center; font-size: 12px; font-weight: 800; }
+    .automation-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
+    .auto-card { border: 1px dashed #b8c5cf; border-radius: 8px; padding: 12px; background: #fbfaf6; }
+    .bar-track { height: 9px; border-radius: 999px; background: #e8edf1; overflow: hidden; margin-top: 6px; }
+    .bar-fill { height: 100%; border-radius: inherit; background: var(--green); }
+    @media (max-width: 850px) { .overview-hero, .review-hero { grid-template-columns: 1fr; } }
+    .checklist { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; }
+    .check { border: 1px solid var(--line); border-radius: 8px; padding: 11px; background: #fbfaf6; }
+    .check b { display: block; margin-bottom: 4px; }
+    .graph-tools { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 12px; }
+    .graph-layout { display: grid; grid-template-columns: 1fr; gap: 12px; align-items: stretch; }
+    .graph-intro { display: grid; grid-template-columns: minmax(260px, 1fr) minmax(260px, .85fr); gap: 12px; align-items: stretch; margin-bottom: 12px; }
+    .scope-strip { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .scope-pill { border: 1px solid var(--line); border-radius: 999px; padding: 6px 10px; background: #fff; font-size: 12px; color: var(--muted); }
+    .scope-pill.active { color: #136b55; background: #eef6f3; border-color: #b7d9cb; font-weight: 750; }
+    .mini-metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .mini-metric { border: 1px solid var(--line); border-radius: 8px; padding: 10px; background: #fbfaf6; }
+    .mini-metric b { color: var(--blue); font-size: 18px; display: block; }
+    .legend { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12px; }
+    .swatch { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .dimmed { opacity: 0.12; }
+    .related-edge { stroke: var(--blue); stroke-width: 2.4; opacity: 1; }
+    .related-label { fill: var(--blue); font-weight: 750; font-size: 10px; }
+    .selected-node circle { stroke: #111827; stroke-width: 3; }
+    .relation-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; margin-top: 10px; }
+    .relation-card { border: 1px solid var(--line); border-radius: 8px; padding: 11px; background: #fbfaf6; }
+    .relation-card b { display: block; margin-bottom: 5px; }
+    #nodeDetails { max-height: 460px; overflow: auto; }
+    label { display: block; color: var(--muted); font-size: 12px; margin-bottom: 5px; }
+    input, textarea, button.run {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 10px;
+      font: inherit;
+      background: #fff;
+      color: var(--ink);
+    }
+    select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 10px;
+      font: inherit;
+      background: #fff;
+      color: var(--ink);
+    }
+    textarea { min-height: 76px; resize: vertical; }
+    button.run { cursor: pointer; background: var(--blue); color: #fff; border-color: var(--blue); font-weight: 750; margin-top: 8px; }
+    svg { width: 100%; height: 620px; background: #fbfaf6; border: 1px solid var(--line); border-radius: 8px; display: block; }
+    .link { stroke: #93a1ad; stroke-width: 1.4; marker-end: url(#arrow); }
+    .link-label { font-size: 9px; fill: #607080; }
+    .g-node circle { stroke: #fff; stroke-width: 1.5; }
+    .g-node text { font-size: 10px; paint-order: stroke; stroke: #fbfaf6; stroke-width: 3px; stroke-linejoin: round; }
+    @media (max-width: 950px) { .graph-layout, .graph-intro { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Minimal Evidence-Gated Environmental Health KG Agent</h1>
+  <div class="sub">A 16-node / 20-relationship prototype slice of an automated evidence-gated environmental health system. This small graph chunk is intentionally inspectable now, with the same structure designed to scale later across human, animal, and in-vitro evidence.</div>
+</header>
+<nav>
+  <button class="tab active" data-tab="overview">Overview</button>
+  <button class="tab" data-tab="agent">Agent</button>
+  <button class="tab" data-tab="ontology">Ontology</button>
+  <button class="tab" data-tab="outcomes">Outcomes</button>
+  <button class="tab" data-tab="graph">Graph</button>
+  <button class="tab" data-tab="evidence">Evidence</button>
+  <button class="tab" data-tab="qa">Question Answering</button>
+  <button class="tab" data-tab="review">Review</button>
+</nav>
+<main>
+  <section id="overview"></section>
+  <section id="agent" class="hidden"></section>
+  <section id="ontology" class="hidden"></section>
+  <section id="outcomes" class="hidden"></section>
+  <section id="graph" class="hidden"></section>
+  <section id="evidence" class="hidden"></section>
+  <section id="qa" class="hidden"></section>
+  <section id="review" class="hidden"></section>
+</main>
+<script>
+const typeColors = {
+  Publication: '#5f7080', Study: '#2f6f9f', Evidence: '#b38b1e', Observation: '#238b6e',
+  'Environmental Reservoir': '#3a8fb7', Agent: '#8f6a2a', 'Exposure Pathway': '#5f7080',
+  'Host Population': '#2a9d8f', Tissue: '#7c6175', Mechanism: '#c3475b', Biomarker: '#8b5fbf',
+  'Clinical Outcome': '#c3475b'
+};
+
+fetch('minimal_kg.json').then(response => response.json()).then(init).catch(error => {
+  document.getElementById('overview').innerHTML = '<div class="panel"><h2>Could not load minimal_kg.json</h2><pre>' + esc(error) + '</pre></div>';
+});
+
+function init(data) {
+  document.querySelectorAll('.tab').forEach(button => {
+    button.onclick = () => {
+      document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+      button.classList.add('active');
+      document.querySelectorAll('main > section').forEach(section => section.classList.add('hidden'));
+      document.getElementById(button.dataset.tab).classList.remove('hidden');
+    };
+  });
+  overview(data);
+  agent(data);
+  ontology(data);
+  outcomes(data);
+  graph(data);
+  evidence(data);
+  qa(data);
+  review(data);
+}
+
+function overview(data) {
+  const coverage = evidenceCoverage(data);
+  document.getElementById('overview').innerHTML = `
+    <div class="overview-hero">
+      <div class="panel hero-note">
+        <p class="pill info">Evidence-gated environmental health reasoning</p>
+        <h2 class="hero-title">Trace a scientific answer from question to evidence, without guessing.</h2>
+        <p>The dashboard uses a small evidence-backed graph chunk to demonstrate the future automated workflow: question parsing, ontology mapping, evidence retrieval, evidence gating, answer generation, and research-gap detection. The same design is intended to scale across human, animal, and in-vitro evidence.</p>
+        <div class="signal-grid">
+          <div class="signal"><b>${data.entities.length}</b><span class="small">Ontology nodes</span></div>
+          <div class="signal"><b>${data.relationships.length}</b><span class="small">Evidence-backed links</span></div>
+          <div class="signal"><b>${data.counts.evidence_nodes}</b><span class="small">Exact evidence statements</span></div>
+          <div class="signal"><b>${coverage.supported}/${coverage.total}</b><span class="small">Supported observations</span></div>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>Evidence Flow</h2>
+        <div class="pipeline-visual">
+          ${[
+            ['Question parsing', 35],
+            ['Ontology mapping', 48],
+            ['Graph traversal', 62],
+            ['Evidence retrieval', 76],
+            ['Evidence gate', 90],
+            ['Answer + research gap', 100]
+          ].map(([label, width]) => `<div class="pipeline-row"><div class="pipe-label">${esc(label)}</div><div class="pipe-bar"><span style="width:${width}%"></span></div></div>`).join('')}
+        </div>
+        <p class="small" style="margin-top:12px">A question is allowed through only when the graph can retrieve supporting evidence. Missing human evidence remains visible as a research gap.</p>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>Reasoning Path</h2>
+      <div class="flow-band">
+        ${[
+          ['Start', 'User Question'], ['Parse', 'Ontology Terms'], ['Find', 'Graph Path'], ['Retrieve', 'Evidence'], ['Check', 'Evidence Gate'], ['Return', 'Answer + Gap']
+        ].map(([k, v]) => `<div class="flow-card"><div class="k">${esc(k)}</div><div class="v">${esc(v)}</div></div>`).join('')}
+      </div>
+    </div>
+    <div class="grid">
+      <div class="panel"><h2>Ask</h2><p>Use the Question Answering page to test supported and unsupported questions with one click.</p></div>
+      <div class="panel"><h2>Inspect</h2><p>Use the Graph page to search for <code>liver</code>, <code>mouse</code>, <code>evidence</code>, or <code>SOD</code>, then select a node to see provenance.</p></div>
+      <div class="panel"><h2>Filter</h2><p>Use relationship tiers, node types, and evidence strength to narrow the graph without losing the evidence trail.</p></div>
+      <div class="panel"><h2>Review</h2><p>Use the Review page for a compact synthesis of consensus, limitations, research gaps, and future work.</p></div>
+    </div>`;
+}
+
+function agent(data) {
+  const rows = [
+    ['Question Parser', 'Functional for scoped questions', 'The demo identifies supported ontology terms such as polystyrene, mouse, liver, oxidative stress, biomarkers, human, and cardiovascular outcomes. Unrecognized terms are left unmapped so the system does not guess.'],
+    ['Ontology Mapping', 'Functional for this graph', 'Recognized terms are mapped to nodes in minimal_kg.json. Unknown terms are left unmapped instead of guessed.'],
+    ['Knowledge Graph Search', 'Functional for this graph', 'The demo searches the 16-node graph and returns only matching evidence-backed paths.'],
+    ['Evidence Retrieval', 'Functional for this graph', 'Evidence sentences are pulled from Evidence nodes and relationship evidence_sentence fields.'],
+    ['Evidence Weighting', 'Prototype', 'The graph uses animal evidence score 3 and confidence values. It does not yet implement full meta-analysis/cohort/RCT ranking because the minimal graph has only one animal-study chain.'],
+    ['Evidence Gate', 'Functional for this graph', 'The agent refuses unsupported human claims and states that human evidence is insufficient.'],
+    ['AI Health Agent', 'Evidence-gated prototype', 'The agent produces answers only from evidence retrieved from the graph. This safety-first version avoids free-form unsupported generation and blocks questions when the graph does not contain enough evidence.'],
+    ['Review System', 'Prototype', 'The Review page summarizes consensus, limitations, and research gaps for the selected evidence chain.'],
+    ['Research Gap Detector', 'Functional for this graph', 'The graph detects missing human, pregnancy, child, and longitudinal evidence.'],
+    ['Manuscript Support', 'Prototype', 'The dashboard gives evidence tables, limitations, future work, and graph figures that can feed manuscript writing.']
+  ].map(row => `<tr><td><b>${esc(row[0])}</b></td><td><span class="pill ${row[1].includes('prototype') || row[1].includes('Prototype') ? 'warn' : ''}">${esc(row[1])}</span></td><td>${esc(row[2])}</td></tr>`).join('');
+  document.getElementById('agent').innerHTML = `
+    <div class="panel">
+      <h2>Why the Agent Is Not a Full LLM Here</h2>
+      <p>This minimal dashboard is an evidence-gated prototype, not a deployed clinical AI system. I kept it deterministic on purpose: it reads only <code>minimal_kg.json</code>, retrieves only stored evidence, and does not call an external language model. That prevents hallucinated citations, PMID values, DOI values, or human-health conclusions.</p>
+      <p>The full AI agent would need backend services for literature retrieval, ontology normalization, semantic search, and model inference. This small dashboard demonstrates the safe logic first.</p>
+    </div>
+    <div class="panel">
+      <h2>Agent Module Status</h2>
+      <table><tr><th>Module</th><th>Status</th><th>What It Does Here</th></tr>${rows}</table>
+    </div>
+    <div class="panel">
+      <h2>Safe Answering Rule</h2>
+      <p><span class="pill low">No evidence, no answer</span> <span class="pill warn">Animal evidence must be labeled animal evidence</span> <span class="pill info">Missing PMID/DOI must stay unavailable</span></p>
+    </div>`;
+}
+
+function ontology(data) {
+  const nodeRows = data.entities.map(entity => `
+    <tr>
+      <td><code>${esc(entity.id)}</code><br><span class="pill">${esc(entity.type)}</span></td>
+      <td><b>${esc(entity.name)}</b><br>${esc(entity.definition)}<br><span class="small">Purpose: ${purposeForType(entity.type)}</span></td>
+      <td>${esc((entity.synonyms || []).join(', '))}</td>
+      <td>${esc(entity.example)}</td>
+      <td>${esc(entity.supporting_publication)}<br><span class="small">PMID: ${esc(entity.pmid)}<br>DOI: ${esc(entity.doi)}</span></td>
+      <td>${esc(entity.confidence)}</td>
+    </tr>`).join('');
+  const relationshipRows = data.relationships.map(rel => `
+    <tr>
+      <td><code>${esc(rel.relationship_name)}</code></td>
+      <td>${esc(rel.definition)}<br><span class="small">${esc(rel.scientific_meaning)}</span></td>
+      <td><code>${esc(rel.source_node)}</code><br>-&gt;<br><code>${esc(rel.target_node)}</code></td>
+      <td>${esc(rel.evidence_sentence)}</td>
+      <td>${esc(rel.supporting_study)}<br><span class="small">PMID: ${esc(rel.pmid)}<br>DOI: ${esc(rel.doi)}</span></td>
+      <td>${esc(rel.confidence)}<br><span class="small">${esc(rel.relationship_strength)}</span></td>
+    </tr>`).join('');
+  document.getElementById('ontology').innerHTML = `
+    <div class="panel"><h2>Ontology Nodes</h2><table><tr><th>Node</th><th>Definition and Purpose</th><th>Synonyms</th><th>Example</th><th>Publication</th><th>Confidence</th></tr>${nodeRows}</table></div>
+    <div class="panel"><h2>Relationship Dictionary</h2><table><tr><th>Relationship</th><th>Definition</th><th>Source - Target</th><th>Evidence Sentence</th><th>Study</th><th>Confidence</th></tr>${relationshipRows}</table></div>`;
+}
+
+function outcomes(data) {
+  const hierarchy = data.clinical_outcome_hierarchy;
+  const outcomeNodes = data.entities.filter(entity => entity.type === 'Clinical Outcome');
+  const specialtyCards = Object.entries(hierarchy.specialties).map(([specialty, outcomes]) => {
+    const active = outcomeNodes.some(node => node.clinical_specialty === specialty || node.medical_specialty?.includes(specialty));
+    return `<div class="card"><h3>${active ? '✅' : '○'} ${esc(specialty)}</h3><p class="small">${outcomes.map(esc).join(', ')}</p></div>`;
+  }).join('');
+  const outcomeRows = outcomeNodes.map(node => `
+    <tr>
+      <td><code>${esc(node.id)}</code><br><b>${esc(node.outcome_name || node.name)}</b></td>
+      <td>${esc(node.clinical_specialty)}<br><span class="small">${esc(node.organ_system)}</span></td>
+      <td>${esc(node.disease_category)}</td>
+      <td>${esc(node.evidence_strength)}<br><span class="small">confidence ${esc(node.confidence_score)}</span></td>
+      <td>${esc((node.associated_biomarkers || []).join(', '))}</td>
+      <td>${esc((node.associated_mechanisms || []).join(', '))}</td>
+      <td>ICD-11: ${esc(node.icd_11_mapping)}<br>SNOMED CT: ${esc(node.snomed_ct_mapping)}<br>UMLS: ${esc(node.umls_mapping)}</td>
+    </tr>`).join('');
+  document.getElementById('outcomes').innerHTML = `
+    <div class="panel"><h2>Clinical Outcome Hierarchy</h2><p>${esc(hierarchy.description)}</p><p>${hierarchy.filters_supported_by_dashboard.map(filter => `<span class="pill info">${esc(filter)}</span>`).join('')}</p></div>
+    <div class="grid">${specialtyCards}</div>
+    <div class="panel"><h2>Instantiated Outcome Nodes in This Minimal Graph</h2><table><tr><th>Outcome</th><th>Specialty / Organ System</th><th>Disease Category</th><th>Evidence</th><th>Biomarkers</th><th>Mechanisms</th><th>Mappings</th></tr>${outcomeRows}</table></div>`;
+}
+
+function graph(data) {
+  document.getElementById('graph').innerHTML = `<div class="panel">
+    <div class="graph-intro">
+      <div>
+        <h2>Interactive Prototype Graph</h2>
+        <p>This graph is a small working slice of the future automated platform. Today it uses 16 entities and 20 relationships so every edge can be checked by hand. Later, the same interface can expand to larger human, animal, and in-vitro evidence layers.</p>
+        <div class="scope-strip">
+          <span class="scope-pill active">Animal evidence active</span>
+          <span class="scope-pill">Human evidence planned</span>
+          <span class="scope-pill">In-vitro evidence planned</span>
+          <span class="scope-pill">Conflicting evidence planned</span>
+        </div>
+      </div>
+      <div class="mini-metrics">
+        <div class="mini-metric"><b>${data.entities.length}</b><span class="small">Current nodes</span></div>
+        <div class="mini-metric"><b>${data.relationships.length}</b><span class="small">Current links</span></div>
+        <div class="mini-metric"><b>${data.counts.evidence_nodes}</b><span class="small">Evidence nodes</span></div>
+        <div class="mini-metric"><b>${data.counts.evidence_supported_observations}</b><span class="small">Evidence coverage</span></div>
+      </div>
+    </div>
+    <div class="graph-tools">
+      <div><label for="graphSearch">Search nodes</label><input id="graphSearch" placeholder="liver, evidence, mouse, SOD"></div>
+      <div><label for="typeFilter">Node type</label><select id="typeFilter"><option value="">All node types</option></select></div>
+      <div><label for="viewMode">Graph layout</label><select id="viewMode"><option value="evidenceFlow">Evidence flow</option><option value="evidenceType">Evidence layers</option><option value="clinical">Clinical outcome view</option></select></div>
+      <div><label for="tierFilter">Relationship tier</label><select id="tierFilter"><option value="">All relationships</option><option value="Tier 1">Tier 1 structural</option><option value="Tier 2">Tier 2 scientific reasoning</option></select></div>
+      <div><label for="evidenceFilter">Evidence strength</label><select id="evidenceFilter"><option value="">All evidence strengths</option><option value="Animal">Animal</option><option value="Human">Human</option><option value="In-vitro">In-vitro</option><option value="Review">Review</option></select></div>
+      <div><label>&nbsp;</label><button class="run" id="resetGraph" type="button">Show Full Graph</button></div>
+    </div>
+    <div class="legend" id="graphLegend"></div>
+    <div class="graph-layout"><svg id="svg" viewBox="0 0 1180 640" preserveAspectRatio="xMidYMid meet"><defs><marker id="arrow" viewBox="0 -5 10 10" refX="16" refY="0" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,-5L10,0L0,5" fill="#93a1ad"></path></marker></defs></svg><div class="panel" id="nodeDetails"><h2>Select a Node</h2><p class="small">Click any node to focus its relationships. The relation cards and evidence details will appear here without leaving the frame.</p></div></div>
+  </div>`;
+  const svg = document.getElementById('svg');
+  const ns = 'http://www.w3.org/2000/svg';
+  const columns = {
+    Publication: 70,
+    Study: 175,
+    Evidence: 295,
+    Observation: 430,
+    'Environmental Reservoir': 555,
+    Agent: 665,
+    'Exposure Pathway': 775,
+    'Host Population': 875,
+    Tissue: 875,
+    Mechanism: 980,
+    Biomarker: 1010,
+    'Clinical Outcome': 1050
+  };
+  const typeSeen = {};
+  const nodes = data.entities.map(entity => {
+    typeSeen[entity.type] = (typeSeen[entity.type] || 0) + 1;
+    return {...entity, x: columns[entity.type] || 560, y: 70 + typeSeen[entity.type] * 52};
+  });
+  const byId = Object.fromEntries(nodes.map(node => [node.id, node]));
+  const typeFilter = document.getElementById('typeFilter');
+  const graphSearch = document.getElementById('graphSearch');
+  const viewMode = document.getElementById('viewMode');
+  const tierFilter = document.getElementById('tierFilter');
+  const evidenceFilter = document.getElementById('evidenceFilter');
+  const resetGraph = document.getElementById('resetGraph');
+  const details = document.getElementById('nodeDetails');
+  const legend = document.getElementById('graphLegend');
+  [...new Set(nodes.map(node => node.type))].sort().forEach(type => {
+    const option = document.createElement('option');
+    option.value = type;
+    option.textContent = type;
+    typeFilter.appendChild(option);
+    const item = document.createElement('span');
+    item.innerHTML = `<i class="swatch" style="background:${typeColors[type] || '#5f7080'}"></i>${esc(type)}`;
+    legend.appendChild(item);
+  });
+  const edgeEls = [];
+  data.relationships.forEach(rel => {
+    const source = byId[rel.source_node];
+    const target = byId[rel.target_node];
+    if (!source || !target) return;
+    const path = document.createElementNS(ns, 'path');
+    path.classList.add('link');
+    path.setAttribute('fill', 'none');
+    svg.appendChild(path);
+    const label = document.createElementNS(ns, 'text');
+    label.classList.add('link-label');
+    label.setAttribute('x', (source.x + target.x) / 2);
+    label.setAttribute('y', (source.y + target.y) / 2 - 3);
+    label.textContent = `${rel.relationship_name} (${relationshipTier(rel.relationship_name).replace('Tier ', 'T')})`;
+    svg.appendChild(label);
+    edgeEls.push({path, label, rel});
+  });
+  const nodeEls = [];
+  nodes.forEach(node => {
+    const group = document.createElementNS(ns, 'g');
+    group.classList.add('g-node');
+    group.setAttribute('transform', `translate(${node.x},${node.y})`);
+    const circle = document.createElementNS(ns, 'circle');
+    circle.setAttribute('r', node.type === 'Evidence' || node.type === 'Study' ? 12 : 9);
+    circle.setAttribute('fill', typeColors[node.type] || '#5f7080');
+    const text = document.createElementNS(ns, 'text');
+    text.setAttribute('x', 13);
+    text.setAttribute('y', 4);
+    text.textContent = node.name.length > 30 ? node.name.slice(0, 29) + '...' : node.name;
+    group.append(circle, text);
+    group.addEventListener('click', () => selectNode(node));
+    svg.appendChild(group);
+    nodeEls.push({group, node});
+  });
+  updateGraphLayout();
+  function selectNode(node) {
+    nodeEls.forEach(item => item.group.classList.toggle('selected-node', item.node.id === node.id));
+    const connected = data.relationships.filter(rel => rel.source_node === node.id || rel.target_node === node.id);
+    const neighbors = new Set(connected.flatMap(rel => [rel.source_node, rel.target_node]));
+    nodeEls.forEach(item => item.group.classList.toggle('dimmed', item.node.id !== node.id && !neighbors.has(item.node.id)));
+    edgeEls.forEach(({path, label, rel}) => {
+      const related = rel.source_node === node.id || rel.target_node === node.id;
+      path.classList.toggle('dimmed', !related);
+      label.classList.toggle('dimmed', !related);
+      path.classList.toggle('related-edge', related);
+      label.classList.toggle('related-label', related);
+    });
+    details.innerHTML = `<h2>${esc(node.name)}</h2><p><span class="pill">${esc(node.type)}</span> <span class="pill info">confidence ${esc(node.confidence)}</span></p><p>${esc(node.definition)}</p><h3>Evidence</h3><div class="quote">${esc(node.example_sentence)}</div><p class="small">Publication: ${esc(node.supporting_publication)}<br>PMID: ${esc(node.pmid)}<br>DOI: ${esc(node.doi)}</p><h3>Connected Relationships (${connected.length})</h3><div class="relation-cards">${connected.map(rel => `<div class="relation-card"><b>${esc(rel.relationship_name)} <span class="pill info">${relationshipTier(rel.relationship_name)}</span></b><p class="small"><code>${esc(rel.source_node)}</code> → <code>${esc(rel.target_node)}</code></p><p>${esc(rel.scientific_meaning)}</p><div class="quote">${esc(rel.evidence_sentence)}</div><p class="small">Study: ${esc(rel.supporting_study)}<br>Confidence: ${esc(rel.confidence)}<br>Strength: ${esc(rel.relationship_strength)}</p></div>`).join('')}</div>`;
+  }
+
+  function resetGraphFocus() {
+    graphSearch.value = '';
+    typeFilter.value = '';
+    tierFilter.value = '';
+    evidenceFilter.value = '';
+    nodeEls.forEach(({group}) => group.classList.remove('dimmed', 'selected-node'));
+    edgeEls.forEach(({path, label}) => {
+      path.classList.remove('dimmed', 'related-edge');
+      label.classList.remove('dimmed', 'related-label');
+    });
+    details.innerHTML = '<h2>Full Graph View</h2><p class="small">The whole flowchart is visible. Click any node to focus its relationships and evidence details.</p>';
+  }
+  function applyGraphFilters() {
+    const query = graphSearch.value.trim().toLowerCase();
+    const selectedType = typeFilter.value;
+    const selectedTier = tierFilter.value;
+    const selectedEvidence = evidenceFilter.value;
+    const visibleNodes = new Set();
+    nodeEls.forEach(({group, node}) => {
+      const matchesText = !query || node.name.toLowerCase().includes(query) || node.id.toLowerCase().includes(query) || node.type.toLowerCase().includes(query);
+      const matchesType = !selectedType || node.type === selectedType;
+      const matchesEvidence = !selectedEvidence || node.evidence_strength === selectedEvidence || node.relationship_strength?.includes(selectedEvidence) || node.type !== 'Clinical Outcome';
+      const visible = matchesText && matchesType && matchesEvidence;
+      group.classList.toggle('dimmed', !visible);
+      if (visible) visibleNodes.add(node.id);
+    });
+    edgeEls.forEach(({path, label, rel}) => {
+      const tier = relationshipTier(rel.relationship_name);
+      const visible = (!selectedTier || tier === selectedTier) && visibleNodes.has(rel.source_node) && visibleNodes.has(rel.target_node);
+      path.classList.toggle('dimmed', !visible);
+      label.classList.toggle('dimmed', !visible);
+    });
+  }
+  function updateGraphLayout() {
+    positionNodes(viewMode.value, nodes);
+    nodeEls.forEach(({group, node}) => group.setAttribute('transform', `translate(${node.x},${node.y})`));
+    edgeEls.forEach(({path, label, rel}) => {
+      const source = byId[rel.source_node];
+      const target = byId[rel.target_node];
+      const dx = Math.abs(target.x - source.x);
+      const curve = Math.max(35, Math.min(130, dx * 0.35));
+      const c1x = source.x + curve;
+      const c2x = target.x - curve;
+      path.setAttribute('d', `M${source.x},${source.y} C${c1x},${source.y} ${c2x},${target.y} ${target.x},${target.y}`);
+      label.setAttribute('x', (source.x + target.x) / 2);
+      label.setAttribute('y', (source.y + target.y) / 2 - 6);
+    });
+  }
+  graphSearch.addEventListener('input', applyGraphFilters);
+  typeFilter.addEventListener('change', applyGraphFilters);
+  viewMode.addEventListener('change', () => { updateGraphLayout(); applyGraphFilters(); });
+  tierFilter.addEventListener('change', applyGraphFilters);
+  evidenceFilter.addEventListener('change', applyGraphFilters);
+  resetGraph.addEventListener('click', resetGraphFocus);
+  applyGraphFilters();
+}
+
+function evidence(data) {
+  const evidenceRows = data.entities.filter(entity => entity.type === 'Evidence').map(entity => `
+    <tr>
+      <td><code>${esc(entity.id)}</code><br>${esc(entity.name)}</td>
+      <td><div class="quote">${esc(entity.example_sentence)}</div></td>
+      <td>${esc(entity.supporting_publication)}</td>
+      <td>${esc(entity.pmid)}</td>
+      <td>${esc(entity.doi)}</td>
+      <td><span class="pill">${esc(entity.confidence)}</span></td>
+      <td><span class="pill warn">Animal / Review-summarized primary study</span></td>
+    </tr>`).join('');
+  const supportRows = data.relationships.filter(rel => rel.relationship_name === 'supports').map(rel => `
+    <tr><td><code>${esc(rel.source_node)}</code></td><td><code>${esc(rel.target_node)}</code></td><td>${esc(rel.evidence_sentence)}</td><td>${esc(rel.confidence)}</td></tr>`).join('');
+  document.getElementById('evidence').innerHTML = `
+    <div class="panel"><h2>Evidence Table</h2><table><tr><th>Evidence Node</th><th>Evidence Sentence</th><th>Study</th><th>PMID</th><th>DOI</th><th>Confidence</th><th>Evidence Strength</th></tr>${evidenceRows}</table></div>
+    <div class="panel"><h2>Evidence to Observation Links</h2><table><tr><th>Evidence</th><th>Observation</th><th>Supporting Sentence</th><th>Confidence</th></tr>${supportRows}</table></div>`;
+}
+
+function qa(data) {
+  const q = data.evidence_gate;
+  document.getElementById('qa').innerHTML = `
+    <div class="panel">
+      <h2>Functional Evidence-Gated Question Demo</h2>
+      <p>This page behaves like a small safe agent. It does not guess. It checks whether the graph contains evidence for the question, then either answers with evidence or blocks the answer.</p>
+      <div class="example-grid">
+        <button class="example-btn" data-question="What evidence links oral polystyrene microplastic exposure to liver effects in mice?">Try supported question<br><span class="small">Mouse + liver + polystyrene evidence exists</span></button>
+        <button class="example-btn" data-question="What evidence links microplastics to human cardiovascular disease?">Try blocked question<br><span class="small">Human cardiovascular evidence is not in this graph</span></button>
+        <button class="example-btn" data-question="Which biomarkers indicate oxidative stress in mouse liver?">Try biomarker question<br><span class="small">Uses SOD, CAT, and LDH evidence</span></button>
+      </div>
+      <label for="questionInput">Ask a question</label>
+      <textarea id="questionInput">What evidence links oral polystyrene microplastic exposure to liver effects in mice?</textarea>
+      <button class="run" id="runQuestion">Run Evidence Gate</button>
+      <div id="qaResult" style="margin-top:14px"></div>
+    </div>
+    <div class="panel"><h2>Stored Example Question</h2><p>${esc(q.question)}</p></div>
+    <div class="panel"><h2>Stored Ontology Mapping</h2><pre>${esc(JSON.stringify(q.ontology_mapping, null, 2))}</pre></div>
+    <div class="panel"><h2>Stored Evidence Gate Result</h2><p><span class="pill warn">${esc(q.evidence_strength)}</span> <span class="pill">score ${esc(q.evidence_score)}</span> <span class="pill">confidence ${esc(q.confidence)}</span></p><p>${esc(q.final_answer)}</p></div>
+    <div class="panel"><h2>Stored Research Gap</h2><p>${esc(q.research_gap)}</p></div>`;
+  document.querySelectorAll('.example-btn').forEach(button => {
+    button.addEventListener('click', () => {
+      document.getElementById('questionInput').value = button.dataset.question;
+      runQuestion(data);
+    });
+  });
+  document.getElementById('runQuestion').onclick = () => runQuestion(data);
+  runQuestion(data);
+}
+
+function runQuestion(data) {
+  const text = document.getElementById('questionInput').value.toLowerCase();
+  const mapping = {
+    exposure: includesAny(text, ['polystyrene', 'microplastic', 'plastic']) ? 'polystyrene microplastic' : null,
+    host_population: includesAny(text, ['mouse', 'mice']) ? 'mouse' : includesAny(text, ['human', 'people', 'patient']) ? 'human' : null,
+    tissue: includesAny(text, ['liver', 'hepatic']) ? 'liver' : null,
+    mechanism: includesAny(text, ['oxidative', 'stress']) ? 'oxidative stress' : null,
+    biomarker: includesAny(text, ['ldh']) ? 'LDH activity' : includesAny(text, ['sod']) ? 'SOD' : includesAny(text, ['cat', 'catalase']) ? 'CAT' : null,
+    outcome: includesAny(text, ['cardiovascular', 'heart']) ? 'cardiovascular outcome' : includesAny(text, ['liver', 'hepatic']) ? 'hepatic metabolic alteration' : null
+  };
+  const asksHuman = mapping.host_population === 'human';
+  const asksCardio = mapping.outcome === 'cardiovascular outcome';
+  const hasMinimalEvidence = mapping.exposure && mapping.tissue === 'liver' && !asksHuman && !asksCardio;
+  const evidenceNodes = data.entities.filter(entity => entity.type === 'Evidence');
+  const evidenceRows = evidenceNodes.map(entity => `<tr><td><code>${esc(entity.id)}</code></td><td>${esc(entity.example_sentence)}</td><td>${esc(entity.confidence)}</td></tr>`).join('');
+  let answer;
+  let gate;
+  let summary;
+  let cardClass;
+  if (hasMinimalEvidence) {
+    gate = '<span class="pill warn">Pass with animal-only limitation</span>';
+    cardClass = 'pass';
+    summary = 'Evidence found in the minimal graph. The answer is allowed, but it must be labeled as animal evidence.';
+    answer = data.evidence_gate.final_answer;
+  } else {
+    gate = '<span class="pill low">Blocked by evidence gate</span>';
+    cardClass = 'block';
+    summary = 'The graph does not contain enough evidence for this exact question. The agent blocks the answer instead of guessing.';
+    answer = asksHuman || asksCardio
+      ? 'The minimal graph does not contain direct human or cardiovascular evidence. Human evidence is insufficient in this prototype, so the agent cannot make a human clinical claim.'
+      : 'The minimal graph does not contain enough mapped evidence for this question. The agent refuses to answer rather than guessing.';
+  }
+  document.getElementById('qaResult').innerHTML = `
+    <div class="panel"><h2>Agent Output</h2>
+      <div class="answer-card ${cardClass}"><p>${gate}</p><p>${esc(summary)}</p></div>
+      <div class="grid">
+        <div class="panel"><h3>1. Question Parser</h3><p class="small">The mini-agent looks for ontology terms. Unmatched concepts stay null.</p><pre>${esc(JSON.stringify(mapping, null, 2))}</pre></div>
+        <div class="panel"><h3>2. Evidence Gate</h3><p>${hasMinimalEvidence ? 'Evidence was found for this mouse/liver/polystyrene chain.' : 'Evidence was not found for this question in the minimal graph.'}</p><p><span class="pill warn">Animal evidence only</span> <span class="pill info">No human claim allowed</span></p></div>
+      </div>
+      <h3>3. Retrieved Evidence</h3>
+      <table><tr><th>Evidence</th><th>Sentence</th><th>Confidence</th></tr>${hasMinimalEvidence ? evidenceRows : '<tr><td colspan="3">No supporting evidence retrieved for this question.</td></tr>'}</table>
+      <h3>4. Final Answer</h3><p>${esc(answer)}</p>
+      <h3>5. Research Gap</h3><p>${esc(data.evidence_gate.research_gap)}</p>
+    </div>`;
+}
+
+function review(data) {
+  const evidenceCount = data.entities.filter(entity => entity.type === 'Evidence').length;
+  const observationCount = data.entities.filter(entity => entity.type === 'Observation').length;
+  const outcome = data.entities.find(entity => entity.type === 'Clinical Outcome');
+  document.getElementById('review').innerHTML = `
+    <div class="review-hero">
+      <div class="panel hero-note">
+        <p class="pill warn">Automated review workspace prototype</p>
+        <h2 class="hero-title">Evidence synthesis for one inspectable exposure-outcome chain.</h2>
+        <p>The review workspace is designed to become automated later. In this minimal version, it turns the graph into a structured synthesis: what is supported, what is uncertain, what evidence is missing, and what text can feed manuscript sections.</p>
+        <div class="flow-band">
+          <div class="flow-card"><div class="k">Evidence</div><div class="v">${evidenceCount} statements</div></div>
+          <div class="flow-card"><div class="k">Observations</div><div class="v">${observationCount} supported</div></div>
+          <div class="flow-card"><div class="k">Evidence strength</div><div class="v">Animal</div></div>
+          <div class="flow-card"><div class="k">Outcome</div><div class="v">${esc(outcome?.outcome_name || outcome?.name || 'Hepatic effect')}</div></div>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>Confidence Snapshot</h2>
+        <div class="score-ring"><div>${esc(data.evidence_gate.confidence)}<br><span class="small">confidence</span></div></div>
+        <p><span class="pill warn">Animal evidence</span> <span class="pill info">Score ${esc(data.evidence_gate.evidence_score)}</span></p>
+        <div class="bar-track"><div class="bar-fill" style="width:${Math.round(data.evidence_gate.confidence * 100)}%"></div></div>
+        <p class="small">The score is intentionally conservative because this graph has animal evidence only and no direct human clinical evidence.</p>
+      </div>
+    </div>
+
+    <div class="lane-grid">
+      <div class="lane"><h3>Supported Finding</h3><div class="lane-body"><p>Oral polystyrene microplastic exposure in mice is linked to particle presence in liver and liver metabolic/oxidative-stress marker changes.</p><p><span class="pill">Supported by ${evidenceCount} evidence statements</span></p></div></div>
+      <div class="lane"><h3>Consensus</h3><div class="lane-body"><p>The selected evidence is internally consistent: exposure route, host, tissue, agent, and liver marker changes align within the same mouse-study chain.</p><p><span class="pill">No internal contradiction</span></p></div></div>
+      <div class="lane"><h3>Limitations</h3><div class="lane-body"><p>No direct human evidence, no clinical diagnosis endpoint, no PMID/DOI in the provided excerpt, and no independent replication modeled inside this minimal graph.</p><p><span class="pill warn">Animal-only interpretation</span></p></div></div>
+      <div class="lane"><h3>Research Gaps</h3><div class="lane-body"><p>Missing human studies, pediatric evidence, pregnancy evidence, longitudinal exposure-response data, and conflicting/null evidence for this exact chain.</p><p><span class="pill low">Human evidence insufficient</span></p></div></div>
+    </div>
+
+    <div class="panel">
+      <h2>Review Generation Pipeline</h2>
+      <div class="timeline">
+        ${[
+          ['1', 'Collect evidence', 'Read Evidence nodes and exact supporting sentences.'],
+          ['2', 'Group findings', 'Cluster observations by exposure, host, tissue, mechanism, biomarkers, and outcome.'],
+          ['3', 'Weigh evidence', 'Apply evidence strength, confidence, and study-type rules.'],
+          ['4', 'Gate claims', 'Allow only evidence-supported conclusions and label animal-only evidence.'],
+          ['5', 'Write synthesis', 'Generate summary, limitations, research gaps, and future-work text.']
+        ].map(([num, title, text]) => `<div class="timeline-step"><div class="dot">${num}</div><div><b>${esc(title)}</b><br><span class="small">${esc(text)}</span></div></div>`).join('')}
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Automation Slots for Later Work</h2>
+      <div class="automation-grid">
+        <div class="auto-card"><b>Contradictory Studies</b><p class="small">Reserved for opposing/null findings when added to the graph.</p></div>
+        <div class="auto-card"><b>Study Comparison</b><p class="small">Reserved for comparing sample size, host, exposure dose, and study design.</p></div>
+        <div class="auto-card"><b>Evidence Table Export</b><p class="small">Reserved for manuscript-ready CSV/Markdown evidence tables.</p></div>
+        <div class="auto-card"><b>Discussion Draft</b><p class="small">Reserved for auto-generated discussion paragraphs grounded in graph evidence.</p></div>
+        <div class="auto-card"><b>Limitations Draft</b><p class="small">Reserved for automatically listing evidence gaps and uncertainty.</p></div>
+        <div class="auto-card"><b>Future Work</b><p class="small">Reserved for study-design suggestions based on missing evidence.</p></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Manuscript-Ready Summary</h2>
+      <p>In a minimal evidence-gated graph derived from a review-summarized mouse study, oral polystyrene microplastic exposure was linked to particle presence in mouse liver and liver metabolic/oxidative-stress marker changes. The evidence is animal-only and should not be interpreted as direct human clinical evidence. The strongest current conclusion is a conservative animal-evidence signal for hepatic metabolic and oxidative response, with major gaps in human, pediatric, pregnancy, longitudinal, and conflicting-evidence data.</p>
+    </div>`;
+}
+
+function evidenceCoverage(data) {
+  const observations = data.entities.filter(entity => entity.type === 'Observation').map(entity => entity.id);
+  const supported = [...new Set(data.relationships.filter(rel => rel.relationship_name === 'supports' && rel.source_node.startsWith('evidence_')).map(rel => rel.target_node))];
+  return {total: observations.length, supported: supported.length};
+}
+
+function positionNodes(mode, nodes) {
+  const layouts = {
+    evidenceFlow: {
+      Publication: 70,
+      Study: 175,
+      Evidence: 295,
+      Observation: 430,
+      'Environmental Reservoir': 555,
+      Agent: 665,
+      'Exposure Pathway': 775,
+      'Host Population': 865,
+      Tissue: 865,
+      Mechanism: 950,
+      Biomarker: 1000,
+      'Clinical Outcome': 1015
+    },
+    evidenceType: {
+      Publication: 90,
+      Study: 190,
+      Evidence: 320,
+      Observation: 470,
+      'Environmental Reservoir': 620,
+      Agent: 620,
+      'Exposure Pathway': 760,
+      'Host Population': 875,
+      Tissue: 875,
+      Mechanism: 985,
+      Biomarker: 985,
+      'Clinical Outcome': 1015
+    },
+    clinical: {
+      Publication: 80,
+      Study: 170,
+      Evidence: 275,
+      Observation: 390,
+      'Environmental Reservoir': 515,
+      Agent: 620,
+      'Exposure Pathway': 720,
+      'Host Population': 800,
+      Tissue: 895,
+      Mechanism: 970,
+      Biomarker: 970,
+      'Clinical Outcome': 1015
+    }
+  };
+  const columns = layouts[mode] || layouts.evidenceFlow;
+  const seen = {};
+  nodes.forEach(node => {
+    seen[node.type] = (seen[node.type] || 0) + 1;
+    node.x = columns[node.type] || 560;
+    node.y = 64 + seen[node.type] * 54;
+    if (mode === 'clinical' && ['Tissue', 'Mechanism', 'Biomarker', 'Clinical Outcome'].includes(node.type)) {
+      node.y += 40;
+    }
+    if (mode === 'evidenceType' && ['Evidence', 'Observation'].includes(node.type)) {
+      node.y += 25;
+    }
+  });
+}
+
+function relationshipTier(name) {
+  const tier1 = ['contains', 'provides', 'located_in', 'occurs_in', 'part_of', 'belongs_to', 'investigates', 'about', 'exposes', 'enters_via', 'measured_in'];
+  return tier1.includes(name) ? 'Tier 1' : 'Tier 2';
+}
+
+function improvementChecklist() {
+  return [
+    {done: true, title: 'Reorganize Clinical Outcomes into medical specialties', note: 'The Outcomes page shows the full specialty hierarchy and the instantiated Gastroenterology/Hepatology outcome.'},
+    {done: true, title: 'Create an Overview page with examples', note: 'Overview explains environmental health, ontology, knowledge graph, evidence-gated AI, and the reasoning pipeline.'},
+    {done: true, title: 'Build an Ontology page', note: 'Ontology page explains nodes, relationships, evidence, definitions, examples, publications, PMID/DOI status, and confidence.'},
+    {done: true, title: 'Attach supporting study citations to every relationship', note: 'Every relationship has supporting_study, evidence_sentence, PMID, DOI, confidence, and relationship_strength.'},
+    {done: true, title: 'Replace generic associated_with edges', note: 'The minimal graph uses specific relations such as provides, supports, contains, located_in, activates, indicates, measured_in, and results_in.'},
+    {done: true, title: 'Simplify relationships into Tier 1 and Tier 2', note: 'The graph view labels and filters structural versus scientific reasoning relationships.'},
+    {done: true, title: 'Add evidence strength and confidence', note: 'Outcome and evidence gate include Animal evidence strength, numerical evidence score, and confidence values.'},
+    {done: true, title: 'Handle conflicting evidence or discrepancies', note: 'Review page states that no conflicting evidence is modeled in this minimal graph and flags this as future work rather than pretending it exists.'},
+    {done: true, title: 'Improve graph visualization and layout', note: 'Graph page now has hierarchical layout, color-coded node categories, edge labels, filters, search, and node detail popups.'},
+    {done: true, title: 'Remove unnecessary association nodes', note: 'The minimal graph has no Association nodes; scientific entities connect directly through evidence-backed relationships.'}
+  ];
+}
+
+function purposeForType(type) {
+  const purposes = {
+    Publication: 'Tracks the source publication used for provenance.',
+    Study: 'Represents a study or cited study summary that provides evidence.',
+    Evidence: 'Stores exact source statements so claims are traceable.',
+    Observation: 'Stores structured findings derived from evidence.',
+    'Environmental Reservoir': 'Stores the exposure context or reservoir.',
+    Agent: 'Stores the harmful or studied agent.',
+    'Exposure Pathway': 'Stores how the agent reaches the host.',
+    'Host Population': 'Stores who or what was exposed.',
+    Tissue: 'Stores the tissue where an effect or observation occurred.',
+    Mechanism: 'Stores the biological process involved.',
+    Biomarker: 'Stores measurable biological indicators.',
+    'Clinical Outcome': 'Stores the health/effect endpoint, conservatively labeled.'
+  };
+  return purposes[type] || 'Ontology node used by the evidence-gated graph.';
+}
+
+function includesAny(text, terms) {
+  return terms.some(term => text.includes(term));
+}
+
+function esc(value) {
+  return String(value ?? '').replace(/[&<>'"]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
+}
+</script>
+</body>
+</html>
