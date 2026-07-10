@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MPKG Provenance Screenshots</title>
+<style>
+  :root { --bg:#f6f7f9; --panel:#fff; --ink:#1f2933; --muted:#607080; --line:#d5dde6; --blue:#2f6f9f; --green:#238b6e; --gold:#a97814; --red:#b54747; }
+  * { box-sizing: border-box; }
+  body { margin:0; padding:28px; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; color:var(--ink); background:var(--bg); }
+  .page { max-width: 1300px; margin: 0 auto; }
+  h1 { margin:0 0 8px; font-size:28px; letter-spacing:0; }
+  h2 { margin:0 0 12px; font-size:20px; letter-spacing:0; }
+  h3 { margin:0 0 8px; font-size:16px; letter-spacing:0; }
+  p { line-height:1.55; }
+  .sub { color:var(--muted); font-size:14px; margin:0 0 18px; }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:18px; margin-bottom:16px; }
+  .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:16px 0; }
+  .stat { background:#fff; border:1px solid var(--line); border-radius:8px; padding:16px; min-height:104px; }
+  .n { font-size:38px; font-weight:800; color:var(--blue); }
+  .label { color:var(--muted); font-size:14px; }
+  .flow { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; align-items:stretch; margin-top:14px; }
+  .node { border:1px solid var(--line); border-radius:8px; padding:16px; background:#fff; position:relative; min-height:214px; }
+  .node:after { content:"→"; position:absolute; right:-23px; top:82px; font-size:30px; color:var(--blue); font-weight:800; }
+  .node:last-child:after { display:none; }
+  .type { display:inline-block; border-radius:999px; padding:4px 9px; font-size:12px; font-weight:800; background:#eef6f3; color:#126650; margin-bottom:8px; }
+  .quote { border-left:4px solid var(--gold); background:#fffaf0; padding:10px 12px; font-size:14px; line-height:1.45; font-style:italic; margin-top:10px; }
+  code { background:#f1f4f7; padding:2px 5px; border-radius:4px; overflow-wrap:anywhere; }
+  .meta { color:var(--muted); font-size:13px; margin-top:10px; }
+  .pill { display:inline-block; border-radius:999px; padding:4px 9px; font-size:12px; font-weight:800; margin:3px 4px 0 0; }
+  .good { background:#eef8f4; color:#136b55; }
+  .warn { background:#fff4df; color:#7b4b00; }
+  .info { background:#eaf3fa; color:#225f84; }
+  .two { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Microplastics KG Dashboard Screenshots</h1>
+  <p class="sub">One-paper minimal provenance tracing and 10-paper scaled evidence-gated dashboard summary.</p>
+
+  <section class="panel">
+    <h2>1-Paper Minimal Dashboard: Evidence → Observation → Outcome Provenance</h2>
+    <p>The minimal dashboard is based on one selected review paper and a hand-checkable 16-node / 20-relationship evidence chain. This screenshot shows how an exact evidence sentence supports a structured observation, which then supports a conservative outcome label.</p>
+    <div class="grid">
+      <div class="stat"><div class="n">1</div><div class="label">Source review paper</div></div>
+      <div class="stat"><div class="n">16</div><div class="label">Minimal graph nodes</div></div>
+      <div class="stat"><div class="n">20</div><div class="label">Relationships</div></div>
+      <div class="stat"><div class="n">2/2</div><div class="label">Evidence-supported observations</div></div>
+    </div>
+    <div class="flow">
+      <div class="node">
+        <span class="type">Evidence</span>
+        <h3><code>evidence_liver_metabolic_oxidative_markers</code></h3>
+        <div class="quote">Examination of the liver revealed dose-dependent alterations in energy metabolism, including reduced ATP levels and elevated LDH activity, alongside oxidative stress markers such as increased GSH-Px and SOD and decreased CAT.</div>
+        <div class="meta"><span class="pill good">confidence 0.98</span><span class="pill info">direct sentence</span></div>
+      </div>
+      <div class="node">
+        <span class="type">Observation</span>
+        <h3><code>observation_liver_metabolic_oxidative_response</code></h3>
+        <p>Structured observation of altered liver metabolism and oxidative-stress markers after polystyrene exposure.</p>
+        <div class="meta"><span class="pill good">confidence 0.95</span><span class="pill info">direct evidence</span></div>
+      </div>
+      <div class="node">
+        <span class="type">Outcome</span>
+        <h3><code>outcome_hepatic_metabolic_alteration</code></h3>
+        <p>The structured liver observation supports the conservative hepatic metabolic alteration outcome.</p>
+        <div class="meta"><span class="pill warn">confidence 0.75</span><span class="pill warn">animal evidence; conservative outcome</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>10-Paper Dashboard: Scaled Evidence-Gated Prototype</h2>
+    <p>The 10-paper dashboard scales the same idea from one source paper to 10 section-level source papers. It supports concept matching, question answering, random-paper testing, and KG-vs-LLM answer comparison.</p>
+    <div class="grid">
+      <div class="stat"><div class="n">10</div><div class="label">Papers</div></div>
+      <div class="stat"><div class="n">188</div><div class="label">Entities</div></div>
+      <div class="stat"><div class="n">365</div><div class="label">Relationships</div></div>
+      <div class="stat"><div class="n">80</div><div class="label">Evidence nodes</div></div>
+    </div>
+    <div class="two">
+      <div class="panel">
+        <h3>Evidence Flow</h3>
+        <p><code>Paper → Evidence → Observation → Concept → Question Answering → Gap or Answer → KG-vs-LLM comparison</code></p>
+      </div>
+      <div class="panel">
+        <h3>Validation Point</h3>
+        <p><span class="pill good">80/80 evidence-supported observations</span><span class="pill info">18 concept nodes</span><span class="pill warn">prototype evidence gate</span></p>
+      </div>
+    </div>
+  </section>
+</div>
+</body>
+</html>

@@ -1,0 +1,10 @@
+You are refining a 10-paper evidence-gated Microplastics KG after critique.
+
+Goals:
+1. keep only supported entities and relationships
+2. preserve exact evidence sentences
+3. mark evidence type as human, animal, in-vitro, review, or mixed/unspecified
+4. create conservative research-gap statements
+5. ensure the dashboard can support question answering and KG-vs-LLM answer comparison
+
+Return strict JSON only.

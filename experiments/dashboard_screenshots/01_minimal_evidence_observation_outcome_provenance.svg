@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1120" viewBox="0 0 1800 1120">
+  <rect width="1800" height="1120" fill="#f7f5ef"/>
+  <text x="64" y="82" font-family="Arial, sans-serif" font-size="42" font-weight="700" fill="#1f2933">Minimal Dashboard: Evidence -> Observation -> Outcome Provenance</text>
+  <text x="64" y="126" font-family="Arial, sans-serif" font-size="22" fill="#607080">1 source review paper | 16 nodes | 20 relationships | 2 evidence nodes | 2 observation nodes | 2/2 evidence-supported observations</text>
+
+  <rect x="64" y="190" width="516" height="530" rx="12" fill="#fffaf0" stroke="#c9d2dc" stroke-width="2"/>
+  <rect x="64" y="190" width="516" height="14" fill="#b38b1e"/>
+  <text x="92" y="250" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#b38b1e">Evidence</text>
+  <text x="92" y="302" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#1f2933">Evidence: liver metabolic and</text>
+  <text x="92" y="334" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#1f2933">oxidative-stress marker changes</text>
+  <text x="92" y="398" font-family="Arial, sans-serif" font-size="21" fill="#1f2933">Exact evidence sentence:</text>
+  <text x="92" y="438" font-family="Arial, sans-serif" font-size="20" fill="#1f2933">Examination of the liver revealed dose-dependent</text>
+  <text x="92" y="466" font-family="Arial, sans-serif" font-size="20" fill="#1f2933">alterations in energy metabolism, including</text>
+  <text x="92" y="494" font-family="Arial, sans-serif" font-size="20" fill="#1f2933">reduced ATP levels and elevated LDH activity,</text>
+  <text x="92" y="522" font-family="Arial, sans-serif" font-size="20" fill="#1f2933">alongside oxidative stress markers such as</text>
+  <text x="92" y="550" font-family="Arial, sans-serif" font-size="20" fill="#1f2933">increased GSH-Px and SOD and decreased CAT.</text>
+  <text x="92" y="625" font-family="Arial, sans-serif" font-size="19" fill="#607080">confidence: 0.98 | evidence type: direct sentence</text>
+
+  <line x1="580" y1="455" x2="625" y2="455" stroke="#2f6f9f" stroke-width="5"/>
+  <polygon points="625,441 625,469 650,455" fill="#2f6f9f"/>
+
+  <rect x="642" y="190" width="516" height="530" rx="12" fill="#eef8f4" stroke="#c9d2dc" stroke-width="2"/>
+  <rect x="642" y="190" width="516" height="14" fill="#238b6e"/>
+  <text x="670" y="250" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#238b6e">Observation</text>
+  <text x="670" y="302" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#1f2933">Mouse liver metabolic and</text>
+  <text x="670" y="334" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#1f2933">oxidative-stress response</text>
+  <text x="670" y="398" font-family="Arial, sans-serif" font-size="21" fill="#1f2933">Structured observation:</text>
+  <text x="670" y="438" font-family="Arial, sans-serif" font-size="20" fill="#1f2933">Altered liver metabolism and oxidative-stress</text>
+  <text x="670" y="466" font-family="Arial, sans-serif" font-size="20" fill="#1f2933">markers after polystyrene exposure.</text>
+  <text x="670" y="540" font-family="Arial, sans-serif" font-size="19" fill="#607080">Evidence -> Observation</text>
+  <text x="670" y="570" font-family="Arial, sans-serif" font-size="18" fill="#607080">evidence_liver_metabolic_oxidative_markers</text>
+  <text x="670" y="598" font-family="Arial, sans-serif" font-size="18" fill="#607080">-> observation_liver_metabolic_oxidative_response</text>
+  <text x="670" y="630" font-family="Arial, sans-serif" font-size="19" fill="#607080">confidence: 0.95 | strength: direct evidence</text>
+
+  <line x1="1158" y1="455" x2="1203" y2="455" stroke="#2f6f9f" stroke-width="5"/>
+  <polygon points="1203,441 1203,469 1228,455" fill="#2f6f9f"/>
+
+  <rect x="1220" y="190" width="516" height="530" rx="12" fill="#fff1f3" stroke="#c9d2dc" stroke-width="2"/>
+  <rect x="1220" y="190" width="516" height="14" fill="#c3475b"/>
+  <text x="1248" y="250" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#c3475b">Outcome</text>
+  <text x="1248" y="302" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#1f2933">Hepatic metabolic alteration</text>
+  <text x="1248" y="365" font-family="Arial, sans-serif" font-size="21" fill="#1f2933">Conservative outcome label:</text>
+  <text x="1248" y="405" font-family="Arial, sans-serif" font-size="20" fill="#1f2933">Reported liver metabolic alteration in mice;</text>
+  <text x="1248" y="433" font-family="Arial, sans-serif" font-size="20" fill="#1f2933">not a direct human clinical diagnosis.</text>
+  <text x="1248" y="540" font-family="Arial, sans-serif" font-size="19" fill="#607080">Observation -> Outcome</text>
+  <text x="1248" y="570" font-family="Arial, sans-serif" font-size="18" fill="#607080">observation_liver_metabolic_oxidative_response</text>
+  <text x="1248" y="598" font-family="Arial, sans-serif" font-size="18" fill="#607080">-> outcome_hepatic_metabolic_alteration</text>
+  <text x="1248" y="630" font-family="Arial, sans-serif" font-size="19" fill="#607080">confidence: 0.75 | strength: animal evidence</text>
+
+  <rect x="64" y="790" width="1672" height="230" rx="12" fill="#ffffff" stroke="#c9d2dc" stroke-width="2"/>
+  <text x="92" y="840" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#1f2933">Why this matters</text>
+  <text x="92" y="890" font-family="Arial, sans-serif" font-size="22" fill="#1f2933">The dashboard keeps the exact evidence sentence separate from the structured observation and the downstream outcome interpretation.</text>
+  <text x="92" y="930" font-family="Arial, sans-serif" font-size="22" fill="#1f2933">This prevents animal evidence from being overstated as direct human clinical evidence and makes provenance visible.</text>
+  <text x="92" y="980" font-family="Arial, sans-serif" font-size="20" fill="#607080">Dashboard source: experiments/minimal_evidence_gated/minimal_kg.json</text>
+</svg>

@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1260" viewBox="0 0 1800 1260">
+  <rect width="1800" height="1260" fill="#f6f7f9"/>
+  <text x="64" y="82" font-family="Arial, sans-serif" font-size="42" font-weight="700" fill="#1f2933">10-Paper Evidence-Gated Dashboard Overview</text>
+  <text x="64" y="126" font-family="Arial, sans-serif" font-size="22" fill="#607080">Scaled prototype with evidence-linked concepts, question testing, random-paper matching, and KG-vs-LLM comparison</text>
+
+  <rect x="64" y="175" width="520" height="130" rx="12" fill="#ffffff" stroke="#d5dde6" stroke-width="2"/>
+  <text x="92" y="232" font-family="Arial, sans-serif" font-size="44" font-weight="700" fill="#2f6f9f">10</text>
+  <text x="92" y="275" font-family="Arial, sans-serif" font-size="22" fill="#607080">Papers</text>
+  <rect x="640" y="175" width="520" height="130" rx="12" fill="#ffffff" stroke="#d5dde6" stroke-width="2"/>
+  <text x="668" y="232" font-family="Arial, sans-serif" font-size="44" font-weight="700" fill="#2f6f9f">188</text>
+  <text x="668" y="275" font-family="Arial, sans-serif" font-size="22" fill="#607080">Entities</text>
+  <rect x="1216" y="175" width="520" height="130" rx="12" fill="#ffffff" stroke="#d5dde6" stroke-width="2"/>
+  <text x="1244" y="232" font-family="Arial, sans-serif" font-size="44" font-weight="700" fill="#2f6f9f">365</text>
+  <text x="1244" y="275" font-family="Arial, sans-serif" font-size="22" fill="#607080">Relationships</text>
+  <rect x="64" y="345" width="520" height="130" rx="12" fill="#ffffff" stroke="#d5dde6" stroke-width="2"/>
+  <text x="92" y="402" font-family="Arial, sans-serif" font-size="44" font-weight="700" fill="#2f6f9f">18</text>
+  <text x="92" y="445" font-family="Arial, sans-serif" font-size="22" fill="#607080">Concept Nodes</text>
+  <rect x="640" y="345" width="520" height="130" rx="12" fill="#ffffff" stroke="#d5dde6" stroke-width="2"/>
+  <text x="668" y="402" font-family="Arial, sans-serif" font-size="44" font-weight="700" fill="#2f6f9f">80</text>
+  <text x="668" y="445" font-family="Arial, sans-serif" font-size="22" fill="#607080">Evidence Nodes</text>
+  <rect x="1216" y="345" width="520" height="130" rx="12" fill="#ffffff" stroke="#d5dde6" stroke-width="2"/>
+  <text x="1244" y="402" font-family="Arial, sans-serif" font-size="44" font-weight="700" fill="#2f6f9f">80</text>
+  <text x="1244" y="445" font-family="Arial, sans-serif" font-size="22" fill="#607080">Observation Nodes</text>
+
+  <rect x="64" y="540" width="1672" height="575" rx="12" fill="#ffffff" stroke="#d5dde6" stroke-width="2"/>
+  <text x="92" y="590" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#1f2933">Selected Source Set</text>
+  <text x="110" y="645" font-family="Arial, sans-serif" font-size="21" fill="#1f2933">1. Neurotoxicity Following Exposure to Micro and Nanoplastics</text>
+  <text x="110" y="685" font-family="Arial, sans-serif" font-size="21" fill="#1f2933">2. Neurotoxicity of nanoplastics: A review</text>
+  <text x="110" y="725" font-family="Arial, sans-serif" font-size="21" fill="#1f2933">3. Micro- and Nanoplastics Breach the Blood-Brain Barrier: Biomolecular Corona's Role Revealed</text>
+  <text x="110" y="765" font-family="Arial, sans-serif" font-size="21" fill="#1f2933">4. Detection of Microplastics in Human Breast Milk and Human Milk Bacterial Microbiota</text>
+  <text x="110" y="805" font-family="Arial, sans-serif" font-size="21" fill="#1f2933">5. Microplastics exposure: implications for human fertility, pregnancy and child health</text>
+  <text x="110" y="845" font-family="Arial, sans-serif" font-size="21" fill="#1f2933">6. Association between microplastics and central nervous system disorders</text>
+  <text x="110" y="885" font-family="Arial, sans-serif" font-size="21" fill="#1f2933">7. Microplastics and schizophrenia zebrafish models: neurotoxicity and oxidative stress</text>
+  <text x="110" y="925" font-family="Arial, sans-serif" font-size="21" fill="#1f2933">8. Potential effects of microplastics and additives of concern on human health</text>
+  <text x="110" y="965" font-family="Arial, sans-serif" font-size="21" fill="#1f2933">9. Microplastics in the Human Body: Exposure, Detection, and Risk of Carcinogenesis</text>
+  <text x="110" y="1005" font-family="Arial, sans-serif" font-size="21" fill="#1f2933">10. Polystyrene microplastics on human placental explants: cytotoxicity and oxidative stress</text>
+
+  <rect x="64" y="1160" width="1672" height="65" rx="12" fill="#eef8f4" stroke="#b8d9cb" stroke-width="2"/>
+  <text x="92" y="1202" font-family="Arial, sans-serif" font-size="22" fill="#136b55">Workflow: Paper -> Evidence -> Observation -> Concept -> Question Answering -> KG-vs-LLM comparison</text>
+</svg>
