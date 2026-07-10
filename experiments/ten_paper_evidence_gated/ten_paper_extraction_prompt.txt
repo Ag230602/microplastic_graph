@@ -135,4 +135,4 @@ SOURCE PAPER CONTENT
 ]
 
 Expected evidence chain:
-Paper -> Evidence -> Observation -> Concept -> Mechanism/Biomarker/Outcome/Gap
+Study -[provides]-> Evidence -[supports]-> Observation, with concepts attached only through approved ontology relations (has_polymer, has_size_class, affects, evaluates, assesses, investigates). Use only node and relationship types defined in entities_v1.json and relationships_v1.json.

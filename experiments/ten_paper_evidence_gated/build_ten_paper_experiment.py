@@ -27,6 +27,48 @@ OUT_EXTRACTION_PROMPT = HERE / "ten_paper_extraction_prompt.txt"
 OUT_CRITIQUE_PROMPT = HERE / "ten_paper_critique_prompt.txt"
 OUT_REFINEMENT_PROMPT = HERE / "ten_paper_refinement_prompt.txt"
 
+# Authoritative ontology (approved node types and relationship triples).
+ONTOLOGY_ENTITIES = ROOT / "entities_v1.json"
+ONTOLOGY_RELATIONSHIPS = ROOT / "relationships_v1.json"
+
+
+def load_ontology() -> tuple[set[str], set[tuple[str, str, str]]]:
+    """Load approved node types and (source, relation_type, target) triples."""
+    node_types = {item["title"] for item in json.loads(ONTOLOGY_ENTITIES.read_text(encoding="utf-8"))}
+    triples = {
+        (rel["source"], rel["relation_type"], rel["target"])
+        for rel in json.loads(ONTOLOGY_RELATIONSHIPS.read_text(encoding="utf-8"))
+    }
+    return node_types, triples
+
+
+VALID_NODE_TYPES, VALID_TRIPLES = load_ontology()
+
+# Map deterministic concept categories to their closest approved ontology node type.
+CATEGORY_TO_ONTOLOGY = {
+    "Agent": "ParticleSizeClass",
+    "Polymer": "Polymer",
+    "Tissue": "TissueOrgan",
+    "Tissue/Population": "TissueOrgan",
+    "Mechanism": "Mechanism",
+    "Outcome": "ClinicalOutcome",
+    "Host": "HostPopulation",
+}
+
+# Ontology-approved relation for an Observation -> mapped-concept edge (by target type).
+OBSERVATION_RELATION = {
+    "Polymer": "has_polymer",
+    "ParticleSizeClass": "has_size_class",
+    "TissueOrgan": "affects",
+}
+
+# Ontology-approved relation for a Study -> mapped-concept edge (by target type).
+STUDY_RELATION = {
+    "Mechanism": "evaluates",
+    "ClinicalOutcome": "assesses",
+    "HostPopulation": "investigates",
+}
+
 
 CONCEPTS = [
     {
@@ -289,8 +331,11 @@ def build_graph(papers: list[dict]) -> dict:
         })
         entities.append({
             "id": paper_id,
-            "type": "Paper",
+            "type": "Study",
             "name": title,
+            "title": title,
+            "label": title,
+            "design": evidence_type,
             "definition": "Section-level source paper used in the 10-paper evidence-gated prototype.",
             "evidence_type": evidence_type,
             "section_count": len([k for k in paper.keys() if k not in ("Title", "Abstract")]),
@@ -299,10 +344,12 @@ def build_graph(papers: list[dict]) -> dict:
         })
 
         for concept in top_hits:
+            mapped_type = CATEGORY_TO_ONTOLOGY[concept["category"]]
             concept_ids.add(concept["id"])
             paper_concepts[paper_id].append(concept["id"])
             sentence = supporting_sentence(paper_sentences, concept)
             confidence = confidence_for(evidence_type, sentence)
+            obs_confidence = round(max(confidence - 0.04, 0.5), 2)
             evidence_count += 1
             evidence_id = f"evidence_{index:02d}_{evidence_count:03d}_{concept['id'].replace('concept_', '')}"
             observation_count += 1
@@ -311,10 +358,12 @@ def build_graph(papers: list[dict]) -> dict:
                 "id": evidence_id,
                 "type": "Evidence",
                 "name": f"Evidence for {concept['name']} in Paper {index}",
+                "text": sentence,
                 "paper_id": paper_id,
                 "paper_title": title,
                 "concept_id": concept["id"],
                 "concept_name": concept["name"],
+                "concept_ontology_type": mapped_type,
                 "evidence_sentence": sentence,
                 "evidence_type": evidence_type,
                 "confidence": round(confidence, 2),
@@ -323,95 +372,97 @@ def build_graph(papers: list[dict]) -> dict:
                 "id": observation_id,
                 "type": "Observation",
                 "name": f"{title[:70]}: {concept['name']}",
+                "metric_type": "concept_mention_count",
+                "value": concept["count"],
+                "unit": "keyword_hits",
                 "paper_id": paper_id,
                 "concept_id": concept["id"],
                 "concept_name": concept["name"],
+                "concept_ontology_type": mapped_type,
                 "definition": f"Structured observation that this source discusses {concept['name']}.",
                 "evidence_type": evidence_type,
-                "confidence": round(max(confidence - 0.04, 0.5), 2),
+                "confidence": obs_confidence,
             })
-            relationships.extend([
-                {
-                    "id": f"rel_paper_evidence_{evidence_count:03d}",
-                    "relationship_name": "provides",
-                    "source_node": paper_id,
-                    "target_node": evidence_id,
-                    "evidence_sentence": sentence,
-                    "confidence": round(confidence, 2),
-                    "relationship_strength": evidence_type,
-                },
-                {
-                    "id": f"rel_evidence_observation_{evidence_count:03d}",
-                    "relationship_name": "supports",
-                    "source_node": evidence_id,
-                    "target_node": observation_id,
-                    "evidence_sentence": sentence,
-                    "confidence": round(confidence, 2),
-                    "relationship_strength": evidence_type,
-                },
-                {
+            # Study -> Evidence -> Observation is the ontology-approved evidence chain.
+            relationships.append({
+                "id": f"rel_study_evidence_{evidence_count:03d}",
+                "relation_type": "provides",
+                "source_node": paper_id,
+                "target_node": evidence_id,
+                "evidence_sentence": sentence,
+                "confidence": round(confidence, 2),
+                "relationship_strength": evidence_type,
+            })
+            relationships.append({
+                "id": f"rel_evidence_observation_{evidence_count:03d}",
+                "relation_type": "supports",
+                "source_node": evidence_id,
+                "target_node": observation_id,
+                "evidence_sentence": sentence,
+                "confidence": round(confidence, 2),
+                "relationship_strength": evidence_type,
+            })
+            # Attach the concept via an ontology-approved edge only. Observation-level
+            # edges cover Polymer/ParticleSizeClass/TissueOrgan; Study-level edges cover
+            # Mechanism/ClinicalOutcome/HostPopulation. Anything else is dropped.
+            observation_relation = OBSERVATION_RELATION.get(mapped_type)
+            study_relation = STUDY_RELATION.get(mapped_type)
+            if observation_relation:
+                relationships.append({
                     "id": f"rel_observation_concept_{evidence_count:03d}",
-                    "relationship_name": "about_concept",
+                    "relation_type": observation_relation,
                     "source_node": observation_id,
                     "target_node": concept["id"],
                     "evidence_sentence": sentence,
-                    "confidence": round(max(confidence - 0.04, 0.5), 2),
+                    "confidence": obs_confidence,
                     "relationship_strength": evidence_type,
-                },
-                {
-                    "id": f"rel_paper_concept_{evidence_count:03d}",
-                    "relationship_name": "mentions_concept",
+                })
+            if study_relation:
+                relationships.append({
+                    "id": f"rel_study_concept_{evidence_count:03d}",
+                    "relation_type": study_relation,
                     "source_node": paper_id,
                     "target_node": concept["id"],
                     "evidence_sentence": sentence,
                     "confidence": round(max(confidence - 0.08, 0.5), 2),
                     "relationship_strength": evidence_type,
-                },
-            ])
+                })
 
     for concept in CONCEPTS:
         if concept["id"] in concept_ids:
+            mapped_type = CATEGORY_TO_ONTOLOGY[concept["category"]]
             entities.append({
                 "id": concept["id"],
-                "type": "Concept",
+                "type": mapped_type,
                 "name": concept["name"],
+                "label": concept["name"],
                 "category": concept["category"],
                 "keywords": concept["keywords"],
                 "definition": f"Controlled concept matched across the 10-paper source set: {concept['name']}.",
             })
 
-    shared_rel_index = 0
-    paper_items = list(paper_concepts.items())
-    for left_index, (left_paper, left_concepts) in enumerate(paper_items):
-        for right_paper, right_concepts in paper_items[left_index + 1:]:
-            shared = sorted(set(left_concepts) & set(right_concepts))
-            if len(shared) < 3:
-                continue
-            shared_rel_index += 1
-            relationships.append({
-                "id": f"rel_shared_concepts_{shared_rel_index:03d}",
-                "relationship_name": "shares_concepts_with",
-                "source_node": left_paper,
-                "target_node": right_paper,
-                "shared_concepts": shared,
-                "evidence_sentence": f"Shared matched concepts: {', '.join(shared)}",
-                "confidence": 0.72,
-                "relationship_strength": "cross-paper concept overlap",
-            })
-
     type_counts = Counter(entity["type"] for entity in entities)
+    relation_counts = Counter(rel.get("relation_type") for rel in relationships)
     evidence_nodes = type_counts.get("Evidence", 0)
     observation_nodes = type_counts.get("Observation", 0)
+    concept_nodes = sum(1 for entity in entities if entity.get("keywords"))
     return {
         "experiment": "10-paper evidence-gated environmental health KG",
         "purpose": "Scale the minimal evidence-gated dashboard concept from one source paper to 10 section-level source papers with deterministic concept matching, question testing, and KG-vs-LLM answer comparison.",
         "source_files": ["../../data/data_sections.json", "../../data/data_title+abstract.json"],
         "selection_rule": "First 10 unique micro/nanoplastic-relevant section records, excluding obvious non-microplastic or duplicate records.",
+        "ontology": {
+            "source_files": ["entities_v1.json", "relationships_v1.json"],
+            "node_types_used": sorted(type_counts),
+            "relation_types_used": sorted(r for r in relation_counts if r),
+            "node_type_counts": dict(sorted(type_counts.items())),
+            "relation_type_counts": dict(sorted((k, v) for k, v in relation_counts.items() if k)),
+        },
         "counts": {
             "papers": len(papers),
             "entities": len(entities),
             "relationships": len(relationships),
-            "concept_nodes": type_counts.get("Concept", 0),
+            "concept_nodes": concept_nodes,
             "evidence_nodes": evidence_nodes,
             "observation_nodes": observation_nodes,
             "evidence_supported_observations": f"{observation_nodes}/{observation_nodes}",
@@ -464,7 +515,7 @@ SOURCE PAPER CONTENT
 {source_payload}
 
 Expected evidence chain:
-Paper -> Evidence -> Observation -> Concept -> Mechanism/Biomarker/Outcome/Gap
+Study -[provides]-> Evidence -[supports]-> Observation, with concepts attached only through approved ontology relations (has_polymer, has_size_class, affects, evaluates, assesses, investigates). Use only node and relationship types defined in entities_v1.json and relationships_v1.json.
 """
 
     critique = f"""You are a Knowledge Graph Auditor for the 10-paper Microplastics KG.
@@ -545,6 +596,19 @@ textarea {{ min-height:120px; resize:vertical; }}
 .concept {{ display:inline-block; border:1px solid var(--line); border-radius:6px; padding:6px 8px; margin:3px; font-size:12px; background:#fff; }}
 .two {{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:12px; }}
 @media (max-width:800px) {{ .two {{ grid-template-columns:1fr; }} }}
+.legend {{ display:flex; gap:14px; flex-wrap:wrap; margin:10px 0; font-size:12px; color:var(--muted); }}
+.legend .swatch {{ display:inline-block; width:11px; height:11px; border-radius:50%; margin-right:5px; vertical-align:middle; }}
+.graph-wrap {{ display:grid; grid-template-columns:1fr; gap:12px; align-items:start; }}
+#kgsvg {{ width:100%; height:600px; background:#fbfdff; border:1px solid var(--line); border-radius:8px; display:block; }}
+.g-node {{ cursor:pointer; }}
+.g-node circle {{ stroke:#fff; stroke-width:1.4px; }}
+.g-node text {{ font-size:10px; fill:var(--ink); pointer-events:none; }}
+.link {{ stroke:#c4cfd9; stroke-width:1px; fill:none; }}
+.link-label {{ font-size:9px; fill:#7d8a97; pointer-events:none; }}
+.dimmed {{ opacity:0.1; }}
+.selected-node circle {{ stroke:#111827; stroke-width:3px; }}
+.related-edge {{ stroke:var(--blue); stroke-width:1.8px; }}
+.relation-card {{ border:1px solid var(--line); border-radius:7px; padding:9px; margin:7px 0; background:#fff; }}
 </style>
 </head>
 <body>
@@ -558,12 +622,15 @@ textarea {{ min-height:120px; resize:vertical; }}
 const DATA = {payload};
 const TABS = [
   ['overview','Overview'], ['papers','Papers'], ['concepts','Concepts'], ['evidence','Evidence'],
+  ['graph','Graph'],
   ['qa','Question Answering'], ['test','Random Paper Test'], ['compare','KG vs LLM Compare'], ['workflow','Workflow']
 ];
+const TYPE_COLORS = {{ Study:'#2f6f9f', Evidence:'#a97814', Observation:'#238b6e', Polymer:'#7357a5', ParticleSizeClass:'#b5651d', TissueOrgan:'#2b8a8a', Mechanism:'#b54747', ClinicalOutcome:'#c2568f', HostPopulation:'#4a7a2f' }};
+const LABELLED_TYPES = new Set(['Study','Polymer','ParticleSizeClass','TissueOrgan','Mechanism','ClinicalOutcome','HostPopulation']);
 const esc = value => String(value ?? '').replace(/[&<>\"]/g, ch => ({{'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}}[ch]));
 const byId = Object.fromEntries(DATA.entities.map(entity => [entity.id, entity]));
-const concepts = DATA.entities.filter(entity => entity.type === 'Concept');
-const papers = DATA.entities.filter(entity => entity.type === 'Paper');
+const concepts = DATA.entities.filter(entity => Array.isArray(entity.keywords));
+const papers = DATA.entities.filter(entity => entity.type === 'Study');
 const evidence = DATA.entities.filter(entity => entity.type === 'Evidence');
 const observations = DATA.entities.filter(entity => entity.type === 'Observation');
 
@@ -579,8 +646,7 @@ function paperScore(text) {{
   const matched = conceptMatches(text);
   const matchIds = new Set(matched.map(item => item.id));
   return papers.map(paper => {{
-    const rels = DATA.relationships.filter(rel => rel.source_node === paper.id && rel.relationship_name === 'mentions_concept');
-    const paperConcepts = rels.map(rel => rel.target_node);
+    const paperConcepts = [...new Set(evidence.filter(ev => ev.paper_id === paper.id).map(ev => ev.concept_id))];
     const shared = paperConcepts.filter(id => matchIds.has(id));
     return {{paper, score: shared.length, shared}};
   }}).filter(row => row.score > 0).sort((a,b) => b.score - a.score || a.paper.name.localeCompare(b.paper.name));
@@ -604,7 +670,7 @@ function kgAnswer(question) {{
 function renderTabs(active='overview') {{
   document.getElementById('tabs').innerHTML = TABS.map(([id,label]) => `<button class=\"${{id===active?'active':''}}\" onclick=\"showTab('${{id}}')\">${{label}}</button>`).join('');
 }}
-function showTab(id) {{ renderTabs(id); document.getElementById('main').innerHTML = views[id](); }}
+function showTab(id) {{ renderTabs(id); document.getElementById('main').innerHTML = views[id](); if (id === 'graph') drawGraph(); }}
 
 const views = {{
 overview() {{
@@ -612,18 +678,38 @@ overview() {{
   return `<div class=\"grid\">
     ${{[['Papers',c.papers],['Entities',c.entities],['Relationships',c.relationships],['Concepts',c.concept_nodes],['Evidence Nodes',c.evidence_nodes],['Observations',c.observation_nodes]].map(([label,n]) => `<div class=\"panel\"><div class=\"n\">${{n}}</div><div class=\"small\">${{label}}</div></div>`).join('')}}
   </div>
-  <div class=\"panel\"><h2>Purpose</h2><p>${{esc(DATA.purpose)}}</p><p><span class=\"pill good\">No external LLM calls in dashboard</span><span class=\"pill warn\">Evidence-gated prototype</span><span class=\"pill\">10 papers</span></p></div>
-  <div class=\"panel\"><h2>Evidence Flow</h2><p>Paper -> Evidence -> Observation -> Concept -> Question Answering -> Gap or Answer -> KG-vs-LLM comparison.</p></div>`;
+  <div class=\"panel\"><h2>Purpose</h2><p>${{esc(DATA.purpose)}}</p><p><span class=\"pill good\">No external LLM calls in dashboard</span><span class=\"pill warn\">Evidence-gated prototype</span><span class=\"pill\">10 papers</span><span class=\"pill good\">Ontology-conformant (entities_v1 + relationships_v1)</span></p></div>
+  <div class=\"panel\"><h2>Evidence Flow</h2><p>Study -[provides]-> Evidence -[supports]-> Observation, with concepts attached through ontology-approved edges (has_polymer, has_size_class, affects, evaluates, assesses, investigates) -> Question Answering -> Gap or Answer -> KG-vs-LLM comparison.</p></div>
+  <div class=\"panel\"><h2>Ontology Conformance</h2><p class=\"small\">Every node type and relationship in this graph is validated against the approved ontology in entities_v1.json and relationships_v1.json.</p><p><b>Node types:</b> ${{(DATA.ontology?.node_types_used || []).map(t => `<span class=\"pill\">${{esc(t)}}</span>`).join('')}}</p><p><b>Relationship types:</b> ${{(DATA.ontology?.relation_types_used || []).map(t => `<span class=\"pill\">${{esc(t)}}</span>`).join('')}}</p></div>`;
 }},
 papers() {{
   return `<div class=\"panel\"><h2>Selected 10 Papers</h2><table><tr><th>Paper</th><th>Evidence Type</th><th>Matched Concepts</th><th>Size</th></tr>${{DATA.selected_sources.map(src => `<tr><td><b>${{esc(src.title)}}</b><br><span class=\"small\">${{esc(src.id)}}</span></td><td><span class=\"pill\">${{esc(src.evidence_type)}}</span></td><td>${{src.matched_concepts.map(c => `<span class=\"concept\">${{esc(c)}}</span>`).join('')}}</td><td>${{src.section_count}} sections<br>${{src.character_count}} chars</td></tr>`).join('')}}</table></div>`;
 }},
 concepts() {{
-  const counts = Object.fromEntries(concepts.map(concept => [concept.id, DATA.relationships.filter(rel => rel.target_node === concept.id && rel.relationship_name === 'mentions_concept').length]));
-  return `<div class=\"panel\"><h2>Concept Layer</h2><table><tr><th>Concept</th><th>Category</th><th>Paper Count</th><th>Keywords</th></tr>${{concepts.sort((a,b)=>(counts[b.id]||0)-(counts[a.id]||0)).map(c => `<tr><td><b>${{esc(c.name)}}</b><br><span class=\"small\">${{esc(c.id)}}</span></td><td>${{esc(c.category)}}</td><td>${{counts[c.id]||0}}</td><td>${{(c.keywords||[]).map(k => `<span class=\"concept\">${{esc(k)}}</span>`).join('')}}</td></tr>`).join('')}}</table></div>`;
+  const counts = Object.fromEntries(concepts.map(concept => [concept.id, new Set(evidence.filter(ev => ev.concept_id === concept.id).map(ev => ev.paper_id)).size]));
+  return `<div class=\"panel\"><h2>Concept Layer</h2><p class=\"small\">Each concept is stored as an ontology node type from entities_v1.json (its deterministic match category is shown for reference).</p><table><tr><th>Concept</th><th>Ontology Type</th><th>Category</th><th>Paper Count</th><th>Keywords</th></tr>${{concepts.sort((a,b)=>(counts[b.id]||0)-(counts[a.id]||0)).map(c => `<tr><td><b>${{esc(c.name)}}</b><br><span class=\"small\">${{esc(c.id)}}</span></td><td><span class=\"pill\">${{esc(c.type)}}</span></td><td>${{esc(c.category)}}</td><td>${{counts[c.id]||0}}</td><td>${{(c.keywords||[]).map(k => `<span class=\"concept\">${{esc(k)}}</span>`).join('')}}</td></tr>`).join('')}}</table></div>`;
 }},
 evidence() {{
   return `<div class=\"panel\"><h2>Evidence Table</h2><table><tr><th>Evidence</th><th>Concept</th><th>Paper</th><th>Sentence</th><th>Confidence</th></tr>${{evidence.map(ev => `<tr><td>${{esc(ev.name)}}</td><td>${{esc(ev.concept_name)}}</td><td>${{esc(ev.paper_title)}}</td><td>${{esc(ev.evidence_sentence)}}</td><td><span class=\"pill\">${{esc(ev.confidence)}}</span><br><span class=\"small\">${{esc(ev.evidence_type)}}</span></td></tr>`).join('')}}</table></div>`;
+}},
+graph() {{
+  const types = [...new Set(DATA.entities.map(e => e.type))].sort();
+  const paperOptions = papers.map(p => `<option value=\"${{esc(p.id)}}\">${{esc(p.name)}}</option>`).join('');
+  return `<div class=\"panel\">
+    <h2>Knowledge Graph</h2>
+    <p class=\"small\">Ontology-conformant graph (entities_v1 + relationships_v1). Node color = ontology node type. Click any node to focus its relationships and evidence. Studies and concept nodes are labelled; evidence and observation nodes are labelled on click.</p>
+    <div class=\"grid\">
+      <div><label class=\"small\">Search</label><input id=\"graphSearch\" placeholder=\"name, id, or type...\"></div>
+      <div><label class=\"small\">Node type</label><select id=\"graphType\"><option value=\"\">All node types</option>${{types.map(t => `<option value=\"${{esc(t)}}\">${{esc(t)}}</option>`).join('')}}</select></div>
+      <div><label class=\"small\">Focus a paper</label><select id=\"graphPaper\"><option value=\"\">All papers (full graph)</option>${{paperOptions}}</select></div>
+      <div><label class=\"small\">&nbsp;</label><button onclick=\"resetGraph()\">Reset view</button></div>
+    </div>
+    <div class=\"legend\" id=\"graphLegend\"></div>
+    <div class=\"graph-wrap\">
+      <svg id=\"kgsvg\" preserveAspectRatio=\"xMidYMid meet\"><defs><marker id=\"arrow\" viewBox=\"0 -5 10 10\" refX=\"18\" refY=\"0\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto\"><path d=\"M0,-5L10,0L0,5\" fill=\"#9aa7b2\"></path></marker></defs></svg>
+      <div class=\"panel\" id=\"graphDetails\"><h3>Select a node</h3><p class=\"small\">Click any node to see its ontology type, evidence, and connected relationships.</p></div>
+    </div>
+  </div>`;
 }},
 qa() {{
   return `<div class=\"panel\"><h2>Evidence-Gated Question Answering</h2><div class=\"grid\"><button onclick=\"setQuestion('What evidence links microplastics to oxidative stress?')\">Oxidative stress</button><button onclick=\"setQuestion('Do microplastics affect the blood-brain barrier and brain?')\">Brain / BBB</button><button onclick=\"setQuestion('What evidence exists for pregnancy or placenta effects?')\">Pregnancy / placenta</button><button onclick=\"setQuestion('Is there human evidence for neurotoxicity?')\">Human neurotoxicity</button></div><textarea id=\"question\" placeholder=\"Ask a question about microplastics, tissue, host, mechanism, biomarker, or outcome...\"></textarea><p><button onclick=\"runQA()\">Run KG Answer</button></p><div id=\"qaResult\"></div></div>`;
@@ -635,7 +721,7 @@ compare() {{
     return `<div class=\"panel\"><h2>Compare LLM Answer Against KG Answer</h2><p class=\"small\">Paste an LLM answer manually, or generate one through the local backend after setting an OpenAI or Gemini key in your terminal. The key is never stored in this HTML file.</p><div class=\"two\"><div><h3>Question</h3><textarea id=\"compareQuestion\" placeholder=\"Paste the question here...\"></textarea><h3>LLM Answer</h3><textarea id=\"llmAnswer\" placeholder=\"Paste any LLM answer here, or generate one with the local backend...\"></textarea><p><button onclick=\"generateLLMAnswer()\">Generate LLM Answer Locally</button> <button onclick=\"runCompare()\">Compare</button></p><p class=\"small\" id=\"llmStatus\">Local backend expected at <code>http://127.0.0.1:8765/api/llm</code>.</p></div><div><h3>Result</h3><div id=\"compareResult\" class=\"result\">Run comparison to see KG-supported concepts, missing evidence, and possible overclaim flags.</div></div></div></div>`;
 }},
 workflow() {{
-  return `<div class=\"panel\"><h2>Workflow</h2><ol><li>Select 10 unique micro/nanoplastic section-level papers from data_sections.json.</li><li>Create prompt artifacts for extraction, critique, and refinement.</li><li>Build deterministic evidence-linked concepts from section text.</li><li>Create Paper, Evidence, Observation, and Concept nodes.</li><li>Use the dashboard to test questions, screen random papers, and compare external LLM answers with KG-supported answers.</li></ol><p class=\"small\">This prototype does not call an external LLM. It prepares the prompt workflow and demonstrates the evidence gate locally.</p></div>`;
+  return `<div class=\"panel\"><h2>Workflow</h2><ol><li>Select 10 unique micro/nanoplastic section-level papers from data_sections.json.</li><li>Create prompt artifacts for extraction, critique, and refinement.</li><li>Build deterministic evidence-linked concepts from section text.</li><li>Create ontology-conformant Study, Evidence, Observation, and typed concept nodes (Polymer, ParticleSizeClass, TissueOrgan, Mechanism, ClinicalOutcome, HostPopulation) using only approved relationship types.</li><li>Use the dashboard to test questions, screen random papers, and compare external LLM answers with KG-supported answers.</li></ol><p class=\"small\">This prototype does not call an external LLM. It prepares the prompt workflow and demonstrates the evidence gate locally. Node and relationship types are validated against entities_v1.json and relationships_v1.json.</p></div>`;
 }}
 }};
 
@@ -683,6 +769,154 @@ function runCompare() {{
   if ((lower.includes('proves') || lower.includes('causes') || lower.includes('definitely')) && !lower.includes('limited')) overclaimFlags.push('Strong causal wording without visible uncertainty');
   if (lower.includes('human') && kg.rows.every(row => row.evidence_type !== 'human')) overclaimFlags.push('Human claim may not be directly supported by matched KG evidence');
   document.getElementById('compareResult').innerHTML = `${{renderAnswer(kg)}}<div class=\"panel\"><h3>LLM Answer Audit</h3><p><b>LLM concepts found:</b> ${{llmMatches.map(m => `<span class=\"concept\">${{esc(m.name)}}</span>`).join('') || 'None'}}</p><p><b>Concepts in LLM answer not matched by KG question evidence:</b> ${{unsupported.map(m => `<span class=\"concept\">${{esc(m.name)}}</span>`).join('') || 'None'}}</p><p><b>Overclaim flags:</b> ${{overclaimFlags.map(flag => `<span class=\"pill bad\">${{esc(flag)}}</span>`).join('') || '<span class=\"pill good\">No simple overclaim flag detected</span>'}}</p></div>`;
+}}
+
+let GRAPH = null;
+function drawGraph() {{
+  const svg = document.getElementById('kgsvg');
+  if (!svg) return;
+  const ns = 'http://www.w3.org/2000/svg';
+  const W = 1260, H = 660;
+  svg.setAttribute('viewBox', `0 0 ${{W}} ${{H}}`);
+  while (svg.lastChild && svg.lastChild.nodeName !== 'defs') svg.removeChild(svg.lastChild);
+
+  const COLS = {{ Study:120, Evidence:340, Observation:560, Polymer:800, ParticleSizeClass:800, TissueOrgan:800, Mechanism:1050, ClinicalOutcome:1050, HostPopulation:1050 }};
+  const nodes = DATA.entities.map((e, i) => {{
+    const sx = Math.sin(i * 43.11) * 10000; const jx = (sx - Math.floor(sx) - 0.5) * 70;
+    const sy = Math.sin(i * 91.7) * 10000; const jy = (sy - Math.floor(sy)) * (H - 60);
+    return {{ ref:e, id:e.id, type:e.type, name:e.name || e.id, x:(COLS[e.type] || 580) + jx, y:30 + jy }};
+  }});
+  const nById = Object.fromEntries(nodes.map(n => [n.id, n]));
+  const links = DATA.relationships.map(r => ({{ rel:r, s:nById[r.source_node], t:nById[r.target_node] }})).filter(l => l.s && l.t);
+
+  // Deterministic layered layout: columns follow the ontology evidence flow.
+  const columns = [['Study'],['Evidence'],['Observation'],['Polymer','ParticleSizeClass','TissueOrgan'],['Mechanism','ClinicalOutcome','HostPopulation']];
+  const COLX = [110, 360, 600, 850, 1090];
+  const spread = arr => {{ const gap=(H-70)/Math.max(arr.length,1); arr.forEach((n,i)=>{{ n.y=45+i*gap+gap/2; }}); }};
+  const colGroups = columns.map((types,ci) => {{
+    const arr = nodes.filter(n => types.includes(n.type));
+    arr.forEach(n => {{ n.x = COLX[ci]; }});
+    spread(arr);
+    return arr;
+  }});
+  const adj = {{}};
+  nodes.forEach(n => {{ adj[n.id] = []; }});
+  links.forEach(l => {{ adj[l.s.id].push(l.t.id); adj[l.t.id].push(l.s.id); }});
+  for (let sweep=0; sweep<10; sweep++) {{
+    colGroups.forEach(arr => {{
+      arr.forEach(n => {{ const nb=adj[n.id]; n._b = nb.length ? nb.reduce((s,id)=>s+nById[id].y,0)/nb.length : n.y; }});
+      arr.sort((a,b)=>a._b-b._b);
+      spread(arr);
+    }});
+  }}
+
+  const legend = document.getElementById('graphLegend');
+  legend.innerHTML = [...new Set(nodes.map(n => n.type))].sort().map(t => `<span><i class=\"swatch\" style=\"background:${{TYPE_COLORS[t] || '#5f7080'}}\"></i>${{esc(t)}}</span>`).join('');
+
+  const edgeEls = links.map(l => {{
+    const path = document.createElementNS(ns, 'path');
+    path.setAttribute('class', 'link');
+    path.setAttribute('marker-end', 'url(#arrow)');
+    svg.appendChild(path);
+    return {{ path, l }};
+  }});
+  const nodeEls = nodes.map(n => {{
+    const g = document.createElementNS(ns, 'g');
+    g.setAttribute('class', 'g-node');
+    const c = document.createElementNS(ns, 'circle');
+    const r = n.type === 'Study' ? 11 : (LABELLED_TYPES.has(n.type) ? 9 : 5);
+    c.setAttribute('r', r);
+    c.setAttribute('fill', TYPE_COLORS[n.type] || '#5f7080');
+    g.appendChild(c);
+    if (LABELLED_TYPES.has(n.type)) {{
+      const t = document.createElementNS(ns, 'text');
+      t.setAttribute('x', r + 3); t.setAttribute('y', 3);
+      t.textContent = n.name.length > 26 ? n.name.slice(0,25) + '...' : n.name;
+      g.appendChild(t);
+    }}
+    g.addEventListener('click', () => selectNode(n.id));
+    svg.appendChild(g);
+    return {{ g, n }};
+  }});
+
+  function layout() {{
+    nodeEls.forEach(({{g,n}}) => g.setAttribute('transform', `translate(${{n.x}},${{n.y}})`));
+    edgeEls.forEach(({{path,l}}) => {{
+      const dx = l.t.x - l.s.x; const curve = Math.max(20, Math.min(90, Math.abs(dx)*0.25));
+      path.setAttribute('d', `M${{l.s.x}},${{l.s.y}} C${{l.s.x+curve}},${{l.s.y}} ${{l.t.x-curve}},${{l.t.y}} ${{l.t.x}},${{l.t.y}}`);
+    }});
+  }}
+  layout();
+
+  GRAPH = {{ nodes, nById, links, edgeEls, nodeEls }};
+  applyGraphFilters();
+  document.getElementById('graphSearch').oninput = applyGraphFilters;
+  document.getElementById('graphType').onchange = applyGraphFilters;
+  document.getElementById('graphPaper').onchange = applyGraphFilters;
+}}
+
+function subgraphIds(paperId) {{
+  if (!paperId) return null;
+  const keep = new Set([paperId]);
+  let changed = true;
+  while (changed) {{
+    changed = false;
+    DATA.relationships.forEach(r => {{
+      if (keep.has(r.source_node) && !keep.has(r.target_node)) {{ keep.add(r.target_node); changed = true; }}
+    }});
+  }}
+  return keep;
+}}
+
+function applyGraphFilters() {{
+  if (!GRAPH) return;
+  const q = (document.getElementById('graphSearch')?.value || '').trim().toLowerCase();
+  const selType = document.getElementById('graphType')?.value || '';
+  const paperId = document.getElementById('graphPaper')?.value || '';
+  const sub = subgraphIds(paperId);
+  const visible = new Set();
+  GRAPH.nodeEls.forEach(({{g,n}}) => {{
+    const matchText = !q || n.name.toLowerCase().includes(q) || n.id.toLowerCase().includes(q) || n.type.toLowerCase().includes(q);
+    const matchType = !selType || n.type === selType;
+    const matchPaper = !sub || sub.has(n.id);
+    const show = matchText && matchType && matchPaper;
+    g.classList.toggle('dimmed', !show);
+    if (show) visible.add(n.id);
+  }});
+  GRAPH.edgeEls.forEach(({{path,l}}) => {{
+    path.classList.toggle('dimmed', !(visible.has(l.s.id) && visible.has(l.t.id)));
+  }});
+}}
+
+function resetGraph() {{
+  ['graphSearch','graphType','graphPaper'].forEach(id => {{ const el = document.getElementById(id); if (el) el.value = ''; }});
+  GRAPH?.nodeEls.forEach(({{g}}) => g.classList.remove('selected-node'));
+  GRAPH?.edgeEls.forEach(({{path}}) => path.classList.remove('related-edge'));
+  document.getElementById('graphDetails').innerHTML = '<h3>Select a node</h3><p class=\"small\">Click any node to see its ontology type, evidence, and connected relationships.</p>';
+  applyGraphFilters();
+}}
+
+function selectNode(id) {{
+  if (!GRAPH) return;
+  const node = byId[id];
+  const connected = DATA.relationships.filter(r => r.source_node === id || r.target_node === id);
+  const neighbors = new Set(connected.flatMap(r => [r.source_node, r.target_node]));
+  GRAPH.nodeEls.forEach(({{g,n}}) => {{
+    g.classList.toggle('selected-node', n.id === id);
+    g.classList.toggle('dimmed', n.id !== id && !neighbors.has(n.id));
+  }});
+  GRAPH.edgeEls.forEach(({{path,l}}) => {{
+    const rel = l.rel.source_node === id || l.rel.target_node === id;
+    path.classList.toggle('related-edge', rel);
+    path.classList.toggle('dimmed', !rel);
+  }});
+  const ev = node.evidence_sentence ? `<div class=\"quote\">${{esc(node.evidence_sentence)}}</div>` : '';
+  const rows = connected.map(r => {{
+    const other = r.source_node === id ? r.target_node : r.source_node;
+    const dir = r.source_node === id ? '&rarr;' : '&larr;';
+    return `<div class=\"relation-card\"><b>${{esc(r.relation_type)}}</b><p class=\"small\"><code>${{esc(byId[r.source_node]?.type)}}</code> ${{esc(r.relation_type)}} <code>${{esc(byId[r.target_node]?.type)}}</code></p><p class=\"small\">${{dir}} ${{esc(byId[other]?.name || other)}}</p>${{r.evidence_sentence ? `<div class=\"quote\">${{esc(r.evidence_sentence)}}</div>` : ''}}</div>`;
+  }}).join('');
+  document.getElementById('graphDetails').innerHTML = `<h3>${{esc(node.name)}}</h3><p><span class=\"pill\" style=\"background:${{TYPE_COLORS[node.type] || '#607080'}};color:#fff\">${{esc(node.type)}}</span>${{node.confidence!=null ? `<span class=\"pill\">confidence ${{esc(node.confidence)}}</span>` : ''}}</p>${{node.definition ? `<p class=\"small\">${{esc(node.definition)}}</p>` : ''}}${{ev}}<h3>Connected relationships (${{connected.length}})</h3>${{rows || '<p class=\"small\">None.</p>'}}`;
 }}
 
 showTab('overview');
@@ -758,12 +992,34 @@ The dashboard button `Generate LLM Answer Locally` calls only `http://127.0.0.1:
     OUT_README.write_text(text, encoding="utf-8")
 
 
+def validate_graph(graph: dict) -> None:
+    """Fail loudly if the graph uses any node type or relationship not in the ontology."""
+    by_id = {entity["id"]: entity for entity in graph["entities"]}
+    bad_nodes = sorted({e["type"] for e in graph["entities"] if e["type"] not in VALID_NODE_TYPES})
+    if bad_nodes:
+        raise ValueError(f"Non-ontology node types found: {bad_nodes}")
+    bad_rels = []
+    for rel in graph["relationships"]:
+        source = by_id.get(rel["source_node"])
+        target = by_id.get(rel["target_node"])
+        triple = (
+            source["type"] if source else "<missing>",
+            rel.get("relation_type"),
+            target["type"] if target else "<missing>",
+        )
+        if triple not in VALID_TRIPLES:
+            bad_rels.append({"id": rel.get("id"), "triple": triple})
+    if bad_rels:
+        raise ValueError(f"Non-ontology relationships found ({len(bad_rels)}): {bad_rels[:10]}")
+
+
 def main() -> None:
     records = json.loads(DATA_SECTIONS.read_text(encoding="utf-8"))
     papers = choose_papers(records, 10)
     if len(papers) != 10:
         raise RuntimeError(f"Expected 10 papers, selected {len(papers)}")
     graph = build_graph(papers)
+    validate_graph(graph)
     OUT_KG.write_text(json.dumps(graph, indent=2, ensure_ascii=True), encoding="utf-8")
     OUT_SOURCE_BUNDLE.write_text(json.dumps(source_bundle(papers, graph), indent=2, ensure_ascii=True), encoding="utf-8")
     write_prompts(graph, papers)
@@ -772,6 +1028,8 @@ def main() -> None:
     print(f"Wrote {OUT_KG.relative_to(ROOT)}")
     print(f"Wrote {OUT_DASHBOARD.relative_to(ROOT)}")
     print(f"Entities: {graph['counts']['entities']} Relationships: {graph['counts']['relationships']}")
+    print(f"Node types: {graph['ontology']['node_types_used']}")
+    print(f"Relation types: {graph['ontology']['relation_types_used']}")
 
 
 if __name__ == "__main__":

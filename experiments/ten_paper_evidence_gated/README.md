@@ -6,7 +6,7 @@ This experiment scales the minimal evidence-gated dashboard concept from one pap
 
 - Papers: 10
 - Entities: 188
-- Relationships: 365
+- Relationships: 240
 - Concept nodes: 18
 - Evidence nodes: 80
 - Observation nodes: 80
@@ -56,8 +56,6 @@ http://127.0.0.1:8765/experiments/ten_paper_evidence_gated/ten_paper_dashboard.h
 ```
 
 The dashboard button `Generate LLM Answer Locally` calls only `http://127.0.0.1:8765/api/llm`.
-
-For Gemini, the local server automatically lists available Gemini models and chooses a `generateContent`-capable model, preferring Flash models when available. You can override this with `GEMINI_MODEL` if needed.
 
 ## Files
 
