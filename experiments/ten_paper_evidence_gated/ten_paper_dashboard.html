@@ -36,6 +36,26 @@ textarea { min-height:120px; resize:vertical; }
 .concept { display:inline-block; border:1px solid var(--line); border-radius:6px; padding:6px 8px; margin:3px; font-size:12px; background:#fff; }
 .two { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:12px; }
 @media (max-width:800px) { .two { grid-template-columns:1fr; } }
+.hero { background:linear-gradient(135deg,#1f2933 0%,#2f6f9f 55%,#238b6e 100%); border:none; color:#fff; position:relative; overflow:hidden; }
+.hero h2 { color:#fff; font-size:23px; }
+.hero p { color:#e9eff3; max-width:760px; position:relative; z-index:1; }
+.hero .chip { background:rgba(255,255,255,.16); color:#fff; }
+.hero::after { content:''; position:absolute; right:-70px; top:-70px; width:240px; height:240px; border-radius:50%; background:rgba(255,255,255,.08); }
+.hero::before { content:''; position:absolute; right:60px; bottom:-90px; width:180px; height:180px; border-radius:50%; background:rgba(255,255,255,.06); }
+.statgrid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:14px; }
+.stat { border:1px solid var(--line); border-top:4px solid var(--blue); border-radius:12px; padding:16px; background:#fff; cursor:pointer; transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease; }
+.stat:hover { transform:translateY(-4px); box-shadow:0 12px 26px rgba(31,41,51,.14); }
+.stat .n { font-size:30px; }
+.stat .lbl { color:var(--muted); font-size:13px; font-weight:600; margin-top:2px; }
+.pipe { display:flex; flex-wrap:wrap; align-items:stretch; gap:2px; }
+.pipe .step { flex:1 1 130px; border:1px solid var(--line); border-radius:10px; padding:12px 10px; background:#fbfdff; cursor:pointer; transition:all .15s ease; text-align:center; }
+.pipe .step:hover { background:var(--blue); border-color:var(--blue); transform:translateY(-3px); box-shadow:0 8px 18px rgba(47,111,159,.28); }
+.pipe .step:hover * { color:#fff !important; }
+.pipe .arrow { display:flex; align-items:center; padding:0 4px; color:var(--muted); font-size:20px; }
+.bar-row { display:grid; grid-template-columns:150px 1fr 42px; gap:10px; align-items:center; margin:8px 0; font-size:13px; cursor:pointer; }
+.bar-row:hover .bar-fill { filter:brightness(1.08); }
+.bar-track { background:#eef2f6; border-radius:999px; height:14px; overflow:hidden; }
+.bar-fill { display:block; height:100%; border-radius:999px; background:linear-gradient(90deg,#2f6f9f,#238b6e); width:0; transition:width .9s cubic-bezier(.22,1,.36,1); }
 </style>
 </head>
 <body>
@@ -95,16 +115,63 @@ function kgAnswer(question) {
 function renderTabs(active='overview') {
   document.getElementById('tabs').innerHTML = TABS.map(([id,label]) => `<button class="${id===active?'active':''}" onclick="showTab('${id}')">${label}</button>`).join('');
 }
-function showTab(id) { renderTabs(id); document.getElementById('main').innerHTML = views[id](); if (id === 'compare') restoreApiKey(); if (id === 'graph') { renderGraph(); renderPrototypeGraph(); } if (id === 'observations') renderObservations(); }
+function showTab(id) { renderTabs(id); document.getElementById('main').innerHTML = views[id](); if (id === 'compare') restoreApiKey(); if (id === 'graph') { renderGraph(); renderPrototypeGraph(); } if (id === 'observations') renderObservations(); if (id === 'overview') animateOverview(); }
+function animateOverview() {
+  document.querySelectorAll('#main .n[data-target]').forEach(el => {
+    const target = +el.dataset.target, dur = 900, start = performance.now();
+    (function tick(now) { const p = Math.min(1, (now - start) / dur); el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3))); if (p < 1) requestAnimationFrame(tick); })(start);
+  });
+  requestAnimationFrame(() => document.querySelectorAll('#main .bar-fill[data-w]').forEach(el => { el.style.width = el.dataset.w + '%'; }));
+}
 
 const views = {
 overview() {
   const c = DATA.counts;
-  return `<div class="grid">
-    ${[['Papers',c.papers],['Entities',c.entities],['Relationships',c.relationships],['Concepts',c.concept_nodes],['Evidence Nodes',c.evidence_nodes],['Observations',c.observation_nodes]].map(([label,n]) => `<div class="panel"><div class="n">${n}</div><div class="small">${label}</div></div>`).join('')}
+  const stats = [
+    ['Papers', c.papers, 'papers', '#2f6f9f'],
+    ['Entities', c.entities, 'graph', '#7357a5'],
+    ['Relationships', c.relationships, 'graph', '#a97814'],
+    ['Concepts', c.concept_nodes, 'concepts', '#2563eb'],
+    ['Evidence Nodes', c.evidence_nodes, 'evidence', '#238b6e'],
+    ['Observations', c.observation_nodes, 'observations', '#b54747']
+  ];
+  const pipeline = [
+    ['Paper', c.papers, 'papers'],
+    ['Evidence', c.evidence_nodes, 'evidence'],
+    ['Observation', c.observation_nodes, 'observations'],
+    ['Concept', c.concept_nodes, 'concepts'],
+    ['Answer', 'Q&A', 'qa']
+  ];
+  const conceptCounts = concepts.map(cn => ({ name: cn.name, count: DATA.relationships.filter(r => r.target_node === cn.id && r.relationship_name === 'mentions_concept').length })).sort((a, b) => b.count - a.count).slice(0, 8);
+  const maxCount = Math.max(1, ...conceptCounts.map(x => x.count));
+  return `
+  <div class="panel hero">
+    <h2>Evidence-Gated Microplastics Knowledge Graph</h2>
+    <p>${esc(DATA.purpose)}</p>
+    <div style="margin-top:10px;position:relative;z-index:1;"><span class="pill chip">No external LLM calls</span><span class="pill chip">Evidence-gated</span><span class="pill chip">10 source papers</span><span class="pill chip">Deterministic matching</span></div>
   </div>
-  <div class="panel"><h2>Purpose</h2><p>${esc(DATA.purpose)}</p><p><span class="pill good">No external LLM calls in dashboard</span><span class="pill warn">Evidence-gated prototype</span><span class="pill">10 papers</span></p></div>
-  <div class="panel"><h2>Evidence Flow</h2><p>Paper -> Evidence -> Observation -> Concept -> Question Answering -> Gap or Answer -> KG-vs-LLM comparison.</p></div>`;
+  <div class="statgrid">
+    ${stats.map(([label, n, tab, color]) => `<div class="stat" style="border-top-color:${color};" onclick="showTab('${tab}')"><div class="n" data-target="${n}" style="color:${color};">0</div><div class="lbl">${label}</div></div>`).join('')}
+  </div>
+  <div class="panel"><h2>Evidence Flow</h2><p class="small">Every claim is traceable along this gate. Click any stage to open it.</p>
+    <div class="pipe">
+      ${pipeline.map((step, i) => `<div class="step" onclick="showTab('${step[2]}')"><div class="n" style="font-size:22px;color:var(--blue);">${typeof step[1] === 'number' ? step[1] : esc(step[1])}</div><div class="small" style="font-weight:700;color:var(--ink);">${esc(step[0])}</div></div>${i < pipeline.length - 1 ? '<div class="arrow">\u2192</div>' : ''}`).join('')}
+    </div>
+  </div>
+  <div class="two">
+    <div class="panel"><h2>Most-Referenced Concepts</h2><p class="small">Papers mentioning each concept. Click a bar to explore the concept layer.</p>
+      ${conceptCounts.map(x => `<div class="bar-row" onclick="showTab('concepts')"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${esc(x.name)}">${esc(x.name)}</span><span class="bar-track"><span class="bar-fill" data-w="${Math.round(x.count / maxCount * 100)}"></span></span><b style="text-align:right;">${x.count}</b></div>`).join('')}
+    </div>
+    <div class="panel"><h2>How It Works</h2>
+      <p class="small">A deterministic prototype scaling the minimal single-paper dashboard to 10 papers.</p>
+      <div style="display:grid;gap:10px;margin-top:6px;">
+        <div class="result"><b>1. Extract</b><p class="small">Exact sentences become Evidence nodes tied to their source Paper.</p></div>
+        <div class="result"><b>2. Structure</b><p class="small">Evidence supports Observations, normalized into a shared Concept layer.</p></div>
+        <div class="result"><b>3. Answer</b><p class="small">Questions are answered only from stored evidence, or flagged as a research gap.</p></div>
+        <div class="result"><b>4. Compare</b><p class="small">KG answers can be compared against an external LLM in the Compare tab.</p></div>
+      </div>
+    </div>
+  </div>`;
 },
 papers() {
   return `<div class="panel"><h2>Selected 10 Papers</h2><table><tr><th>Paper</th><th>Evidence Type</th><th>Matched Concepts</th><th>Size</th></tr>${DATA.selected_sources.map(src => `<tr><td><b>${esc(src.title)}</b><br><span class="small">${esc(src.id)}</span></td><td><span class="pill">${esc(src.evidence_type)}</span></td><td>${src.matched_concepts.map(c => `<span class="concept">${esc(c)}</span>`).join('')}</td><td>${src.section_count} sections<br>${src.character_count} chars</td></tr>`).join('')}</table></div>`;
