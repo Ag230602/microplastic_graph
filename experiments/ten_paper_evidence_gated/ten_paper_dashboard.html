@@ -117,7 +117,7 @@ evidence() {
   return `<div class="panel"><h2>Evidence Table</h2><table><tr><th>Evidence</th><th>Concept</th><th>Paper</th><th>Sentence</th><th>Confidence</th></tr>${evidence.map(ev => `<tr><td>${esc(ev.name)}</td><td>${esc(ev.concept_name)}</td><td>${esc(ev.paper_title)}</td><td>${esc(ev.evidence_sentence)}</td><td><span class="pill">${esc(ev.confidence)}</span><br><span class="small">${esc(ev.evidence_type)}</span></td></tr>`).join('')}</table></div>`;
 },
 graph() {
-  return `<div class="panel"><h2>Knowledge Graph</h2><p class="small">Interactive node-link view of the 10-paper KG. <span style="color:#059669;font-weight:600;">Green</span> = papers, <span style="color:#2563eb;font-weight:600;">blue</span> = concepts. Edges are <code>mentions_concept</code> links; bigger nodes have more connections. Drag any node to rearrange, and hover for details.</p><svg id="kgsvg" viewBox="0 0 900 600" style="width:100%;height:auto;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;cursor:grab;"></svg></div>`;
+  return `<div class="panel"><h2>Knowledge Graph</h2><p class="small">Interactive node-link view of the 10-paper KG. <span style="color:#059669;font-weight:600;">Green</span> = papers, <span style="color:#2563eb;font-weight:600;">blue</span> = concepts. Edges are <code>mentions_concept</code> links; bigger nodes have more connections. Drag any node to rearrange, and hover a node or edge for details.</p><div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;"><svg id="kgsvg" viewBox="0 0 900 600" style="flex:2 1 520px;min-width:320px;width:100%;height:auto;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;cursor:grab;"></svg><div id="kginfo" style="flex:1 1 260px;min-width:240px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:12px;max-height:600px;overflow:auto;"></div></div></div>`;
 },
 qa() {
   return `<div class="panel"><h2>Evidence-Gated Question Answering</h2><div class="grid"><button onclick="setQuestion('What evidence links microplastics to oxidative stress?')">Oxidative stress</button><button onclick="setQuestion('Do microplastics affect the blood-brain barrier and brain?')">Brain / BBB</button><button onclick="setQuestion('What evidence exists for pregnancy or placenta effects?')">Pregnancy / placenta</button><button onclick="setQuestion('Is there human evidence for neurotoxicity?')">Human neurotoxicity</button></div><textarea id="question" placeholder="Ask a question about microplastics, tissue, host, mechanism, biomarker, or outcome..."></textarea><p><button onclick="runQA()">Run KG Answer</button></p><div id="qaResult"></div></div>`;
@@ -239,8 +239,9 @@ const paperTitleById = Object.fromEntries((DATA.selected_sources || []).map(s =>
 let GRAPH_STATE = null;
 function buildGraphData() {
   const nodes = [], nodeIndex = {};
-  concepts.forEach(c => { nodeIndex[c.id] = nodes.length; nodes.push({id:c.id, label:c.name, type:'Concept'}); });
-  papers.forEach(p => { nodeIndex[p.id] = nodes.length; nodes.push({id:p.id, label:(paperTitleById[p.id] || p.name), type:'Paper'}); });
+  const srcById = Object.fromEntries((DATA.selected_sources || []).map(s => [s.id, s]));
+  concepts.forEach(c => { nodeIndex[c.id] = nodes.length; nodes.push({id:c.id, label:c.name, type:'Concept', raw:c}); });
+  papers.forEach(p => { nodeIndex[p.id] = nodes.length; nodes.push({id:p.id, label:(paperTitleById[p.id] || p.name), type:'Paper', raw:p, src:srcById[p.id]}); });
   const links = [];
   DATA.relationships.forEach(rel => {
     if (rel.relationship_name === 'mentions_concept' && nodeIndex[rel.source_node] !== undefined && nodeIndex[rel.target_node] !== undefined) {
@@ -272,15 +273,40 @@ function layoutGraph(nodes, links, width, height, iters) {
     });
   }
 }
-function drawGraph() {
+const GRAPH_DEFAULT_INFO = '<p class="small">Hover a node to see its details and evidence, or hover an edge to see the paper\u2013concept relationship. Drag nodes to rearrange.</p>';
+function setGraphInfo(html) { const box = document.getElementById('kginfo'); if (box) box.innerHTML = html; }
+function nodeInfoHTML(n) {
+  if (n.type === 'Concept') {
+    const evs = evidence.filter(ev => ev.concept_id === n.id);
+    const sample = evs.slice(0,3).map(ev => `<div class="quote"><b>${esc(ev.paper_title)}</b><br>${esc(ev.evidence_sentence)}</div>`).join('');
+    return `<h3><span style="color:#2563eb;">\u25cf</span> ${esc(n.label)}</h3><p class="small"><b>Type:</b> Concept &nbsp; <b>Category:</b> ${esc((n.raw && n.raw.category) || '\u2014')}</p><p class="small"><b>Mentioned by:</b> ${n.deg} papers &nbsp; <b>Evidence items:</b> ${evs.length}</p><p><b>Keywords:</b> ${((n.raw && n.raw.keywords) || []).map(k => `<span class="concept">${esc(k)}</span>`).join('') || '\u2014'}</p>${sample ? '<h3>Sample evidence</h3>' + sample : ''}`;
+  }
+  const s = n.src || {};
+  return `<h3><span style="color:#059669;">\u25cf</span> ${esc(n.label)}</h3><p class="small"><b>Type:</b> Paper &nbsp; <b>Evidence type:</b> ${esc(s.evidence_type || '\u2014')}</p><p class="small"><b>Concepts linked:</b> ${n.deg} &nbsp; <b>Size:</b> ${s.section_count || '\u2014'} sections, ${s.character_count || '\u2014'} chars</p><p><b>Matched concepts:</b> ${(s.matched_concepts || []).map(c => `<span class="concept">${esc(c)}</span>`).join('') || '\u2014'}</p>`;
+}
+function edgeInfoHTML(link) {
+  const a = GRAPH_STATE.nodes[link.source], b = GRAPH_STATE.nodes[link.target];
+  const paper = a.type === 'Paper' ? a : b, concept = a.type === 'Concept' ? a : b;
+  const ev = evidence.find(e => e.concept_id === concept.id && e.paper_title === paper.label);
+  return `<h3>Relationship &middot; mentions_concept</h3><p class="small"><span style="color:#059669;">\u25cf</span> <b>${esc(paper.label)}</b> &rarr; <span style="color:#2563eb;">\u25cf</span> <b>${esc(concept.label)}</b></p>${ev ? `<div class="quote">${esc(ev.evidence_sentence)}</div>` : '<p class="small">This paper mentions the concept; no single stored sentence was pinpointed for this pair.</p>'}`;
+}
+function drawGraph(hl) {
   const svg = document.getElementById('kgsvg');
   if (!svg || !GRAPH_STATE) return;
   const {nodes, links} = GRAPH_STATE;
-  const linkEls = links.map(l => `<line x1="${nodes[l.source].x.toFixed(1)}" y1="${nodes[l.source].y.toFixed(1)}" x2="${nodes[l.target].x.toFixed(1)}" y2="${nodes[l.target].y.toFixed(1)}" stroke="#cbd5e1" stroke-width="1"/>`).join('');
+  const linkEls = links.map((l,li) => {
+    let stroke = '#cbd5e1', w = 1, op = 1;
+    if (hl) { if (hl.linkSet.has(li)) { stroke = '#f59e0b'; w = 2.5; } else { op = 0.12; } }
+    return `<line class="kgedge" data-i="${li}" x1="${nodes[l.source].x.toFixed(1)}" y1="${nodes[l.source].y.toFixed(1)}" x2="${nodes[l.target].x.toFixed(1)}" y2="${nodes[l.target].y.toFixed(1)}" stroke="${stroke}" stroke-width="${w}" stroke-opacity="${op}"/>`;
+  }).join('');
   const nodeEls = nodes.map((n,i) => {
     const fill = n.type === 'Paper' ? '#059669' : '#2563eb';
     const short = n.label.length > 26 ? n.label.slice(0,24) + '\u2026' : n.label;
-    return `<g class="kgnode" data-i="${i}"><circle cx="${n.x.toFixed(1)}" cy="${n.y.toFixed(1)}" r="${n.r}" fill="${fill}" fill-opacity="0.85" stroke="#fff" stroke-width="1.5"><title>${esc(n.label)} (${esc(n.type)}, ${n.deg} links)</title></circle><text x="${n.x.toFixed(1)}" y="${(n.y-n.r-3).toFixed(1)}" font-size="9" text-anchor="middle" fill="#334155">${esc(short)}</text></g>`;
+    const dim = hl && !hl.nodeSet.has(i);
+    const nodeOp = dim ? 0.15 : 0.9;
+    const ring = (hl && hl.nodeSet.has(i)) ? 2.5 : 1.5;
+    const label = dim ? '' : `<text x="${n.x.toFixed(1)}" y="${(n.y-n.r-3).toFixed(1)}" font-size="9" text-anchor="middle" fill="#334155">${esc(short)}</text>`;
+    return `<g class="kgnode" data-i="${i}"><circle cx="${n.x.toFixed(1)}" cy="${n.y.toFixed(1)}" r="${n.r}" fill="${fill}" fill-opacity="${nodeOp}" stroke="#fff" stroke-width="${ring}"><title>${esc(n.label)} (${esc(n.type)}, ${n.deg} links)</title></circle>${label}</g>`;
   }).join('');
   svg.innerHTML = linkEls + nodeEls;
 }
@@ -289,13 +315,25 @@ function renderGraph() {
   if (!svg) return;
   const width = 900, height = 600, g = buildGraphData();
   layoutGraph(g.nodes, g.links, width, height, 350);
+  const incident = g.nodes.map(() => []);
+  g.links.forEach((l,li) => { incident[l.source].push(li); incident[l.target].push(li); });
+  g.incident = incident;
   GRAPH_STATE = g;
   drawGraph();
+  setGraphInfo(GRAPH_DEFAULT_INFO);
   let dragIdx = -1;
   const toSvg = evt => { const rect = svg.getBoundingClientRect(); return { x: (evt.clientX-rect.left)/rect.width*width, y: (evt.clientY-rect.top)/rect.height*height }; };
   svg.onmousedown = e => { const node = e.target.closest('.kgnode'); if (!node) return; dragIdx = +node.getAttribute('data-i'); svg.style.cursor = 'grabbing'; e.preventDefault(); };
   svg.onmousemove = e => { if (dragIdx < 0) return; const p = toSvg(e); GRAPH_STATE.nodes[dragIdx].x = p.x; GRAPH_STATE.nodes[dragIdx].y = p.y; drawGraph(); };
   window.addEventListener('mouseup', () => { dragIdx = -1; svg.style.cursor = 'grab'; });
+  svg.onmouseover = e => {
+    if (dragIdx >= 0) return;
+    const node = e.target.closest('.kgnode');
+    if (node) { const i = +node.getAttribute('data-i'); const linkSet = new Set(GRAPH_STATE.incident[i]); const nodeSet = new Set([i]); linkSet.forEach(li => { nodeSet.add(GRAPH_STATE.links[li].source); nodeSet.add(GRAPH_STATE.links[li].target); }); drawGraph({nodeSet, linkSet}); setGraphInfo(nodeInfoHTML(GRAPH_STATE.nodes[i])); return; }
+    const edge = e.target.closest('.kgedge');
+    if (edge) { const li = +edge.getAttribute('data-i'); const l = GRAPH_STATE.links[li]; drawGraph({nodeSet: new Set([l.source, l.target]), linkSet: new Set([li])}); setGraphInfo(edgeInfoHTML(l)); }
+  };
+  svg.onmouseout = e => { if (dragIdx >= 0) return; if (e.relatedTarget && svg.contains(e.relatedTarget)) return; drawGraph(); setGraphInfo(GRAPH_DEFAULT_INFO); };
 }
 
 showTab('overview');
