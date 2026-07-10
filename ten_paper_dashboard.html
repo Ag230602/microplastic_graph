@@ -56,6 +56,12 @@ textarea { min-height:120px; resize:vertical; }
 .bar-row:hover .bar-fill { filter:brightness(1.08); }
 .bar-track { background:#eef2f6; border-radius:999px; height:14px; overflow:hidden; }
 .bar-fill { display:block; height:100%; border-radius:999px; background:linear-gradient(90deg,#2f6f9f,#238b6e); width:0; transition:width .9s cubic-bezier(.22,1,.36,1); }
+.accent { border-left:4px solid var(--blue); }
+.tl-step { display:flex; gap:12px; align-items:flex-start; padding:9px 8px; border-radius:10px; transition:background .15s ease; }
+.tl-step:hover { background:#f1f6fb; }
+.tl-num { min-width:28px; height:28px; border-radius:50%; background:var(--blue); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; }
+.slot { border:1px dashed var(--line); border-radius:10px; padding:13px; background:#fbfcfe; transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease; }
+.slot:hover { transform:translateY(-3px); box-shadow:0 8px 18px rgba(31,41,51,.1); border-color:var(--blue); }
 </style>
 </head>
 <body>
@@ -115,9 +121,9 @@ function kgAnswer(question) {
 function renderTabs(active='overview') {
   document.getElementById('tabs').innerHTML = TABS.map(([id,label]) => `<button class="${id===active?'active':''}" onclick="showTab('${id}')">${label}</button>`).join('');
 }
-function showTab(id) { renderTabs(id); document.getElementById('main').innerHTML = views[id](); if (id === 'compare') restoreApiKey(); if (id === 'graph') { renderGraph(); renderPrototypeGraph(); } if (id === 'observations') renderObservations(); if (id === 'overview') animateOverview(); }
+function showTab(id) { renderTabs(id); document.getElementById('main').innerHTML = views[id](); if (id === 'compare') restoreApiKey(); if (id === 'graph') { renderGraph(); renderPrototypeGraph(); } if (id === 'observations') renderObservations(); if (id === 'overview' || id === 'review') animateOverview(); }
 function animateOverview() {
-  document.querySelectorAll('#main .n[data-target]').forEach(el => {
+  document.querySelectorAll('#main [data-target]').forEach(el => {
     const target = +el.dataset.target, dur = 900, start = performance.now();
     (function tick(now) { const p = Math.min(1, (now - start) / dur); el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3))); if (p < 1) requestAnimationFrame(tick); })(start);
   });
@@ -320,29 +326,26 @@ review() {
     ['Limitations Draft','Reserved for automatically listing evidence gaps and uncertainty.'],
     ['Future Work','Reserved for study-design suggestions based on missing specialties and hosts.']
   ];
-  return `<div class="panel"><p class="pill warn">Automated review workspace prototype</p><h2>Evidence synthesis across the 10-paper microplastics corpus</h2><p class="small">The review workspace turns the knowledge graph into a structured synthesis: what is supported, what is consistent, what is uncertain, and what evidence is missing. It is evidence-gated and designed to become automated later.</p>
-  <div class="grid">
-    <div class="card"><div class="n">${evidenceCount}</div><div class="small">Evidence statements</div></div>
-    <div class="card"><div class="n">${obsCount}</div><div class="small">Observations supported</div></div>
-    <div class="card"><div class="n">${DATA.counts.concept_nodes}</div><div class="small">Concepts synthesized</div></div>
-    <div class="card"><div class="n">${DATA.counts.papers}</div><div class="small">Source papers</div></div>
-  </div></div>
+  return `<div class="panel hero"><h2>Evidence Synthesis Across the 10-Paper Corpus</h2><p>The review workspace turns the knowledge graph into a structured synthesis: what is supported, what is consistent, what is uncertain, and what evidence is missing. Evidence-gated by design, ready to become automated later.</p><div style="margin-top:10px;position:relative;z-index:1;"><span class="pill chip">Evidence-gated</span><span class="pill chip">${DATA.counts.papers} papers</span><span class="pill chip">Automated review prototype</span></div></div>
+  <div class="statgrid">
+    ${[['Evidence statements',evidenceCount,'#238b6e',''],['Observations',obsCount,'#7357a5',''],['Concepts',DATA.counts.concept_nodes,'#2563eb',''],['Source papers',DATA.counts.papers,'#2f6f9f',''],['Mean confidence',pct,'#a97814','%']].map(([label,n,color,suffix]) => `<div class="stat" style="border-top-color:${color};cursor:default;"><div class="n" style="color:${color};"><span data-target="${n}">0</span>${suffix}</div><div class="lbl">${label}</div></div>`).join('')}
+  </div>
 
   <div class="two">
-    <div class="panel"><h2>Confidence Snapshot</h2><p><span class="n">${avg.toFixed(2)}</span> <span class="small">mean evidence confidence</span></p><div style="height:12px;background:#eef2f6;border-radius:999px;overflow:hidden;margin:8px 0;"><div style="height:100%;width:${pct}%;background:var(--green);"></div></div><p>${Object.entries(typeCounts).map(([t,n]) => `<span class="pill">${esc(t)}: ${n} paper(s)</span>`).join('')}</p><p class="small">Confidence is intentionally conservative: evidence is section-level and mixes human, in-vitro, and animal sources, with deterministic concept matching rather than manual curation.</p></div>
-    <div class="panel"><h2>Consensus Concepts</h2><p class="small">Concepts supported across the most papers in the corpus.</p>${topConcepts.map(c => `<div style="margin:6px 0;"><b>${esc(c.name)}</b> <span class="pill good">${c.n} paper(s)</span></div>`).join('')}</div>
+    <div class="panel"><h2>Confidence Snapshot</h2><p><span class="n" style="color:var(--green);">${avg.toFixed(2)}</span> <span class="small">mean evidence confidence</span></p><div class="bar-track" style="height:14px;margin:8px 0;"><span class="bar-fill" data-w="${pct}" style="background:linear-gradient(90deg,#238b6e,#2f6f9f);"></span></div><p>${Object.entries(typeCounts).map(([t,n]) => `<span class="pill">${esc(t)}: ${n} paper(s)</span>`).join('')}</p><p class="small">Confidence is intentionally conservative: evidence is section-level and mixes human, in-vitro, and animal sources, with deterministic concept matching rather than manual curation.</p></div>
+    <div class="panel"><h2>Consensus Concepts</h2><p class="small">Concepts supported across the most papers in the corpus. Click a bar to explore the concept layer.</p>${topConcepts.map(c => `<div class="bar-row" onclick="showTab('concepts')"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${esc(c.name)}">${esc(c.name)}</span><span class="bar-track"><span class="bar-fill" data-w="${Math.round(c.n/(topConcepts[0]?.n||1)*100)}"></span></span><b style="text-align:right;">${c.n}</b></div>`).join('')}</div>
   </div>
 
   <div class="grid">
-    <div class="panel"><h3>Supported Finding</h3><p class="small">Across the 10 papers, micro- and nanoplastic exposure is repeatedly linked to neurological, hepatic / gastrointestinal, reproductive, and cellular-mechanism outcomes.</p><p><span class="pill good">Supported by ${evidenceCount} evidence statements</span></p></div>
-    <div class="panel"><h3>Consensus</h3><p class="small">The most-mentioned concepts (${topConcepts.slice(0,3).map(c=>esc(c.name)).join(', ')}) recur across multiple independent papers, indicating internal agreement.</p><p><span class="pill">Cross-paper concept overlap</span></p></div>
-    <div class="panel"><h3>Limitations</h3><p class="small">Evidence is section-level and extracted deterministically; confidence scores are heuristic; human clinical endpoints and PMIDs / DOIs are not modeled inside the graph.</p><p><span class="pill warn">Mixed human / in-vitro / animal evidence</span></p></div>
-    <div class="panel"><h3>Research Gaps</h3><p class="small">No instantiated evidence yet for several specialties: ${gapSpecialties.join(', ')}. Conflicting and longitudinal evidence are also not represented.</p><p><span class="pill bad">Specialties without evidence</span></p></div>
+    <div class="panel accent" style="border-left-color:var(--green);"><h3>Supported Finding</h3><p class="small">Across the 10 papers, micro- and nanoplastic exposure is repeatedly linked to neurological, hepatic / gastrointestinal, reproductive, and cellular-mechanism outcomes.</p><span class="pill good">Supported by ${evidenceCount} evidence statements</span></div>
+    <div class="panel accent" style="border-left-color:var(--blue);"><h3>Consensus</h3><p class="small">The most-mentioned concepts (${topConcepts.slice(0,3).map(c=>esc(c.name)).join(', ')}) recur across multiple independent papers, indicating internal agreement.</p><span class="pill">Cross-paper concept overlap</span></div>
+    <div class="panel accent" style="border-left-color:var(--gold);"><h3>Limitations</h3><p class="small">Evidence is section-level and extracted deterministically; confidence scores are heuristic; human clinical endpoints and PMIDs / DOIs are not modeled inside the graph.</p><span class="pill warn">Mixed human / in-vitro / animal evidence</span></div>
+    <div class="panel accent" style="border-left-color:var(--red);"><h3>Research Gaps</h3><p class="small">No instantiated evidence yet for several specialties: ${gapSpecialties.join(', ')}. Conflicting and longitudinal evidence are also not represented.</p><span class="pill bad">Specialties without evidence</span></div>
   </div>
 
-  <div class="panel"><h2>Review Generation Pipeline</h2><div style="display:flex;flex-direction:column;gap:8px;">${steps.map(([num,title,text]) => `<div style="display:flex;gap:10px;align-items:flex-start;"><div style="min-width:26px;height:26px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;">${num}</div><div><b>${esc(title)}</b><br><span class="small">${esc(text)}</span></div></div>`).join('')}</div></div>
+  <div class="panel"><h2>Review Generation Pipeline</h2><div style="display:flex;flex-direction:column;gap:4px;">${steps.map(([num,title,text]) => `<div class="tl-step"><div class="tl-num">${num}</div><div><b>${esc(title)}</b><br><span class="small">${esc(text)}</span></div></div>`).join('')}</div></div>
 
-  <div class="panel"><h2>Automation Slots for Later Work</h2><div class="cards">${autos.map(([t,d]) => `<div class="card"><b>${esc(t)}</b><p class="small">${esc(d)}</p></div>`).join('')}</div></div>
+  <div class="panel"><h2>Automation Slots for Later Work</h2><div class="cards">${autos.map(([t,d]) => `<div class="slot"><b>${esc(t)}</b> <span class="pill warn">planned</span><p class="small">${esc(d)}</p></div>`).join('')}</div></div>
 
   <div class="panel"><h2>Manuscript-Ready Summary</h2><p>In a 10-paper evidence-gated knowledge graph, micro- and nanoplastic exposure was linked through ${evidenceCount} evidence statements and ${obsCount} observations to neurological, hepatic / gastrointestinal, reproductive, and cellular-mechanism outcomes such as ${topConcepts.slice(0,4).map(c=>esc(c.name)).join(', ')}. The synthesis is evidence-gated: it reflects only concepts supported by the represented papers and mixes human, in-vitro, and animal evidence, so it should not be read as direct human clinical proof. The strongest current signals are a conservative cross-paper association for the instantiated specialties, with major gaps in cardiology, pulmonology, endocrinology, immunology, oncology, nephrology, dermatology, and in conflicting or longitudinal evidence.</p></div>`;
 }
