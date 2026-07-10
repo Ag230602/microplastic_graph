@@ -95,7 +95,7 @@ function kgAnswer(question) {
 function renderTabs(active='overview') {
   document.getElementById('tabs').innerHTML = TABS.map(([id,label]) => `<button class="${id===active?'active':''}" onclick="showTab('${id}')">${label}</button>`).join('');
 }
-function showTab(id) { renderTabs(id); document.getElementById('main').innerHTML = views[id](); }
+function showTab(id) { renderTabs(id); document.getElementById('main').innerHTML = views[id](); if (id === 'compare') restoreApiKey(); }
 
 const views = {
 overview() {
@@ -123,7 +123,7 @@ test() {
   return `<div class="panel"><h2>Random Paper Test</h2><p class="small">Paste a random paper title/abstract. The dashboard checks whether it overlaps with concepts already represented in the 10-paper KG and recommends whether it should be added.</p><textarea id="paperText" placeholder="Paste title and abstract here..."></textarea><p><button onclick="runPaperTest()">Test Paper Against KG</button></p><div id="paperTestResult"></div></div>`;
 },
 compare() {
-    return `<div class="panel"><h2>Compare LLM Answer Against KG Answer</h2><p class="small">Paste an LLM answer manually, or generate one through the local backend after setting an OpenAI or Gemini key in your terminal. The key is never stored in this HTML file.</p><div class="two"><div><h3>Question</h3><textarea id="compareQuestion" placeholder="Paste the question here..."></textarea><h3>LLM Answer</h3><textarea id="llmAnswer" placeholder="Paste any LLM answer here, or generate one with the local backend..."></textarea><p><button onclick="generateLLMAnswer()">Generate LLM Answer Locally</button> <button onclick="runCompare()">Compare</button></p><p class="small" id="llmStatus">Local backend expected at <code>http://127.0.0.1:8765/api/llm</code>.</p></div><div><h3>Result</h3><div id="compareResult" class="result">Run comparison to see KG-supported concepts, missing evidence, and possible overclaim flags.</div></div></div></div>`;
+    return `<div class="panel"><h2>Compare LLM Answer Against KG Answer</h2><p class="small">Paste an LLM answer manually, or generate one using <b>your own</b> OpenAI or Gemini API key. Your key is used only in your browser to call the provider directly &mdash; it is never sent anywhere else, and it is never stored in this file or on the server.</p><div class="two"><div><h3>Question</h3><textarea id="compareQuestion" placeholder="Paste the question here..."></textarea><h3>Your API key</h3><input id="apiKey" type="password" placeholder="sk-... (OpenAI) or AIza... (Gemini)" style="width:100%;padding:8px;box-sizing:border-box;" oninput="onKeyInput()"><p class="small"><label><input type="checkbox" id="rememberKey" onchange="onRememberChange()"> Remember key in this browser</label> &nbsp; <select id="provider"><option value="auto">Auto-detect provider</option><option value="openai">OpenAI</option><option value="gemini">Gemini</option></select></p><h3>LLM Answer</h3><textarea id="llmAnswer" placeholder="Paste any LLM answer here, or generate one with your key..."></textarea><p><button onclick="generateLLMAnswer()">Generate LLM Answer</button> <button onclick="runCompare()">Compare</button></p><p class="small" id="llmStatus">Enter your own OpenAI or Gemini key above to generate an answer directly from your browser.</p></div><div><h3>Result</h3><div id="compareResult" class="result">Run comparison to see KG-supported concepts, missing evidence, and possible overclaim flags.</div></div></div></div>`;
 },
 workflow() {
   return `<div class="panel"><h2>Workflow</h2><ol><li>Select 10 unique micro/nanoplastic section-level papers from data_sections.json.</li><li>Create prompt artifacts for extraction, critique, and refinement.</li><li>Build deterministic evidence-linked concepts from section text.</li><li>Create Paper, Evidence, Observation, and Concept nodes.</li><li>Use the dashboard to test questions, screen random papers, and compare external LLM answers with KG-supported answers.</li></ol><p class="small">This prototype does not call an external LLM. It prepares the prompt workflow and demonstrates the evidence gate locally.</p></div>`;
@@ -142,24 +142,81 @@ function runPaperTest() {
   const recommendation = matches.length >= 4 ? 'High overlap: candidate is related to the existing KG and can be added with evidence extraction.' : matches.length ? 'Partial overlap: candidate may be relevant, but needs review.' : 'Low overlap: no strong concept match in the current 10-paper KG.';
   document.getElementById('paperTestResult').innerHTML = `<div class="result"><p><span class="pill ${matches.length>=4?'good':matches.length?'warn':'bad'}">${recommendation}</span></p><h3>Matched KG Concepts</h3><p>${matches.map(m => `<span class="concept">${esc(m.name)} (${m.count})</span>`).join('') || 'None'}</p><h3>Nearest Existing Papers</h3><table><tr><th>Paper</th><th>Shared Concepts</th></tr>${scores.slice(0,5).map(row => `<tr><td>${esc(row.paper.name)}</td><td>${row.shared.map(id => `<span class="concept">${esc(byId[id]?.name || id)}</span>`).join('')}</td></tr>`).join('') || '<tr><td colspan="2">No similar paper found.</td></tr>'}</table></div>`;
 }
+const LLM_SYSTEM_PROMPT = "You are a careful scientific assistant answering questions about microplastics and nanoplastics based on the general literature. Give a concise answer of one to two short paragraphs. State mechanisms and outcomes plainly, and explicitly note uncertainty or where human evidence is limited. Do not overstate causation.";
+function getApiKey() {
+    const el = document.getElementById('apiKey');
+    let key = el ? el.value.trim() : '';
+    if (!key) { try { key = localStorage.getItem('mpkg_api_key') || ''; } catch (e) {} }
+    return key;
+}
+function detectProvider(key) {
+    const sel = document.getElementById('provider');
+    const choice = sel ? sel.value : 'auto';
+    if (choice === 'openai' || choice === 'gemini') return choice;
+    return key.startsWith('sk-') ? 'openai' : 'gemini';
+}
+function onKeyInput() {
+    const el = document.getElementById('apiKey');
+    const remember = document.getElementById('rememberKey');
+    if (remember && remember.checked && el) { try { localStorage.setItem('mpkg_api_key', el.value.trim()); } catch (e) {} }
+}
+function onRememberChange() {
+    const el = document.getElementById('apiKey');
+    const remember = document.getElementById('rememberKey');
+    try { if (remember && remember.checked && el) localStorage.setItem('mpkg_api_key', el.value.trim()); else localStorage.removeItem('mpkg_api_key'); } catch (e) {}
+}
+function restoreApiKey() {
+    let saved = '';
+    try { saved = localStorage.getItem('mpkg_api_key') || ''; } catch (e) {}
+    const el = document.getElementById('apiKey');
+    const remember = document.getElementById('rememberKey');
+    if (saved && el) { el.value = saved; if (remember) remember.checked = true; }
+}
+async function callOpenAI(question, key) {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key},
+        body: JSON.stringify({ model: 'gpt-4o-mini', temperature: 0.2, messages: [ {role: 'system', content: LLM_SYSTEM_PROMPT}, {role: 'user', content: question} ] })
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error((data.error && data.error.message) || ('OpenAI error ' + response.status));
+    return {answer: (data.choices[0].message.content || '').trim(), model: 'gpt-4o-mini'};
+}
+async function callGemini(question, key) {
+    const models = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash'];
+    let lastErr = 'Gemini request failed';
+    for (const model of models) {
+        const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent?key=' + encodeURIComponent(key);
+        let response, data;
+        try {
+            response = await fetch(url, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ systemInstruction: {parts: [{text: LLM_SYSTEM_PROMPT}]}, contents: [{role: 'user', parts: [{text: question}]}], generationConfig: {temperature: 0.2} }) });
+            data = await response.json();
+        } catch (e) { lastErr = e.message; continue; }
+        if (response.ok && data.candidates && data.candidates[0]) {
+            const parts = (data.candidates[0].content && data.candidates[0].content.parts) || [];
+            const text = parts.map(p => p.text || '').join('').trim();
+            if (text) return {answer: text, model: model};
+        }
+        lastErr = (data && data.error && data.error.message) || ('Gemini error ' + (response ? response.status : ''));
+    }
+    throw new Error(lastErr);
+}
 async function generateLLMAnswer() {
     const question = document.getElementById('compareQuestion').value.trim();
     const status = document.getElementById('llmStatus');
     if (!question) { status.innerHTML = '<span class="pill bad">Add a question first.</span>'; return; }
-    status.innerHTML = '<span class="pill warn">Calling local LLM backend...</span>';
+    const key = getApiKey();
+    if (!key) { status.innerHTML = '<span class="pill bad">Enter your own OpenAI or Gemini API key above.</span>'; return; }
+    const provider = detectProvider(key);
+    status.innerHTML = '<span class="pill warn">Calling ' + provider + ' with your key...</span>';
     try {
-        const response = await fetch('http://127.0.0.1:8765/api/llm', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({question})
-        });
-        const data = await response.json();
-        if (!data.ok) throw new Error(data.error || 'Local backend returned an error.');
-        document.getElementById('llmAnswer').value = data.answer;
-        status.innerHTML = `<span class="pill good">Generated with ${esc(data.model || 'local LLM backend')}</span>`;
+        const result = provider === 'openai' ? await callOpenAI(question, key) : await callGemini(question, key);
+        if (!result.answer) throw new Error('Empty response from provider.');
+        document.getElementById('llmAnswer').value = result.answer;
+        status.innerHTML = `<span class="pill good">Generated with ${esc(result.model)}</span>`;
         runCompare();
     } catch (error) {
-        status.innerHTML = `<span class="pill bad">${esc(error.message)}. Restart the local server and enter a fresh OpenAI or Gemini key in that terminal.</span>`;
+        status.innerHTML = `<span class="pill bad">${esc(error.message)}</span>`;
     }
 }
 function runCompare() {
