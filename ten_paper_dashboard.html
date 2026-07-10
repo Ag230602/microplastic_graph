@@ -117,7 +117,7 @@ evidence() {
   return `<div class="panel"><h2>Evidence Table</h2><table><tr><th>Evidence</th><th>Concept</th><th>Paper</th><th>Sentence</th><th>Confidence</th></tr>${evidence.map(ev => `<tr><td>${esc(ev.name)}</td><td>${esc(ev.concept_name)}</td><td>${esc(ev.paper_title)}</td><td>${esc(ev.evidence_sentence)}</td><td><span class="pill">${esc(ev.confidence)}</span><br><span class="small">${esc(ev.evidence_type)}</span></td></tr>`).join('')}</table></div>`;
 },
 graph() {
-  return `<div class="panel"><h2>Knowledge Graph</h2><p class="small">Interactive node-link view of the 10-paper KG. <span style="color:#059669;font-weight:600;">Green</span> = papers, <span style="color:#2563eb;font-weight:600;">blue</span> = concepts. Edges are <code>mentions_concept</code> links; bigger nodes have more connections. Drag any node to rearrange, and hover a node or edge for details.</p><div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;"><svg id="kgsvg" viewBox="0 0 900 600" style="flex:2 1 520px;min-width:320px;width:100%;height:auto;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;cursor:grab;"></svg><div id="kginfo" style="flex:1 1 260px;min-width:240px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:12px;max-height:600px;overflow:auto;"></div></div></div>`;
+  return `<div class="panel"><h2>Knowledge Graph</h2><p class="small">Full evidence-gated graph produced by the extraction &amp; critique prompts: <b style="color:#059669;">Paper</b> \u2192 <b style="color:#f59e0b;">Evidence</b> \u2192 <b style="color:#7c3aed;">Observation</b> \u2192 <b style="color:#2563eb;">Concept</b>, plus <code>mentions_concept</code> shortcuts — the same schema and presentation as the minimal graph. Click a node for its full record and relationships, drag the canvas to pan, scroll to zoom, and use search / type filter on the right.</p><div style="display:flex;flex-wrap:wrap;gap:12px;align-items:stretch;"><svg id="kgsvg" style="flex:2 1 520px;min-width:320px;height:600px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;cursor:grab;" role="img" aria-label="Knowledge graph"></svg><aside style="flex:1 1 250px;min-width:230px;display:flex;flex-direction:column;gap:10px;"><div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;"><input id="kgsearch" type="search" placeholder="Search nodes" style="flex:1 1 120px;padding:6px;border:1px solid #cbd5e1;border-radius:6px;"><select id="kgtype" style="padding:6px;border:1px solid #cbd5e1;border-radius:6px;"><option value="">All types</option></select><button onclick="kgReset()">Reset</button></div><div id="kglegend" class="small" style="display:flex;flex-wrap:wrap;gap:10px;"></div><div id="kginfo" style="flex:1;background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:12px;min-height:180px;max-height:520px;overflow:auto;"><p class="small">Select a node to see its full record and relationships.</p></div></aside></div></div>`;
 },
 qa() {
   return `<div class="panel"><h2>Evidence-Gated Question Answering</h2><div class="grid"><button onclick="setQuestion('What evidence links microplastics to oxidative stress?')">Oxidative stress</button><button onclick="setQuestion('Do microplastics affect the blood-brain barrier and brain?')">Brain / BBB</button><button onclick="setQuestion('What evidence exists for pregnancy or placenta effects?')">Pregnancy / placenta</button><button onclick="setQuestion('Is there human evidence for neurotoxicity?')">Human neurotoxicity</button></div><textarea id="question" placeholder="Ask a question about microplastics, tissue, host, mechanism, biomarker, or outcome..."></textarea><p><button onclick="runQA()">Run KG Answer</button></p><div id="qaResult"></div></div>`;
@@ -235,105 +235,132 @@ function runCompare() {
   if (lower.includes('human') && kg.rows.every(row => row.evidence_type !== 'human')) overclaimFlags.push('Human claim may not be directly supported by matched KG evidence');
   document.getElementById('compareResult').innerHTML = `${renderAnswer(kg)}<div class="panel"><h3>LLM Answer Audit</h3><p><b>LLM concepts found:</b> ${llmMatches.map(m => `<span class="concept">${esc(m.name)}</span>`).join('') || 'None'}</p><p><b>Concepts in LLM answer not matched by KG question evidence:</b> ${unsupported.map(m => `<span class="concept">${esc(m.name)}</span>`).join('') || 'None'}</p><p><b>Overclaim flags:</b> ${overclaimFlags.map(flag => `<span class="pill bad">${esc(flag)}</span>`).join('') || '<span class="pill good">No simple overclaim flag detected</span>'}</p></div>`;
 }
-const paperTitleById = Object.fromEntries((DATA.selected_sources || []).map(s => [s.id, s.title]));
-let GRAPH_STATE = null;
-function buildGraphData() {
-  const nodes = [], nodeIndex = {};
-  const srcById = Object.fromEntries((DATA.selected_sources || []).map(s => [s.id, s]));
-  concepts.forEach(c => { nodeIndex[c.id] = nodes.length; nodes.push({id:c.id, label:c.name, type:'Concept', raw:c}); });
-  papers.forEach(p => { nodeIndex[p.id] = nodes.length; nodes.push({id:p.id, label:(paperTitleById[p.id] || p.name), type:'Paper', raw:p, src:srcById[p.id]}); });
-  const links = [];
-  DATA.relationships.forEach(rel => {
-    if (rel.relationship_name === 'mentions_concept' && nodeIndex[rel.source_node] !== undefined && nodeIndex[rel.target_node] !== undefined) {
-      links.push({source: nodeIndex[rel.source_node], target: nodeIndex[rel.target_node]});
-    }
-  });
-  const deg = nodes.map(() => 0);
-  links.forEach(l => { deg[l.source]++; deg[l.target]++; });
-  nodes.forEach((n,i) => { n.deg = deg[i]; n.r = (n.type === 'Paper' ? 8 : 5) + Math.min(9, deg[i]); });
-  return {nodes, links};
+const KG_COLORS = { Paper: '#059669', Concept: '#2563eb', Evidence: '#f59e0b', Observation: '#7c3aed' };
+const KG_RADIUS = { Paper: 11, Concept: 8, Evidence: 5, Observation: 5 };
+const KG_DEFAULT_INFO = '<p class="small">Select a node to see its full record and relationships.</p>';
+let kgResetFn = () => {};
+function kgReset() { kgResetFn(); }
+function setGraphInfo(html) { const box = document.getElementById('kginfo'); if (box) box.innerHTML = html; }
+function kgSeed(nodes, width, height) {
+  const cx = width/2, cy = height/2;
+  nodes.forEach((n,i) => { const a = (i/nodes.length)*Math.PI*2, rad = Math.min(width,height)*0.42*(0.5 + 0.5*((i*97)%100)/100); n.x = cx + Math.cos(a)*rad; n.y = cy + Math.sin(a)*rad; });
 }
-function layoutGraph(nodes, links, width, height, iters) {
-  nodes.forEach((n,i) => { const a = (i/nodes.length)*Math.PI*2; n.x = width/2 + Math.cos(a)*Math.min(width,height)/3; n.y = height/2 + Math.sin(a)*Math.min(width,height)/3; n.vx = 0; n.vy = 0; });
-  for (let it=0; it<iters; it++) {
+function kgLayout(nodes, links, width, height, steps) {
+  for (let it=0; it<steps; it++) {
+    const cool = 1 - it/steps;
+    for (let i=0;i<nodes.length;i++) { nodes[i].vx = 0; nodes[i].vy = 0; }
     for (let i=0;i<nodes.length;i++) for (let j=i+1;j<nodes.length;j++) {
       let dx = nodes[i].x-nodes[j].x, dy = nodes[i].y-nodes[j].y, d2 = dx*dx+dy*dy+0.01, d = Math.sqrt(d2);
-      let f = 2600/d2, fx = f*dx/d, fy = f*dy/d;
+      let f = 1800/d2, fx = f*dx/d, fy = f*dy/d;
       nodes[i].vx += fx; nodes[i].vy += fy; nodes[j].vx -= fx; nodes[j].vy -= fy;
     }
-    links.forEach(l => {
+    for (const l of links) {
       const a = nodes[l.source], b = nodes[l.target];
-      let dx = b.x-a.x, dy = b.y-a.y, d = Math.sqrt(dx*dx+dy*dy)+0.01, f = (d-90)*0.02, fx = f*dx/d, fy = f*dy/d;
+      let dx = b.x-a.x, dy = b.y-a.y, d = Math.sqrt(dx*dx+dy*dy)+0.01, f = (d-70)*0.03, fx = f*dx/d, fy = f*dy/d;
       a.vx += fx; a.vy += fy; b.vx -= fx; b.vy -= fy;
-    });
-    nodes.forEach(n => {
-      n.vx += (width/2-n.x)*0.001; n.vy += (height/2-n.y)*0.001;
-      n.x += n.vx*0.85; n.y += n.vy*0.85; n.vx *= 0.85; n.vy *= 0.85;
-      n.x = Math.max(n.r+2, Math.min(width-n.r-2, n.x)); n.y = Math.max(n.r+12, Math.min(height-n.r-2, n.y));
-    });
+    }
+    for (const n of nodes) {
+      n.vx += (width/2-n.x)*0.002; n.vy += (height/2-n.y)*0.002;
+      n.x += Math.max(-25, Math.min(25, n.vx))*cool; n.y += Math.max(-25, Math.min(25, n.vy))*cool;
+    }
   }
 }
-const GRAPH_DEFAULT_INFO = '<p class="small">Hover a node to see its details and evidence, or hover an edge to see the paper\u2013concept relationship. Drag nodes to rearrange.</p>';
-function setGraphInfo(html) { const box = document.getElementById('kginfo'); if (box) box.innerHTML = html; }
-function nodeInfoHTML(n) {
-  if (n.type === 'Concept') {
-    const evs = evidence.filter(ev => ev.concept_id === n.id);
-    const sample = evs.slice(0,3).map(ev => `<div class="quote"><b>${esc(ev.paper_title)}</b><br>${esc(ev.evidence_sentence)}</div>`).join('');
-    return `<h3><span style="color:#2563eb;">\u25cf</span> ${esc(n.label)}</h3><p class="small"><b>Type:</b> Concept &nbsp; <b>Category:</b> ${esc((n.raw && n.raw.category) || '\u2014')}</p><p class="small"><b>Mentioned by:</b> ${n.deg} papers &nbsp; <b>Evidence items:</b> ${evs.length}</p><p><b>Keywords:</b> ${((n.raw && n.raw.keywords) || []).map(k => `<span class="concept">${esc(k)}</span>`).join('') || '\u2014'}</p>${sample ? '<h3>Sample evidence</h3>' + sample : ''}`;
-  }
-  const s = n.src || {};
-  return `<h3><span style="color:#059669;">\u25cf</span> ${esc(n.label)}</h3><p class="small"><b>Type:</b> Paper &nbsp; <b>Evidence type:</b> ${esc(s.evidence_type || '\u2014')}</p><p class="small"><b>Concepts linked:</b> ${n.deg} &nbsp; <b>Size:</b> ${s.section_count || '\u2014'} sections, ${s.character_count || '\u2014'} chars</p><p><b>Matched concepts:</b> ${(s.matched_concepts || []).map(c => `<span class="concept">${esc(c)}</span>`).join('') || '\u2014'}</p>`;
-}
-function edgeInfoHTML(link) {
-  const a = GRAPH_STATE.nodes[link.source], b = GRAPH_STATE.nodes[link.target];
-  const paper = a.type === 'Paper' ? a : b, concept = a.type === 'Concept' ? a : b;
-  const ev = evidence.find(e => e.concept_id === concept.id && e.paper_title === paper.label);
-  return `<h3>Relationship &middot; mentions_concept</h3><p class="small"><span style="color:#059669;">\u25cf</span> <b>${esc(paper.label)}</b> &rarr; <span style="color:#2563eb;">\u25cf</span> <b>${esc(concept.label)}</b></p>${ev ? `<div class="quote">${esc(ev.evidence_sentence)}</div>` : '<p class="small">This paper mentions the concept; no single stored sentence was pinpointed for this pair.</p>'}`;
-}
-function drawGraph(hl) {
-  const svg = document.getElementById('kgsvg');
-  if (!svg || !GRAPH_STATE) return;
-  const {nodes, links} = GRAPH_STATE;
-  const linkEls = links.map((l,li) => {
-    let stroke = '#cbd5e1', w = 1, op = 1;
-    if (hl) { if (hl.linkSet.has(li)) { stroke = '#f59e0b'; w = 2.5; } else { op = 0.12; } }
-    return `<line class="kgedge" data-i="${li}" x1="${nodes[l.source].x.toFixed(1)}" y1="${nodes[l.source].y.toFixed(1)}" x2="${nodes[l.target].x.toFixed(1)}" y2="${nodes[l.target].y.toFixed(1)}" stroke="${stroke}" stroke-width="${w}" stroke-opacity="${op}"/>`;
-  }).join('');
-  const nodeEls = nodes.map((n,i) => {
-    const fill = n.type === 'Paper' ? '#059669' : '#2563eb';
-    const short = n.label.length > 26 ? n.label.slice(0,24) + '\u2026' : n.label;
-    const dim = hl && !hl.nodeSet.has(i);
-    const nodeOp = dim ? 0.15 : 0.9;
-    const ring = (hl && hl.nodeSet.has(i)) ? 2.5 : 1.5;
-    const label = dim ? '' : `<text x="${n.x.toFixed(1)}" y="${(n.y-n.r-3).toFixed(1)}" font-size="9" text-anchor="middle" fill="#334155">${esc(short)}</text>`;
-    return `<g class="kgnode" data-i="${i}"><circle cx="${n.x.toFixed(1)}" cy="${n.y.toFixed(1)}" r="${n.r}" fill="${fill}" fill-opacity="${nodeOp}" stroke="#fff" stroke-width="${ring}"><title>${esc(n.label)} (${esc(n.type)}, ${n.deg} links)</title></circle>${label}</g>`;
-  }).join('');
-  svg.innerHTML = linkEls + nodeEls;
+function kgFit(nodes, width, height) {
+  let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
+  for (const n of nodes) { minX=Math.min(minX,n.x); maxX=Math.max(maxX,n.x); minY=Math.min(minY,n.y); maxY=Math.max(maxY,n.y); }
+  const pad=44, w=(maxX-minX)||1, h=(maxY-minY)||1, s=Math.min((width-2*pad)/w, (height-2*pad)/h);
+  for (const n of nodes) { n.x = pad + (n.x-minX)*s; n.y = pad + (n.y-minY)*s; }
 }
 function renderGraph() {
   const svg = document.getElementById('kgsvg');
   if (!svg) return;
-  const width = 900, height = 600, g = buildGraphData();
-  layoutGraph(g.nodes, g.links, width, height, 350);
-  const incident = g.nodes.map(() => []);
-  g.links.forEach((l,li) => { incident[l.source].push(li); incident[l.target].push(li); });
-  g.incident = incident;
-  GRAPH_STATE = g;
-  drawGraph();
-  setGraphInfo(GRAPH_DEFAULT_INFO);
-  let dragIdx = -1;
-  const toSvg = evt => { const rect = svg.getBoundingClientRect(); return { x: (evt.clientX-rect.left)/rect.width*width, y: (evt.clientY-rect.top)/rect.height*height }; };
-  svg.onmousedown = e => { const node = e.target.closest('.kgnode'); if (!node) return; dragIdx = +node.getAttribute('data-i'); svg.style.cursor = 'grabbing'; e.preventDefault(); };
-  svg.onmousemove = e => { if (dragIdx < 0) return; const p = toSvg(e); GRAPH_STATE.nodes[dragIdx].x = p.x; GRAPH_STATE.nodes[dragIdx].y = p.y; drawGraph(); };
-  window.addEventListener('mouseup', () => { dragIdx = -1; svg.style.cursor = 'grab'; });
-  svg.onmouseover = e => {
-    if (dragIdx >= 0) return;
-    const node = e.target.closest('.kgnode');
-    if (node) { const i = +node.getAttribute('data-i'); const linkSet = new Set(GRAPH_STATE.incident[i]); const nodeSet = new Set([i]); linkSet.forEach(li => { nodeSet.add(GRAPH_STATE.links[li].source); nodeSet.add(GRAPH_STATE.links[li].target); }); drawGraph({nodeSet, linkSet}); setGraphInfo(nodeInfoHTML(GRAPH_STATE.nodes[i])); return; }
-    const edge = e.target.closest('.kgedge');
-    if (edge) { const li = +edge.getAttribute('data-i'); const l = GRAPH_STATE.links[li]; drawGraph({nodeSet: new Set([l.source, l.target]), linkSet: new Set([li])}); setGraphInfo(edgeInfoHTML(l)); }
-  };
-  svg.onmouseout = e => { if (dragIdx >= 0) return; if (e.relatedTarget && svg.contains(e.relatedTarget)) return; drawGraph(); setGraphInfo(GRAPH_DEFAULT_INFO); };
+  const ns = 'http://www.w3.org/2000/svg';
+  const width = svg.clientWidth || 640, height = svg.clientHeight || 600;
+  const nodes = DATA.entities.map(e => ({ id:e.id, label:e.name || e.id, type:e.type, data:e }));
+  const nodeIndex = Object.fromEntries(nodes.map((n,i) => [n.id, i]));
+  const links = DATA.relationships.filter(r => nodeIndex[r.source_node] !== undefined && nodeIndex[r.target_node] !== undefined).map(r => ({ source: nodeIndex[r.source_node], target: nodeIndex[r.target_node], label: r.relationship_name, data: r }));
+  const adjacency = nodes.map(() => new Set());
+  const incident = nodes.map(() => []);
+  links.forEach((l,li) => { adjacency[l.source].add(l.target); adjacency[l.target].add(l.source); incident[l.source].push(li); incident[l.target].push(li); });
+  kgSeed(nodes, width, height);
+  kgLayout(nodes, links, width, height, 260);
+  kgFit(nodes, width, height);
+  const types = [...new Set(nodes.map(n => n.type))];
+  const typeSel = document.getElementById('kgtype');
+  if (typeSel) typeSel.innerHTML = '<option value="">All types</option>' + types.map(t => `<option value="${esc(t)}">${esc(t)} (${nodes.filter(n => n.type === t).length})</option>`).join('');
+  const legend = document.getElementById('kglegend');
+  if (legend) legend.innerHTML = types.map(t => `<span><i style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${KG_COLORS[t] || '#64748b'};margin-right:4px;"></i>${esc(t)}</span>`).join('');
+  svg.innerHTML = '<defs><marker id="kgarrow" viewBox="0 -5 10 10" refX="16" refY="0" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,-5L10,0L0,5" fill="#94a3b8"></path></marker></defs>';
+  const viewport = document.createElementNS(ns, 'g'), edgeLayer = document.createElementNS(ns, 'g'), nodeLayer = document.createElementNS(ns, 'g');
+  viewport.append(edgeLayer, nodeLayer); svg.appendChild(viewport);
+  const edgeEls = links.map(l => { const line = document.createElementNS(ns, 'line'); line.setAttribute('stroke', '#cbd5e1'); line.setAttribute('stroke-width', '1'); line.setAttribute('marker-end', 'url(#kgarrow)'); edgeLayer.appendChild(line); return { line, l }; });
+  const nodeEls = nodes.map((n,i) => {
+    const g = document.createElementNS(ns, 'g'); g.style.cursor = 'pointer';
+    const c = document.createElementNS(ns, 'circle'); c.setAttribute('r', KG_RADIUS[n.type] || 5); c.setAttribute('fill', KG_COLORS[n.type] || '#64748b'); c.setAttribute('stroke', '#fff'); c.setAttribute('stroke-width', '1.5');
+    const t = document.createElementNS(ns, 'text'); t.setAttribute('x', (KG_RADIUS[n.type] || 5) + 3); t.setAttribute('y', 3); t.setAttribute('font-size', '9'); t.setAttribute('fill', '#334155');
+    t.textContent = (n.type === 'Paper' || n.type === 'Concept') ? (n.label.length > 28 ? n.label.slice(0,26) + '\u2026' : n.label) : '';
+    g.append(c, t);
+    g.addEventListener('mouseenter', () => { if (locked < 0) showFocus(i); });
+    g.addEventListener('mouseleave', () => { if (locked < 0) showFocus(-1); });
+    g.addEventListener('click', ev => { ev.stopPropagation(); locked = (locked === i) ? -1 : i; showFocus(locked >= 0 ? locked : i); });
+    nodeLayer.appendChild(g);
+    return { g, c, t, n };
+  });
+  let locked = -1;
+  function positions() {
+    edgeEls.forEach(({line, l}) => { line.setAttribute('x1', nodes[l.source].x); line.setAttribute('y1', nodes[l.source].y); line.setAttribute('x2', nodes[l.target].x); line.setAttribute('y2', nodes[l.target].y); });
+    nodeEls.forEach(({g, n}) => g.setAttribute('transform', 'translate(' + n.x + ',' + n.y + ')'));
+  }
+  function highlight(active) {
+    const q = ((document.getElementById('kgsearch') || {}).value || '').trim().toLowerCase();
+    const type = (document.getElementById('kgtype') || {}).value || '';
+    const related = active >= 0 ? adjacency[active] : null;
+    const visible = nodes.map(n => (!q || (n.label + ' ' + n.type).toLowerCase().includes(q)) && (!type || n.type === type));
+    nodeEls.forEach((item, i) => {
+      const dim = !visible[i] || (active >= 0 && i !== active && !related.has(i));
+      item.g.style.opacity = dim ? 0.1 : 1;
+      item.c.setAttribute('stroke-width', i === active ? 3 : 1.5);
+      item.t.textContent = (i === active || (!dim && (item.n.type === 'Paper' || item.n.type === 'Concept'))) ? (item.n.label.length > 28 ? item.n.label.slice(0,26) + '\u2026' : item.n.label) : '';
+    });
+    edgeEls.forEach(({line, l}) => {
+      const hidden = !visible[l.source] || !visible[l.target] || (active >= 0 && l.source !== active && l.target !== active);
+      const hi = active >= 0 && (l.source === active || l.target === active);
+      line.setAttribute('stroke', hi ? '#f59e0b' : '#cbd5e1'); line.setAttribute('stroke-width', hi ? 2 : 1); line.style.opacity = hidden ? 0.05 : 1;
+    });
+  }
+  function relLine(i, l) { return `<div class="small"><span class="pill">${esc(l.label)}</span> ${l.source === i ? '\u2192 ' + esc(nodes[l.target].label) + ' <span class="small">(' + esc(nodes[l.target].type) + ')</span>' : esc(nodes[l.source].label) + ' <span class="small">(' + esc(nodes[l.source].type) + ')</span> \u2192'}</div>`; }
+  function nodeDetailHTML(i) {
+    const n = nodes[i], data = n.data;
+    const outRels = incident[i].map(li => links[li]).filter(l => l.source === i);
+    const inRels = incident[i].map(li => links[li]).filter(l => l.target === i);
+    const fields = [];
+    if (data.category) fields.push(['Category', data.category]);
+    if (data.evidence_type) fields.push(['Evidence type', data.evidence_type]);
+    if (data.confidence !== undefined) fields.push(['Confidence', data.confidence]);
+    if (data.concept_name) fields.push(['Concept', data.concept_name]);
+    if (data.paper_title) fields.push(['Paper', data.paper_title]);
+    if (data.section_count) fields.push(['Sections', data.section_count + (data.character_count ? ' (' + data.character_count + ' chars)' : '')]);
+    const kw = (data.keywords || []).map(k => `<span class="concept">${esc(k)}</span>`).join('');
+    const sentence = data.evidence_sentence ? `<div class="quote">${esc(data.evidence_sentence)}</div>` : '';
+    const defn = data.definition ? `<p class="small">${esc(data.definition)}</p>` : '';
+    return `<h3><span style="color:${KG_COLORS[n.type] || '#64748b'};">\u25cf</span> ${esc(n.label)}</h3><p class="small"><b>${esc(n.type)}</b> &middot; ${esc(n.id)}</p>` + fields.map(([k,v]) => `<p class="small"><b>${esc(k)}:</b> ${esc(v)}</p>`).join('') + (kw ? `<p><b>Keywords:</b> ${kw}</p>` : '') + sentence + defn + (outRels.length ? `<h3>Outgoing (${outRels.length})</h3>` + outRels.slice(0,15).map(l => relLine(i, l)).join('') : '') + (inRels.length ? `<h3>Incoming (${inRels.length})</h3>` + inRels.slice(0,15).map(l => relLine(i, l)).join('') : '');
+  }
+  function showFocus(i) { highlight(i); setGraphInfo(i >= 0 ? nodeDetailHTML(i) : KG_DEFAULT_INFO); }
+  positions();
+  highlight(-1);
+  setGraphInfo(KG_DEFAULT_INFO);
+  const searchEl = document.getElementById('kgsearch'), typeEl = document.getElementById('kgtype');
+  if (searchEl) searchEl.oninput = () => highlight(locked);
+  if (typeEl) typeEl.onchange = () => highlight(locked);
+  let tf = { x: 0, y: 0, s: 1 };
+  const applyTf = () => viewport.setAttribute('transform', 'translate(' + tf.x + ',' + tf.y + ') scale(' + tf.s + ')');
+  let panning = false, last = null;
+  svg.addEventListener('pointerdown', e => { if (e.target.closest('g') && e.target.closest('g') !== viewport && e.target.tagName !== 'svg' && e.target.closest('g').parentNode === nodeLayer) return; panning = true; last = { x: e.clientX, y: e.clientY }; svg.style.cursor = 'grabbing'; });
+  svg.addEventListener('pointermove', e => { if (!panning) return; tf.x += e.clientX - last.x; tf.y += e.clientY - last.y; last = { x: e.clientX, y: e.clientY }; applyTf(); });
+  svg.addEventListener('pointerup', () => { panning = false; svg.style.cursor = 'grab'; });
+  svg.addEventListener('pointerleave', () => { panning = false; svg.style.cursor = 'grab'; });
+  svg.addEventListener('wheel', e => { e.preventDefault(); tf.s = Math.max(0.3, Math.min(3, tf.s * (e.deltaY > 0 ? 0.9 : 1.1))); applyTf(); }, { passive: false });
+  kgResetFn = () => { locked = -1; if (searchEl) searchEl.value = ''; if (typeEl) typeEl.value = ''; tf = { x: 0, y: 0, s: 1 }; applyTf(); showFocus(-1); };
 }
 
 showTab('overview');
