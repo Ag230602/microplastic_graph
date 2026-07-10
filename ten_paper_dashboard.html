@@ -114,43 +114,61 @@ concepts() {
   return `<div class="panel"><h2>Concept Layer</h2><table><tr><th>Concept</th><th>Category</th><th>Paper Count</th><th>Keywords</th></tr>${concepts.sort((a,b)=>(counts[b.id]||0)-(counts[a.id]||0)).map(c => `<tr><td><b>${esc(c.name)}</b><br><span class="small">${esc(c.id)}</span></td><td>${esc(c.category)}</td><td>${counts[c.id]||0}</td><td>${(c.keywords||[]).map(k => `<span class="concept">${esc(k)}</span>`).join('')}</td></tr>`).join('')}</table></div>`;
 },
 outcomes() {
-  const DOMAINS = [
-    ['Neurological & Behavioral', ['concept_brain','concept_bbb','concept_neurotoxicity','concept_behavior']],
-    ['Hepatic & Gastrointestinal', ['concept_liver','concept_gut']],
-    ['Reproductive & Developmental', ['concept_placenta','concept_fertility']],
-    ['Cellular & Molecular Mechanisms', ['concept_oxidative_stress','concept_inflammation','concept_apoptosis']]
-  ];
-  const outcomeIds = new Set(DOMAINS.flatMap(([,ids]) => ids));
+  const HIERARCHY = {
+    description: "Clinical Outcomes are organized by medical specialty instead of a flat list. The minimal graph instantiates one conservative Gastroenterology/Hepatology outcome, while the full ontology can use this hierarchy for filtering and expansion.",
+    filters: ["Medical Specialty","Organ System","Disease Category","Evidence Strength","Human/Animal/In-vitro Studies","Publication Year","Confidence Score"],
+    specialties: {
+      "Neurology": ["Cognitive Decline","Alzheimer's Disease","Parkinson's Disease","Neuroinflammation","Stroke","Neurotoxicity","Memory Impairment"],
+      "Cardiology": ["Hypertension","Atherosclerosis","Myocardial Injury","Arrhythmia","Heart Failure","Cardiovascular Disease"],
+      "Pulmonology": ["Asthma","COPD","Pulmonary Fibrosis","Airway Inflammation","Lung Injury"],
+      "Gastroenterology": ["Gut Dysbiosis","Intestinal Inflammation","Liver Injury","Hepatic Steatosis","Colitis","Gastrointestinal Toxicity","Hepatic metabolic alteration"],
+      "Endocrinology": ["Diabetes Mellitus","Obesity","Metabolic Syndrome","Thyroid Dysfunction","Insulin Resistance"],
+      "Reproductive Health": ["Infertility","Reduced Fertility","Placental Dysfunction","Pregnancy Complications","Fetal Development Disorders","Reproductive Toxicity"],
+      "Immunology": ["Chronic Inflammation","Immune Dysfunction","Autoimmune Response","Cytokine Storm","Immunotoxicity"],
+      "Oncology": ["Carcinogenesis","Tumor Progression","DNA Damage","Cell Proliferation","Cancer Risk"],
+      "Nephrology": ["Kidney Injury","Renal Dysfunction","Nephrotoxicity","Chronic Kidney Disease"],
+      "Dermatology": ["Dermatitis","Skin Inflammation","Skin Barrier Dysfunction","Allergic Skin Response"],
+      "General Systemic Outcomes": ["Oxidative Stress","Apoptosis","Fibrosis","Organ Damage","Cellular Toxicity","Systemic Inflammation","Multi-Organ Dysfunction"]
+    }
+  };
+  const SPECIALTY_CONCEPTS = {
+    "Neurology": ['concept_neurotoxicity','concept_brain','concept_bbb','concept_behavior'],
+    "Gastroenterology": ['concept_liver','concept_gut'],
+    "Reproductive Health": ['concept_placenta','concept_fertility'],
+    "General Systemic Outcomes": ['concept_oxidative_stress','concept_apoptosis','concept_inflammation']
+  };
   const stat = id => {
     const c = byId[id] || {name:id, category:''};
     const papersN = DATA.relationships.filter(r => r.target_node === id && r.relationship_name === 'mentions_concept').length;
-    const obs = observations.filter(o => o.concept_id === id);
     const evs = evidence.filter(e => e.concept_id === id);
     const confs = evs.map(e => Number(e.confidence)).filter(n => !isNaN(n));
     const avg = confs.length ? confs.reduce((a,b)=>a+b,0)/confs.length : null;
+    const obs = observations.filter(o => o.concept_id === id);
     const strength = papersN >= 5 ? 'Strong' : papersN >= 2 ? 'Moderate' : papersN ? 'Limited' : 'None';
     const sentence = evs.map(e => e.evidence_sentence).find(Boolean) || '';
-    return {c, papersN, obs, evs, avg, strength, sentence};
+    return {c, papersN, evs, avg, obs, strength, sentence};
   };
-  const domainCards = DOMAINS.map(([domain, ids]) => {
-    const active = ids.filter(id => stat(id).papersN > 0);
-    return `<div class="card"><h3>${active.length ? '\u2705' : '\u25cb'} ${esc(domain)}</h3><p class="small">${ids.map(id => esc(byId[id]?.name || id)).join(', ')}</p><p class="small">${active.length}/${ids.length} with supporting evidence</p></div>`;
+  const specialtyCards = Object.entries(HIERARCHY.specialties).map(([specialty, diseases]) => {
+    const ids = SPECIALTY_CONCEPTS[specialty] || [];
+    const active = ids.some(id => stat(id).papersN > 0);
+    const kgTags = ids.length ? `<p class="small">KG concepts: ${ids.map(id => `<span class="concept">${esc(byId[id]?.name || id)} (${stat(id).papersN})</span>`).join('')}</p>` : '';
+    return `<div class="card"><h3>${active ? '\u2705' : '\u25cb'} ${esc(specialty)}</h3><p class="small">${diseases.map(esc).join(', ')}</p>${kgTags}</div>`;
   }).join('');
-  const rows = DOMAINS.flatMap(([domain, ids]) => ids.map(id => {
+  const instantiated = Object.entries(SPECIALTY_CONCEPTS).flatMap(([specialty, ids]) => ids.map(id => {
     const s = stat(id);
     return `<tr>
+      <td>${esc(specialty)}</td>
       <td><b>${esc(s.c.name)}</b><br><span class="small">${esc(id)}</span></td>
-      <td>${esc(domain)}<br><span class="small">${esc(s.c.category)}</span></td>
       <td><span class="pill ${s.strength==='Strong'?'good':s.strength==='None'?'bad':'warn'}">${s.strength}</span><br><span class="small">${s.papersN} paper(s), ${s.obs.length} obs.</span></td>
       <td>${s.avg!=null ? 'avg '+s.avg.toFixed(2) : '\u2014'}<br><span class="small">${s.evs.length} evidence node(s)</span></td>
       <td>${s.sentence ? `<div class="quote">${esc(s.sentence)}</div>` : '<span class="small">No stored evidence sentence.</span>'}</td>
     </tr>`;
   })).join('');
-  const totalActive = [...outcomeIds].filter(id => stat(id).papersN > 0).length;
-  return `<div class="panel"><h2>Health Outcome Hierarchy</h2><p class="small">The 10-paper KG groups microplastic and nanoplastic health-effect concepts into clinical domains, mirroring the minimal dashboard's clinical-outcome view. Each outcome is evidence-gated: strength reflects how many source papers and stored evidence sentences support it.</p><p>${DOMAINS.map(([d]) => `<span class="pill">${esc(d)}</span>`).join('')}</p></div>
-  <div class="cards"><div class="card"><div class="n">${outcomeIds.size}</div><div class="small">Outcome concepts</div></div><div class="card"><div class="n">${totalActive}/${outcomeIds.size}</div><div class="small">With supporting evidence</div></div><div class="card"><div class="n">${DOMAINS.length}</div><div class="small">Clinical domains</div></div></div>
-  <div class="grid">${domainCards}</div>
-  <div class="panel"><h2>Instantiated Outcome Concepts in the 10-Paper Graph</h2><table><tr><th>Outcome</th><th>Domain / Category</th><th>Evidence Strength</th><th>Confidence</th><th>Representative Evidence</th></tr>${rows}</table></div>`;
+  const activeSpecialties = Object.keys(SPECIALTY_CONCEPTS).filter(sp => (SPECIALTY_CONCEPTS[sp]||[]).some(id => stat(id).papersN > 0)).length;
+  return `<div class="panel"><h2>Clinical Outcome Hierarchy</h2><p>${esc(HIERARCHY.description)}</p><p>${HIERARCHY.filters.map(f => `<span class="pill">${esc(f)}</span>`).join('')}</p></div>
+  <div class="cards"><div class="card"><div class="n">${Object.keys(HIERARCHY.specialties).length}</div><div class="small">Medical specialties</div></div><div class="card"><div class="n">${activeSpecialties}</div><div class="small">Specialties instantiated by the 10-paper KG</div></div></div>
+  <div class="grid">${specialtyCards}</div>
+  <div class="panel"><h2>Instantiated Outcomes in the 10-Paper Graph</h2><p class="small">Evidence-gated: strength reflects how many source papers and stored evidence sentences support each outcome concept.</p><table><tr><th>Specialty</th><th>Outcome Concept</th><th>Evidence Strength</th><th>Confidence</th><th>Representative Evidence</th></tr>${instantiated}</table></div>`;
 },
 evidence() {
   return `<div class="panel"><h2>Evidence Table</h2><table><tr><th>Evidence</th><th>Concept</th><th>Paper</th><th>Sentence</th><th>Confidence</th></tr>${evidence.map(ev => `<tr><td>${esc(ev.name)}</td><td>${esc(ev.concept_name)}</td><td>${esc(ev.paper_title)}</td><td>${esc(ev.evidence_sentence)}</td><td><span class="pill">${esc(ev.confidence)}</span><br><span class="small">${esc(ev.evidence_type)}</span></td></tr>`).join('')}</table></div>`;
