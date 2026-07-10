@@ -8,47 +8,42 @@
   "selection_rule": "First 10 unique micro/nanoplastic-relevant section records, excluding obvious non-microplastic or duplicate records.",
   "ontology": {
     "source_files": [
-      "entities_v1.json",
-      "relationships_v1.json"
+      "environmental-health ontology (minimal-dashboard schema)"
     ],
     "node_types_used": [
-      "ClinicalOutcome",
+      "Agent",
+      "Clinical Outcome",
       "Evidence",
-      "HostPopulation",
+      "Host Population",
       "Mechanism",
       "Observation",
-      "ParticleSizeClass",
-      "Polymer",
-      "Study",
-      "TissueOrgan"
+      "Publication",
+      "Tissue"
     ],
     "relation_types_used": [
       "affects",
       "assesses",
       "evaluates",
-      "has_polymer",
-      "has_size_class",
+      "has_agent",
       "investigates",
       "provides",
       "supports"
     ],
     "node_type_counts": {
-      "ClinicalOutcome": 3,
+      "Agent": 4,
+      "Clinical Outcome": 3,
       "Evidence": 80,
-      "HostPopulation": 3,
+      "Host Population": 3,
       "Mechanism": 4,
       "Observation": 80,
-      "ParticleSizeClass": 2,
-      "Polymer": 2,
-      "Study": 10,
-      "TissueOrgan": 4
+      "Publication": 10,
+      "Tissue": 4
     },
     "relation_type_counts": {
       "affects": 15,
       "assesses": 5,
       "evaluates": 15,
-      "has_polymer": 7,
-      "has_size_class": 16,
+      "has_agent": 23,
       "investigates": 22,
       "provides": 80,
       "supports": 80
@@ -248,12 +243,12 @@
   "entities": [
     {
       "id": "paper_01_neurotoxicity_following_exposure_to_micro_and_nanoplastics",
-      "type": "Study",
+      "type": "Publication",
       "name": "Neurotoxicity Following Exposure to Micro and Nanoplastics",
       "title": "Neurotoxicity Following Exposure to Micro and Nanoplastics",
       "label": "Neurotoxicity Following Exposure to Micro and Nanoplastics",
       "design": "human/in-vitro",
-      "definition": "Section-level source paper used in the 10-paper evidence-gated prototype.",
+      "definition": "Section-level source publication used in the 10-paper evidence-gated prototype.",
       "evidence_type": "human/in-vitro",
       "section_count": 6,
       "character_count": 20193,
@@ -268,7 +263,7 @@
       "paper_title": "Neurotoxicity Following Exposure to Micro and Nanoplastics",
       "concept_id": "concept_nanoplastics",
       "concept_name": "Nanoplastics",
-      "concept_ontology_type": "ParticleSizeClass",
+      "concept_ontology_type": "Agent",
       "evidence_sentence": "Over time, these enduring plastics fragment into microplastics and nanoplastics-tiny particles with variable chemical structures formed through degradation processes [9,10,11].",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -283,7 +278,7 @@
       "paper_id": "paper_01_neurotoxicity_following_exposure_to_micro_and_nanoplastics",
       "concept_id": "concept_nanoplastics",
       "concept_name": "Nanoplastics",
-      "concept_ontology_type": "ParticleSizeClass",
+      "concept_ontology_type": "Agent",
       "definition": "Structured observation that this source discusses Nanoplastics.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -297,7 +292,7 @@
       "paper_title": "Neurotoxicity Following Exposure to Micro and Nanoplastics",
       "concept_id": "concept_microplastics",
       "concept_name": "Microplastics",
-      "concept_ontology_type": "ParticleSizeClass",
+      "concept_ontology_type": "Agent",
       "evidence_sentence": "Over time, these enduring plastics fragment into microplastics and nanoplastics-tiny particles with variable chemical structures formed through degradation processes [9,10,11].",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -312,7 +307,7 @@
       "paper_id": "paper_01_neurotoxicity_following_exposure_to_micro_and_nanoplastics",
       "concept_id": "concept_microplastics",
       "concept_name": "Microplastics",
-      "concept_ontology_type": "ParticleSizeClass",
+      "concept_ontology_type": "Agent",
       "definition": "Structured observation that this source discusses Microplastics.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -326,7 +321,7 @@
       "paper_title": "Neurotoxicity Following Exposure to Micro and Nanoplastics",
       "concept_id": "concept_mouse",
       "concept_name": "Mouse / mammal evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "evidence_sentence": "In the U.S., the recycling rate for plastics is merely 8.8% [7].",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -341,7 +336,7 @@
       "paper_id": "paper_01_neurotoxicity_following_exposure_to_micro_and_nanoplastics",
       "concept_id": "concept_mouse",
       "concept_name": "Mouse / mammal evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "definition": "Structured observation that this source discusses Mouse / mammal evidence.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -384,7 +379,7 @@
       "paper_title": "Neurotoxicity Following Exposure to Micro and Nanoplastics",
       "concept_id": "concept_neurotoxicity",
       "concept_name": "Neurotoxicity",
-      "concept_ontology_type": "ClinicalOutcome",
+      "concept_ontology_type": "Clinical Outcome",
       "evidence_sentence": "This study aims to provide an overview of the potential entry of microplastics and nanoplastics into the body and then into the brain and to link exposure and the physicochemical properties of the particles with neurological diseases.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -399,7 +394,7 @@
       "paper_id": "paper_01_neurotoxicity_following_exposure_to_micro_and_nanoplastics",
       "concept_id": "concept_neurotoxicity",
       "concept_name": "Neurotoxicity",
-      "concept_ontology_type": "ClinicalOutcome",
+      "concept_ontology_type": "Clinical Outcome",
       "definition": "Structured observation that this source discusses Neurotoxicity.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -413,7 +408,7 @@
       "paper_title": "Neurotoxicity Following Exposure to Micro and Nanoplastics",
       "concept_id": "concept_brain",
       "concept_name": "Brain / CNS",
-      "concept_ontology_type": "TissueOrgan",
+      "concept_ontology_type": "Tissue",
       "evidence_sentence": "This study aims to provide an overview of the potential entry of microplastics and nanoplastics into the body and then into the brain and to link exposure and the physicochemical properties of the particles with neurological diseases.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -428,7 +423,7 @@
       "paper_id": "paper_01_neurotoxicity_following_exposure_to_micro_and_nanoplastics",
       "concept_id": "concept_brain",
       "concept_name": "Brain / CNS",
-      "concept_ontology_type": "TissueOrgan",
+      "concept_ontology_type": "Tissue",
       "definition": "Structured observation that this source discusses Brain / CNS.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -442,7 +437,7 @@
       "paper_title": "Neurotoxicity Following Exposure to Micro and Nanoplastics",
       "concept_id": "concept_polystyrene",
       "concept_name": "Polystyrene",
-      "concept_ontology_type": "Polymer",
+      "concept_ontology_type": "Agent",
       "evidence_sentence": "Microplastics and Nanoplastics Neurotoxic Effects on Marine Invertebrates Caenorhabditis elegans were subjected to five different spherical polystyrene microplastic sizes (0.1-5 \u03bcm) in a culture medium at 1 mg/L concentration.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -457,7 +452,7 @@
       "paper_id": "paper_01_neurotoxicity_following_exposure_to_micro_and_nanoplastics",
       "concept_id": "concept_polystyrene",
       "concept_name": "Polystyrene",
-      "concept_ontology_type": "Polymer",
+      "concept_ontology_type": "Agent",
       "definition": "Structured observation that this source discusses Polystyrene.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -471,7 +466,7 @@
       "paper_title": "Neurotoxicity Following Exposure to Micro and Nanoplastics",
       "concept_id": "concept_human",
       "concept_name": "Human evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "evidence_sentence": "Consequently, plastic waste surged from 275 million tons in 2010 to 335 million tons by 2017 [5,6], posing a grave threat to human health due to its largely unsustainable usage patterns [4].",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -486,19 +481,19 @@
       "paper_id": "paper_01_neurotoxicity_following_exposure_to_micro_and_nanoplastics",
       "concept_id": "concept_human",
       "concept_name": "Human evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "definition": "Structured observation that this source discusses Human evidence.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
     },
     {
       "id": "paper_02_neurotoxicity_of_nanoplastics_a_review",
-      "type": "Study",
+      "type": "Publication",
       "name": "Neurotoxicity of nanoplastics: A review",
       "title": "Neurotoxicity of nanoplastics: A review",
       "label": "Neurotoxicity of nanoplastics: A review",
       "design": "human/in-vitro",
-      "definition": "Section-level source paper used in the 10-paper evidence-gated prototype.",
+      "definition": "Section-level source publication used in the 10-paper evidence-gated prototype.",
       "evidence_type": "human/in-vitro",
       "section_count": 3,
       "character_count": 14696,
@@ -513,7 +508,7 @@
       "paper_title": "Neurotoxicity of nanoplastics: A review",
       "concept_id": "concept_nanoplastics",
       "concept_name": "Nanoplastics",
-      "concept_ontology_type": "ParticleSizeClass",
+      "concept_ontology_type": "Agent",
       "evidence_sentence": "13 Tiny plastic fragments are termed according to their sizes: secondary microplastics (MPs) and nanoplastics (NPs), the latter of which is the primary focus of this review.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -528,7 +523,7 @@
       "paper_id": "paper_02_neurotoxicity_of_nanoplastics_a_review",
       "concept_id": "concept_nanoplastics",
       "concept_name": "Nanoplastics",
-      "concept_ontology_type": "ParticleSizeClass",
+      "concept_ontology_type": "Agent",
       "definition": "Structured observation that this source discusses Nanoplastics.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -542,7 +537,7 @@
       "paper_title": "Neurotoxicity of nanoplastics: A review",
       "concept_id": "concept_mouse",
       "concept_name": "Mouse / mammal evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "evidence_sentence": "Thus, they have gradually displaced materials such as rubber, wood, and metal in a wide variety of sectors owing to their unique and versatile properties: electrical, heat, chemical, and light resistance; strong and durable but meltable at specific temperatures; and cost-effective.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -557,7 +552,7 @@
       "paper_id": "paper_02_neurotoxicity_of_nanoplastics_a_review",
       "concept_id": "concept_mouse",
       "concept_name": "Mouse / mammal evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "definition": "Structured observation that this source discusses Mouse / mammal evidence.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -571,7 +566,7 @@
       "paper_title": "Neurotoxicity of nanoplastics: A review",
       "concept_id": "concept_microplastics",
       "concept_name": "Microplastics",
-      "concept_ontology_type": "ParticleSizeClass",
+      "concept_ontology_type": "Agent",
       "evidence_sentence": "13 Tiny plastic fragments are termed according to their sizes: secondary microplastics (MPs) and nanoplastics (NPs), the latter of which is the primary focus of this review.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -586,7 +581,7 @@
       "paper_id": "paper_02_neurotoxicity_of_nanoplastics_a_review",
       "concept_id": "concept_microplastics",
       "concept_name": "Microplastics",
-      "concept_ontology_type": "ParticleSizeClass",
+      "concept_ontology_type": "Agent",
       "definition": "Structured observation that this source discusses Microplastics.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -629,7 +624,7 @@
       "paper_title": "Neurotoxicity of nanoplastics: A review",
       "concept_id": "concept_human",
       "concept_name": "Human evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "evidence_sentence": "Humans are then exposed to MPs and NPs, which are accessible because of their minute dimensions, enabling them to travel to any anatomical region without further resistance.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -644,7 +639,7 @@
       "paper_id": "paper_02_neurotoxicity_of_nanoplastics_a_review",
       "concept_id": "concept_human",
       "concept_name": "Human evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "definition": "Structured observation that this source discusses Human evidence.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -658,7 +653,7 @@
       "paper_title": "Neurotoxicity of nanoplastics: A review",
       "concept_id": "concept_neurotoxicity",
       "concept_name": "Neurotoxicity",
-      "concept_ontology_type": "ClinicalOutcome",
+      "concept_ontology_type": "Clinical Outcome",
       "evidence_sentence": "Moreover, several articles have also highlighted the various toxicities that MPs and NPs can induce in humans, in particular neurotoxicity.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -673,7 +668,7 @@
       "paper_id": "paper_02_neurotoxicity_of_nanoplastics_a_review",
       "concept_id": "concept_neurotoxicity",
       "concept_name": "Neurotoxicity",
-      "concept_ontology_type": "ClinicalOutcome",
+      "concept_ontology_type": "Clinical Outcome",
       "definition": "Structured observation that this source discusses Neurotoxicity.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -687,7 +682,7 @@
       "paper_title": "Neurotoxicity of nanoplastics: A review",
       "concept_id": "concept_brain",
       "concept_name": "Brain / CNS",
-      "concept_ontology_type": "TissueOrgan",
+      "concept_ontology_type": "Tissue",
       "evidence_sentence": "Most concerns on NP toxicity lean towards the central nervous system, and NPs are regarded as a worse \u2018extension\u2019 of MPs in many circumstances.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -702,7 +697,7 @@
       "paper_id": "paper_02_neurotoxicity_of_nanoplastics_a_review",
       "concept_id": "concept_brain",
       "concept_name": "Brain / CNS",
-      "concept_ontology_type": "TissueOrgan",
+      "concept_ontology_type": "Tissue",
       "definition": "Structured observation that this source discusses Brain / CNS.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -716,7 +711,7 @@
       "paper_title": "Neurotoxicity of nanoplastics: A review",
       "concept_id": "concept_fish",
       "concept_name": "Fish / aquatic evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "evidence_sentence": "While NPs are evidently present in the aquatic environment, data are scarce on the threshold levels that will impact the aquatic system and food chain, causing bioaccumulation and potential risks to humans.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -731,19 +726,19 @@
       "paper_id": "paper_02_neurotoxicity_of_nanoplastics_a_review",
       "concept_id": "concept_fish",
       "concept_name": "Fish / aquatic evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "definition": "Structured observation that this source discusses Fish / aquatic evidence.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
     },
     {
       "id": "paper_03_micro_and_nanoplastics_breach_the_blood_brain_barrier_bbb_biomolecular",
-      "type": "Study",
+      "type": "Publication",
       "name": "Micro- and Nanoplastics Breach the Blood\u2013Brain Barrier (BBB): Biomolecular Corona\u2019s Role Revealed",
       "title": "Micro- and Nanoplastics Breach the Blood\u2013Brain Barrier (BBB): Biomolecular Corona\u2019s Role Revealed",
       "label": "Micro- and Nanoplastics Breach the Blood\u2013Brain Barrier (BBB): Biomolecular Corona\u2019s Role Revealed",
       "design": "human/in-vitro",
-      "definition": "Section-level source paper used in the 10-paper evidence-gated prototype.",
+      "definition": "Section-level source publication used in the 10-paper evidence-gated prototype.",
       "evidence_type": "human/in-vitro",
       "section_count": 4,
       "character_count": 21720,
@@ -758,7 +753,7 @@
       "paper_title": "Micro- and Nanoplastics Breach the Blood\u2013Brain Barrier (BBB): Biomolecular Corona\u2019s Role Revealed",
       "concept_id": "concept_nanoplastics",
       "concept_name": "Nanoplastics",
-      "concept_ontology_type": "ParticleSizeClass",
+      "concept_ontology_type": "Agent",
       "evidence_sentence": "Introduction Micro-/nanoplastics (MNPs) are a growing concern, both for human health and the environment, due to their widespread distribution and potential harmfulness.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -773,7 +768,7 @@
       "paper_id": "paper_03_micro_and_nanoplastics_breach_the_blood_brain_barrier_bbb_biomolecular",
       "concept_id": "concept_nanoplastics",
       "concept_name": "Nanoplastics",
-      "concept_ontology_type": "ParticleSizeClass",
+      "concept_ontology_type": "Agent",
       "definition": "Structured observation that this source discusses Nanoplastics.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -787,7 +782,7 @@
       "paper_title": "Micro- and Nanoplastics Breach the Blood\u2013Brain Barrier (BBB): Biomolecular Corona\u2019s Role Revealed",
       "concept_id": "concept_mouse",
       "concept_name": "Mouse / mammal evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "evidence_sentence": "The relative energy of the individual states must be similar for the transfer to occur at a reasonable rate [15].",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -802,7 +797,7 @@
       "paper_id": "paper_03_micro_and_nanoplastics_breach_the_blood_brain_barrier_bbb_biomolecular",
       "concept_id": "concept_mouse",
       "concept_name": "Mouse / mammal evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "definition": "Structured observation that this source discusses Mouse / mammal evidence.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -816,7 +811,7 @@
       "paper_title": "Micro- and Nanoplastics Breach the Blood\u2013Brain Barrier (BBB): Biomolecular Corona\u2019s Role Revealed",
       "concept_id": "concept_brain",
       "concept_name": "Brain / CNS",
-      "concept_ontology_type": "TissueOrgan",
+      "concept_ontology_type": "Tissue",
       "evidence_sentence": "MNPs can enter the body and cross impermeable barriers such as the intestinal mucosal barrier and the blood\u2013brain barrier.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -831,7 +826,7 @@
       "paper_id": "paper_03_micro_and_nanoplastics_breach_the_blood_brain_barrier_bbb_biomolecular",
       "concept_id": "concept_brain",
       "concept_name": "Brain / CNS",
-      "concept_ontology_type": "TissueOrgan",
+      "concept_ontology_type": "Tissue",
       "definition": "Structured observation that this source discusses Brain / CNS.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -845,7 +840,7 @@
       "paper_title": "Micro- and Nanoplastics Breach the Blood\u2013Brain Barrier (BBB): Biomolecular Corona\u2019s Role Revealed",
       "concept_id": "concept_polystyrene",
       "concept_name": "Polystyrene",
-      "concept_ontology_type": "Polymer",
+      "concept_ontology_type": "Agent",
       "evidence_sentence": "Earlier simulation studies [16,17,18,19,20,21] found that when nanometer-sized polystyrene (PS) particles absorb into the hydrophobic core of lipid bilayers, the polymer chains that make up the plastic particle may disentangle and form a network of macromolecules within the membrane.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -860,7 +855,7 @@
       "paper_id": "paper_03_micro_and_nanoplastics_breach_the_blood_brain_barrier_bbb_biomolecular",
       "concept_id": "concept_polystyrene",
       "concept_name": "Polystyrene",
-      "concept_ontology_type": "Polymer",
+      "concept_ontology_type": "Agent",
       "definition": "Structured observation that this source discusses Polystyrene.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -932,7 +927,7 @@
       "paper_title": "Micro- and Nanoplastics Breach the Blood\u2013Brain Barrier (BBB): Biomolecular Corona\u2019s Role Revealed",
       "concept_id": "concept_human",
       "concept_name": "Human evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "evidence_sentence": "Introduction Micro-/nanoplastics (MNPs) are a growing concern, both for human health and the environment, due to their widespread distribution and potential harmfulness.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -947,7 +942,7 @@
       "paper_id": "paper_03_micro_and_nanoplastics_breach_the_blood_brain_barrier_bbb_biomolecular",
       "concept_id": "concept_human",
       "concept_name": "Human evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "definition": "Structured observation that this source discusses Human evidence.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -961,7 +956,7 @@
       "paper_title": "Micro- and Nanoplastics Breach the Blood\u2013Brain Barrier (BBB): Biomolecular Corona\u2019s Role Revealed",
       "concept_id": "concept_gut",
       "concept_name": "Gut / intestinal effects",
-      "concept_ontology_type": "TissueOrgan",
+      "concept_ontology_type": "Tissue",
       "evidence_sentence": "MNPs can enter the body and cross impermeable barriers such as the intestinal mucosal barrier and the blood\u2013brain barrier.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -976,19 +971,19 @@
       "paper_id": "paper_03_micro_and_nanoplastics_breach_the_blood_brain_barrier_bbb_biomolecular",
       "concept_id": "concept_gut",
       "concept_name": "Gut / intestinal effects",
-      "concept_ontology_type": "TissueOrgan",
+      "concept_ontology_type": "Tissue",
       "definition": "Structured observation that this source discusses Gut / intestinal effects.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
     },
     {
       "id": "paper_04_detection_of_microplastics_in_human_breast_milk_and_its_association_wi",
-      "type": "Study",
+      "type": "Publication",
       "name": "Detection of Microplastics in Human Breast Milk and Its Association with Changes in Human Milk Bacterial Microbiota",
       "title": "Detection of Microplastics in Human Breast Milk and Its Association with Changes in Human Milk Bacterial Microbiota",
       "label": "Detection of Microplastics in Human Breast Milk and Its Association with Changes in Human Milk Bacterial Microbiota",
       "design": "human/in-vitro",
-      "definition": "Section-level source paper used in the 10-paper evidence-gated prototype.",
+      "definition": "Section-level source publication used in the 10-paper evidence-gated prototype.",
       "evidence_type": "human/in-vitro",
       "section_count": 4,
       "character_count": 16885,
@@ -1003,7 +998,7 @@
       "paper_title": "Detection of Microplastics in Human Breast Milk and Its Association with Changes in Human Milk Bacterial Microbiota",
       "concept_id": "concept_microplastics",
       "concept_name": "Microplastics",
-      "concept_ontology_type": "ParticleSizeClass",
+      "concept_ontology_type": "Agent",
       "evidence_sentence": "Introduction Microplastics (MPs) are plastic byproducts that emerge from the decomposition of plastic constituents present in routine consumer products, including scrubs, cleaning liquids, and cosmetics [1].",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -1018,7 +1013,7 @@
       "paper_id": "paper_04_detection_of_microplastics_in_human_breast_milk_and_its_association_wi",
       "concept_id": "concept_microplastics",
       "concept_name": "Microplastics",
-      "concept_ontology_type": "ParticleSizeClass",
+      "concept_ontology_type": "Agent",
       "definition": "Structured observation that this source discusses Microplastics.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -1032,7 +1027,7 @@
       "paper_title": "Detection of Microplastics in Human Breast Milk and Its Association with Changes in Human Milk Bacterial Microbiota",
       "concept_id": "concept_placenta",
       "concept_name": "Placenta / pregnancy",
-      "concept_ontology_type": "TissueOrgan",
+      "concept_ontology_type": "Tissue",
       "evidence_sentence": "The initial identification of MPs in the human placenta indicates the potential for a transfer from the mother to the fetus during utero, according to the research that triggered the debate concerning the relationship between MPs, nutrition, and maternal breast milk [7].",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -1047,7 +1042,7 @@
       "paper_id": "paper_04_detection_of_microplastics_in_human_breast_milk_and_its_association_wi",
       "concept_id": "concept_placenta",
       "concept_name": "Placenta / pregnancy",
-      "concept_ontology_type": "TissueOrgan",
+      "concept_ontology_type": "Tissue",
       "definition": "Structured observation that this source discusses Placenta / pregnancy.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -1061,7 +1056,7 @@
       "paper_title": "Detection of Microplastics in Human Breast Milk and Its Association with Changes in Human Milk Bacterial Microbiota",
       "concept_id": "concept_human",
       "concept_name": "Human evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "evidence_sentence": "Possible ingestion of these contaminants by organisms, including humans, could result in their release and subsequent entry into the human body.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -1076,7 +1071,7 @@
       "paper_id": "paper_04_detection_of_microplastics_in_human_breast_milk_and_its_association_wi",
       "concept_id": "concept_human",
       "concept_name": "Human evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "definition": "Structured observation that this source discusses Human evidence.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -1090,7 +1085,7 @@
       "paper_title": "Detection of Microplastics in Human Breast Milk and Its Association with Changes in Human Milk Bacterial Microbiota",
       "concept_id": "concept_gut",
       "concept_name": "Gut / intestinal effects",
-      "concept_ontology_type": "TissueOrgan",
+      "concept_ontology_type": "Tissue",
       "evidence_sentence": "Studies have shown that exposure to MPs can lead to inflammation and immune reactions in various organisms, including human, bacteria, and microbiota [3,4].",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -1105,7 +1100,7 @@
       "paper_id": "paper_04_detection_of_microplastics_in_human_breast_milk_and_its_association_wi",
       "concept_id": "concept_gut",
       "concept_name": "Gut / intestinal effects",
-      "concept_ontology_type": "TissueOrgan",
+      "concept_ontology_type": "Tissue",
       "definition": "Structured observation that this source discusses Gut / intestinal effects.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -1119,7 +1114,7 @@
       "paper_title": "Detection of Microplastics in Human Breast Milk and Its Association with Changes in Human Milk Bacterial Microbiota",
       "concept_id": "concept_behavior",
       "concept_name": "Behavioral change",
-      "concept_ontology_type": "ClinicalOutcome",
+      "concept_ontology_type": "Clinical Outcome",
       "evidence_sentence": "In addition, research on breastfeeding complications, maternal behavior, and the risk of MP exposure during antepartum, postpartum, and breastfeeding has very limited data, and there is no study examining the relationship between MP detection and microbiota concentration in human breast milk; this underscores the lack of knowledge in this area of study.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -1134,7 +1129,7 @@
       "paper_id": "paper_04_detection_of_microplastics_in_human_breast_milk_and_its_association_wi",
       "concept_id": "concept_behavior",
       "concept_name": "Behavioral change",
-      "concept_ontology_type": "ClinicalOutcome",
+      "concept_ontology_type": "Clinical Outcome",
       "definition": "Structured observation that this source discusses Behavioral change.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -1177,7 +1172,7 @@
       "paper_title": "Detection of Microplastics in Human Breast Milk and Its Association with Changes in Human Milk Bacterial Microbiota",
       "concept_id": "concept_mouse",
       "concept_name": "Mouse / mammal evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "evidence_sentence": "Early development exposure to small concentrations of MPs may disrupt the exchange of gases and nutrients and microorganisms and result in long-term health effects [6].",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -1192,7 +1187,7 @@
       "paper_id": "paper_04_detection_of_microplastics_in_human_breast_milk_and_its_association_wi",
       "concept_id": "concept_mouse",
       "concept_name": "Mouse / mammal evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "definition": "Structured observation that this source discusses Mouse / mammal evidence.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -1206,7 +1201,7 @@
       "paper_title": "Detection of Microplastics in Human Breast Milk and Its Association with Changes in Human Milk Bacterial Microbiota",
       "concept_id": "concept_liver",
       "concept_name": "Liver / hepatic effects",
-      "concept_ontology_type": "TissueOrgan",
+      "concept_ontology_type": "Tissue",
       "evidence_sentence": "The exclusion criteria for participants included strict adherence to medically prescribed special diets for eight weeks before delivery, diarrhea or severe constipation, antibiotic use during the third trimester of pregnancy and postpartum, and consumption of intestinal resorption inhibitors, such as cholestyramine or activated charcoal.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -1221,19 +1216,19 @@
       "paper_id": "paper_04_detection_of_microplastics_in_human_breast_milk_and_its_association_wi",
       "concept_id": "concept_liver",
       "concept_name": "Liver / hepatic effects",
-      "concept_ontology_type": "TissueOrgan",
+      "concept_ontology_type": "Tissue",
       "definition": "Structured observation that this source discusses Liver / hepatic effects.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
     },
     {
       "id": "paper_05_microplastics_exposure_implications_for_human_fertility_pregnancy_and_",
-      "type": "Study",
+      "type": "Publication",
       "name": "Microplastics exposure: implications for human fertility, pregnancy and child health",
       "title": "Microplastics exposure: implications for human fertility, pregnancy and child health",
       "label": "Microplastics exposure: implications for human fertility, pregnancy and child health",
       "design": "human/in-vitro",
-      "definition": "Section-level source paper used in the 10-paper evidence-gated prototype.",
+      "definition": "Section-level source publication used in the 10-paper evidence-gated prototype.",
       "evidence_type": "human/in-vitro",
       "section_count": 6,
       "character_count": 29785,
@@ -1248,7 +1243,7 @@
       "paper_title": "Microplastics exposure: implications for human fertility, pregnancy and child health",
       "concept_id": "concept_nanoplastics",
       "concept_name": "Nanoplastics",
-      "concept_ontology_type": "ParticleSizeClass",
+      "concept_ontology_type": "Agent",
       "evidence_sentence": "4 Effects of MNP exposure on mammalian fertility 4.1 Fertility effects in adult males Several adverse reproductive effects are observed in male mammals following oral exposure to MNPs of various size and with varying duration.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -1263,7 +1258,7 @@
       "paper_id": "paper_05_microplastics_exposure_implications_for_human_fertility_pregnancy_and_",
       "concept_id": "concept_nanoplastics",
       "concept_name": "Nanoplastics",
-      "concept_ontology_type": "ParticleSizeClass",
+      "concept_ontology_type": "Agent",
       "definition": "Structured observation that this source discusses Nanoplastics.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -1277,7 +1272,7 @@
       "paper_title": "Microplastics exposure: implications for human fertility, pregnancy and child health",
       "concept_id": "concept_mouse",
       "concept_name": "Mouse / mammal evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "evidence_sentence": "4 Effects of MNP exposure on mammalian fertility 4.1 Fertility effects in adult males Several adverse reproductive effects are observed in male mammals following oral exposure to MNPs of various size and with varying duration.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -1292,7 +1287,7 @@
       "paper_id": "paper_05_microplastics_exposure_implications_for_human_fertility_pregnancy_and_",
       "concept_id": "concept_mouse",
       "concept_name": "Mouse / mammal evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "definition": "Structured observation that this source discusses Mouse / mammal evidence.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -1306,7 +1301,7 @@
       "paper_title": "Microplastics exposure: implications for human fertility, pregnancy and child health",
       "concept_id": "concept_placenta",
       "concept_name": "Placenta / pregnancy",
-      "concept_ontology_type": "TissueOrgan",
+      "concept_ontology_type": "Tissue",
       "evidence_sentence": "Male fertility, fetal health and the long-term health of offspring are dependent on the epigenetic programming events that occur during spermatogenesis, events that can be adversely disrupted by exposures to various testicular toxicants (68, 69).",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -1321,7 +1316,7 @@
       "paper_id": "paper_05_microplastics_exposure_implications_for_human_fertility_pregnancy_and_",
       "concept_id": "concept_placenta",
       "concept_name": "Placenta / pregnancy",
-      "concept_ontology_type": "TissueOrgan",
+      "concept_ontology_type": "Tissue",
       "definition": "Structured observation that this source discusses Placenta / pregnancy.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -1335,7 +1330,7 @@
       "paper_title": "Microplastics exposure: implications for human fertility, pregnancy and child health",
       "concept_id": "concept_fertility",
       "concept_name": "Fertility / reproductive effects",
-      "concept_ontology_type": "ClinicalOutcome",
+      "concept_ontology_type": "Clinical Outcome",
       "evidence_sentence": "4 Effects of MNP exposure on mammalian fertility 4.1 Fertility effects in adult males Several adverse reproductive effects are observed in male mammals following oral exposure to MNPs of various size and with varying duration.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -1350,7 +1345,7 @@
       "paper_id": "paper_05_microplastics_exposure_implications_for_human_fertility_pregnancy_and_",
       "concept_id": "concept_fertility",
       "concept_name": "Fertility / reproductive effects",
-      "concept_ontology_type": "ClinicalOutcome",
+      "concept_ontology_type": "Clinical Outcome",
       "definition": "Structured observation that this source discusses Fertility / reproductive effects.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -1364,7 +1359,7 @@
       "paper_title": "Microplastics exposure: implications for human fertility, pregnancy and child health",
       "concept_id": "concept_human",
       "concept_name": "Human evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "evidence_sentence": "It is noteworthy that an exponential rise in global plastic production (4) coincides with a well-documented, population-wide decline in human sperm production which appears to be accelerating since 2000 (67).",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -1379,7 +1374,7 @@
       "paper_id": "paper_05_microplastics_exposure_implications_for_human_fertility_pregnancy_and_",
       "concept_id": "concept_human",
       "concept_name": "Human evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "definition": "Structured observation that this source discusses Human evidence.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -1422,7 +1417,7 @@
       "paper_title": "Microplastics exposure: implications for human fertility, pregnancy and child health",
       "concept_id": "concept_microplastics",
       "concept_name": "Microplastics",
-      "concept_ontology_type": "ParticleSizeClass",
+      "concept_ontology_type": "Agent",
       "evidence_sentence": "More detailed investigations identified microplastic-like particles within the syncytiotrophoblast cellular layer of the placenta, both free within the cytoplasm and encapsulated within structures located below the plasma membrane (i.e.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -1437,7 +1432,7 @@
       "paper_id": "paper_05_microplastics_exposure_implications_for_human_fertility_pregnancy_and_",
       "concept_id": "concept_microplastics",
       "concept_name": "Microplastics",
-      "concept_ontology_type": "ParticleSizeClass",
+      "concept_ontology_type": "Agent",
       "definition": "Structured observation that this source discusses Microplastics.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -1473,12 +1468,12 @@
     },
     {
       "id": "paper_06_an_overview_of_research_on_the_association_between_microplastics_and_c",
-      "type": "Study",
+      "type": "Publication",
       "name": "An overview of research on the association between microplastics and central nervous system disorders",
       "title": "An overview of research on the association between microplastics and central nervous system disorders",
       "label": "An overview of research on the association between microplastics and central nervous system disorders",
       "design": "human/in-vitro",
-      "definition": "Section-level source paper used in the 10-paper evidence-gated prototype.",
+      "definition": "Section-level source publication used in the 10-paper evidence-gated prototype.",
       "evidence_type": "human/in-vitro",
       "section_count": 3,
       "character_count": 6274,
@@ -1493,7 +1488,7 @@
       "paper_title": "An overview of research on the association between microplastics and central nervous system disorders",
       "concept_id": "concept_microplastics",
       "concept_name": "Microplastics",
-      "concept_ontology_type": "ParticleSizeClass",
+      "concept_ontology_type": "Agent",
       "evidence_sentence": "1 Introduction Microplastics are tiny plastic particles, measuring less than 5 mm in diameter, and they are found throughout our environment, including in oceans, rivers, land, and even the atmosphere.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -1508,7 +1503,7 @@
       "paper_id": "paper_06_an_overview_of_research_on_the_association_between_microplastics_and_c",
       "concept_id": "concept_microplastics",
       "concept_name": "Microplastics",
-      "concept_ontology_type": "ParticleSizeClass",
+      "concept_ontology_type": "Agent",
       "definition": "Structured observation that this source discusses Microplastics.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -1522,7 +1517,7 @@
       "paper_title": "An overview of research on the association between microplastics and central nervous system disorders",
       "concept_id": "concept_brain",
       "concept_name": "Brain / CNS",
-      "concept_ontology_type": "TissueOrgan",
+      "concept_ontology_type": "Tissue",
       "evidence_sentence": "Microplastics have been detected in the organs of various animals, including the brains of fish and mice, raising concerns about their potential effects on the central nervous system (CNS) (2).",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -1537,7 +1532,7 @@
       "paper_id": "paper_06_an_overview_of_research_on_the_association_between_microplastics_and_c",
       "concept_id": "concept_brain",
       "concept_name": "Brain / CNS",
-      "concept_ontology_type": "TissueOrgan",
+      "concept_ontology_type": "Tissue",
       "definition": "Structured observation that this source discusses Brain / CNS.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -1551,7 +1546,7 @@
       "paper_title": "An overview of research on the association between microplastics and central nervous system disorders",
       "concept_id": "concept_mouse",
       "concept_name": "Mouse / mammal evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "evidence_sentence": "These particles are present in all aquatic ecosystems and can accumulate in organisms across different trophic levels, with evidence of trophic transfer observed in marine species such as fish and mammals (1).",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -1566,7 +1561,7 @@
       "paper_id": "paper_06_an_overview_of_research_on_the_association_between_microplastics_and_c",
       "concept_id": "concept_mouse",
       "concept_name": "Mouse / mammal evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "definition": "Structured observation that this source discusses Mouse / mammal evidence.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -1580,7 +1575,7 @@
       "paper_title": "An overview of research on the association between microplastics and central nervous system disorders",
       "concept_id": "concept_nanoplastics",
       "concept_name": "Nanoplastics",
-      "concept_ontology_type": "ParticleSizeClass",
+      "concept_ontology_type": "Agent",
       "evidence_sentence": "This results in secondary microplastics and even smaller particles known as nanoplastics, which are less than 1 \u03bcm in diameter.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -1595,7 +1590,7 @@
       "paper_id": "paper_06_an_overview_of_research_on_the_association_between_microplastics_and_c",
       "concept_id": "concept_nanoplastics",
       "concept_name": "Nanoplastics",
-      "concept_ontology_type": "ParticleSizeClass",
+      "concept_ontology_type": "Agent",
       "definition": "Structured observation that this source discusses Nanoplastics.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -1638,7 +1633,7 @@
       "paper_title": "An overview of research on the association between microplastics and central nervous system disorders",
       "concept_id": "concept_polystyrene",
       "concept_name": "Polystyrene",
-      "concept_ontology_type": "Polymer",
+      "concept_ontology_type": "Agent",
       "evidence_sentence": "Microplastics exert multidimensional effects on the nervous system at the molecular level [e.g., microplastic exposure interferes with the ROS/TGF-\u03b2/Akt/FoxO3a signaling pathway (4)], cellular level [microplastics disrupt tight junctions between endothelial cells and enter endothelial cells via endocytosis (5)], and organ level [e.g., in the hippocampus, exposure to nanopolystyrene induces P53-mediated ferritinophagy and ferroptosis in the rat hippocampus (6)].",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -1653,7 +1648,7 @@
       "paper_id": "paper_06_an_overview_of_research_on_the_association_between_microplastics_and_c",
       "concept_id": "concept_polystyrene",
       "concept_name": "Polystyrene",
-      "concept_ontology_type": "Polymer",
+      "concept_ontology_type": "Agent",
       "definition": "Structured observation that this source discusses Polystyrene.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -1667,7 +1662,7 @@
       "paper_title": "An overview of research on the association between microplastics and central nervous system disorders",
       "concept_id": "concept_human",
       "concept_name": "Human evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "evidence_sentence": "Microplastics pose a threat to ecosystems and carry potential risks to human health, with their impact on the CNS attracting increasing attention (2).",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -1682,7 +1677,7 @@
       "paper_id": "paper_06_an_overview_of_research_on_the_association_between_microplastics_and_c",
       "concept_id": "concept_human",
       "concept_name": "Human evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "definition": "Structured observation that this source discusses Human evidence.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -1718,12 +1713,12 @@
     },
     {
       "id": "paper_07_do_microplastics_have_neurological_implications_in_relation_to_schizop",
-      "type": "Study",
+      "type": "Publication",
       "name": "Do Microplastics Have Neurological Implications in Relation to Schizophrenia Zebrafish Models? A Brain Immunohistochemistry, Neurotoxicity Assessment, and Oxidative Stress Analysis",
       "title": "Do Microplastics Have Neurological Implications in Relation to Schizophrenia Zebrafish Models? A Brain Immunohistochemistry, Neurotoxicity Assessment, and Oxidative Stress Analysis",
       "label": "Do Microplastics Have Neurological Implications in Relation to Schizophrenia Zebrafish Models? A Brain Immunohistochemistry, Neurotoxicity Assessment, and Oxidative Stress Analysis",
       "design": "human/in-vitro",
-      "definition": "Section-level source paper used in the 10-paper evidence-gated prototype.",
+      "definition": "Section-level source publication used in the 10-paper evidence-gated prototype.",
       "evidence_type": "human/in-vitro",
       "section_count": 5,
       "character_count": 31300,
@@ -1738,7 +1733,7 @@
       "paper_title": "Do Microplastics Have Neurological Implications in Relation to Schizophrenia Zebrafish Models? A Brain Immunohistochemistry, Neurotoxicity Assessment, and Oxidative Stress Analysis",
       "concept_id": "concept_microplastics",
       "concept_name": "Microplastics",
-      "concept_ontology_type": "ParticleSizeClass",
+      "concept_ontology_type": "Agent",
       "evidence_sentence": "MPs can contaminate food sources via air, water, and soil contamination, as well as via packaging and processing [19,20].",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -1753,7 +1748,7 @@
       "paper_id": "paper_07_do_microplastics_have_neurological_implications_in_relation_to_schizop",
       "concept_id": "concept_microplastics",
       "concept_name": "Microplastics",
-      "concept_ontology_type": "ParticleSizeClass",
+      "concept_ontology_type": "Agent",
       "definition": "Structured observation that this source discusses Microplastics.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -1767,7 +1762,7 @@
       "paper_title": "Do Microplastics Have Neurological Implications in Relation to Schizophrenia Zebrafish Models? A Brain Immunohistochemistry, Neurotoxicity Assessment, and Oxidative Stress Analysis",
       "concept_id": "concept_mouse",
       "concept_name": "Mouse / mammal evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "evidence_sentence": "Zebrafish has become a reliable species for modeling schizophrenia-like symptoms, anxiety, depression, and neurodegenerative disorders [7], especially through pharmaceutical manipulation [8].",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -1782,7 +1777,7 @@
       "paper_id": "paper_07_do_microplastics_have_neurological_implications_in_relation_to_schizop",
       "concept_id": "concept_mouse",
       "concept_name": "Mouse / mammal evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "definition": "Structured observation that this source discusses Mouse / mammal evidence.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -1796,7 +1791,7 @@
       "paper_title": "Do Microplastics Have Neurological Implications in Relation to Schizophrenia Zebrafish Models? A Brain Immunohistochemistry, Neurotoxicity Assessment, and Oxidative Stress Analysis",
       "concept_id": "concept_fish",
       "concept_name": "Fish / aquatic evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "evidence_sentence": "Zebrafish has become a reliable species for modeling schizophrenia-like symptoms, anxiety, depression, and neurodegenerative disorders [7], especially through pharmaceutical manipulation [8].",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -1811,7 +1806,7 @@
       "paper_id": "paper_07_do_microplastics_have_neurological_implications_in_relation_to_schizop",
       "concept_id": "concept_fish",
       "concept_name": "Fish / aquatic evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "definition": "Structured observation that this source discusses Fish / aquatic evidence.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -1854,7 +1849,7 @@
       "paper_title": "Do Microplastics Have Neurological Implications in Relation to Schizophrenia Zebrafish Models? A Brain Immunohistochemistry, Neurotoxicity Assessment, and Oxidative Stress Analysis",
       "concept_id": "concept_brain",
       "concept_name": "Brain / CNS",
-      "concept_ontology_type": "TissueOrgan",
+      "concept_ontology_type": "Tissue",
       "evidence_sentence": "Diet plays a crucial role in psychiatric disorders due to its impact on brain function and overall mental health; it is worth mentioning that this is an often-missed component in SZ management.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -1869,7 +1864,7 @@
       "paper_id": "paper_07_do_microplastics_have_neurological_implications_in_relation_to_schizop",
       "concept_id": "concept_brain",
       "concept_name": "Brain / CNS",
-      "concept_ontology_type": "TissueOrgan",
+      "concept_ontology_type": "Tissue",
       "definition": "Structured observation that this source discusses Brain / CNS.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -1912,7 +1907,7 @@
       "paper_title": "Do Microplastics Have Neurological Implications in Relation to Schizophrenia Zebrafish Models? A Brain Immunohistochemistry, Neurotoxicity Assessment, and Oxidative Stress Analysis",
       "concept_id": "concept_neurotoxicity",
       "concept_name": "Neurotoxicity",
-      "concept_ontology_type": "ClinicalOutcome",
+      "concept_ontology_type": "Clinical Outcome",
       "evidence_sentence": "The Cox41-i overexpression in some groups indicates increased energy requirements to restore the cellular metabolism of nerve cells as a result of the oxidative stress and neurotoxicity produced by types of various exposure.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -1927,7 +1922,7 @@
       "paper_id": "paper_07_do_microplastics_have_neurological_implications_in_relation_to_schizop",
       "concept_id": "concept_neurotoxicity",
       "concept_name": "Neurotoxicity",
-      "concept_ontology_type": "ClinicalOutcome",
+      "concept_ontology_type": "Clinical Outcome",
       "definition": "Structured observation that this source discusses Neurotoxicity.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -1941,7 +1936,7 @@
       "paper_title": "Do Microplastics Have Neurological Implications in Relation to Schizophrenia Zebrafish Models? A Brain Immunohistochemistry, Neurotoxicity Assessment, and Oxidative Stress Analysis",
       "concept_id": "concept_gut",
       "concept_name": "Gut / intestinal effects",
-      "concept_ontology_type": "TissueOrgan",
+      "concept_ontology_type": "Tissue",
       "evidence_sentence": "Emerging research has suggested a strong connection between the brain and the gut, known as the brain\u2013gut axis.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -1956,19 +1951,19 @@
       "paper_id": "paper_07_do_microplastics_have_neurological_implications_in_relation_to_schizop",
       "concept_id": "concept_gut",
       "concept_name": "Gut / intestinal effects",
-      "concept_ontology_type": "TissueOrgan",
+      "concept_ontology_type": "Tissue",
       "definition": "Structured observation that this source discusses Gut / intestinal effects.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
     },
     {
       "id": "paper_08_a_detailed_review_study_on_potential_effects_of_microplastics_and_addi",
-      "type": "Study",
+      "type": "Publication",
       "name": "A Detailed Review Study on Potential Effects of Microplastics and Additives of Concern on Human Health",
       "title": "A Detailed Review Study on Potential Effects of Microplastics and Additives of Concern on Human Health",
       "label": "A Detailed Review Study on Potential Effects of Microplastics and Additives of Concern on Human Health",
       "design": "human/in-vitro",
-      "definition": "Section-level source paper used in the 10-paper evidence-gated prototype.",
+      "definition": "Section-level source publication used in the 10-paper evidence-gated prototype.",
       "evidence_type": "human/in-vitro",
       "section_count": 2,
       "character_count": 12908,
@@ -1983,7 +1978,7 @@
       "paper_title": "A Detailed Review Study on Potential Effects of Microplastics and Additives of Concern on Human Health",
       "concept_id": "concept_microplastics",
       "concept_name": "Microplastics",
-      "concept_ontology_type": "ParticleSizeClass",
+      "concept_ontology_type": "Agent",
       "evidence_sentence": "Effects of Micro and Nanoplastics on Human Health A recent report from the World Health Organization [146] emphasized the ubiquitous microplastics presence in the environment and aroused great concern regarding the exposition and effects of nano and microplastics on human health [122,147,148,149,150].",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -1998,7 +1993,7 @@
       "paper_id": "paper_08_a_detailed_review_study_on_potential_effects_of_microplastics_and_addi",
       "concept_id": "concept_microplastics",
       "concept_name": "Microplastics",
-      "concept_ontology_type": "ParticleSizeClass",
+      "concept_ontology_type": "Agent",
       "definition": "Structured observation that this source discusses Microplastics.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -2012,7 +2007,7 @@
       "paper_title": "A Detailed Review Study on Potential Effects of Microplastics and Additives of Concern on Human Health",
       "concept_id": "concept_human",
       "concept_name": "Human evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "evidence_sentence": "Effects of Micro and Nanoplastics on Human Health A recent report from the World Health Organization [146] emphasized the ubiquitous microplastics presence in the environment and aroused great concern regarding the exposition and effects of nano and microplastics on human health [122,147,148,149,150].",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -2027,7 +2022,7 @@
       "paper_id": "paper_08_a_detailed_review_study_on_potential_effects_of_microplastics_and_addi",
       "concept_id": "concept_human",
       "concept_name": "Human evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "definition": "Structured observation that this source discusses Human evidence.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -2041,7 +2036,7 @@
       "paper_title": "A Detailed Review Study on Potential Effects of Microplastics and Additives of Concern on Human Health",
       "concept_id": "concept_nanoplastics",
       "concept_name": "Nanoplastics",
-      "concept_ontology_type": "ParticleSizeClass",
+      "concept_ontology_type": "Agent",
       "evidence_sentence": "Effects of Micro and Nanoplastics on Human Health A recent report from the World Health Organization [146] emphasized the ubiquitous microplastics presence in the environment and aroused great concern regarding the exposition and effects of nano and microplastics on human health [122,147,148,149,150].",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -2056,7 +2051,7 @@
       "paper_id": "paper_08_a_detailed_review_study_on_potential_effects_of_microplastics_and_addi",
       "concept_id": "concept_nanoplastics",
       "concept_name": "Nanoplastics",
-      "concept_ontology_type": "ParticleSizeClass",
+      "concept_ontology_type": "Agent",
       "definition": "Structured observation that this source discusses Nanoplastics.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -2070,7 +2065,7 @@
       "paper_title": "A Detailed Review Study on Potential Effects of Microplastics and Additives of Concern on Human Health",
       "concept_id": "concept_mouse",
       "concept_name": "Mouse / mammal evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "evidence_sentence": "Therefore, following exposure via diet, uptake in humans is plausible, as evidenced by the capacity for synthetic particles smaller than 150 \u03bcm to cross the gastrointestinal epithelium in mammalian bodies, which causes systemic exposure.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -2085,7 +2080,7 @@
       "paper_id": "paper_08_a_detailed_review_study_on_potential_effects_of_microplastics_and_addi",
       "concept_id": "concept_mouse",
       "concept_name": "Mouse / mammal evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "definition": "Structured observation that this source discusses Mouse / mammal evidence.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -2099,7 +2094,7 @@
       "paper_title": "A Detailed Review Study on Potential Effects of Microplastics and Additives of Concern on Human Health",
       "concept_id": "concept_gut",
       "concept_name": "Gut / intestinal effects",
-      "concept_ontology_type": "TissueOrgan",
+      "concept_ontology_type": "Tissue",
       "evidence_sentence": "Therefore, following exposure via diet, uptake in humans is plausible, as evidenced by the capacity for synthetic particles smaller than 150 \u03bcm to cross the gastrointestinal epithelium in mammalian bodies, which causes systemic exposure.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -2114,7 +2109,7 @@
       "paper_id": "paper_08_a_detailed_review_study_on_potential_effects_of_microplastics_and_addi",
       "concept_id": "concept_gut",
       "concept_name": "Gut / intestinal effects",
-      "concept_ontology_type": "TissueOrgan",
+      "concept_ontology_type": "Tissue",
       "definition": "Structured observation that this source discusses Gut / intestinal effects.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -2157,7 +2152,7 @@
       "paper_title": "A Detailed Review Study on Potential Effects of Microplastics and Additives of Concern on Human Health",
       "concept_id": "concept_polystyrene",
       "concept_name": "Polystyrene",
-      "concept_ontology_type": "Polymer",
+      "concept_ontology_type": "Agent",
       "evidence_sentence": "Polystyrene particles of the size 50 nm have led to genotoxic and cytotoxic effects on pulmonary epithelial cells and macrophages (Calu-3 and THP-1) [166].",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -2172,7 +2167,7 @@
       "paper_id": "paper_08_a_detailed_review_study_on_potential_effects_of_microplastics_and_addi",
       "concept_id": "concept_polystyrene",
       "concept_name": "Polystyrene",
-      "concept_ontology_type": "Polymer",
+      "concept_ontology_type": "Agent",
       "definition": "Structured observation that this source discusses Polystyrene.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -2186,7 +2181,7 @@
       "paper_title": "A Detailed Review Study on Potential Effects of Microplastics and Additives of Concern on Human Health",
       "concept_id": "concept_brain",
       "concept_name": "Brain / CNS",
-      "concept_ontology_type": "TissueOrgan",
+      "concept_ontology_type": "Tissue",
       "evidence_sentence": "However, scientists speculate that only 0.3% of these particles are expected to be absorbed, while a lower fraction (0.1%) that contains particles that are bigger than 10 \u00b5m should be capable of reaching both organs and cellular membranes and passing through the blood\u2013brain barrier and placenta [117].",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -2201,19 +2196,19 @@
       "paper_id": "paper_08_a_detailed_review_study_on_potential_effects_of_microplastics_and_addi",
       "concept_id": "concept_brain",
       "concept_name": "Brain / CNS",
-      "concept_ontology_type": "TissueOrgan",
+      "concept_ontology_type": "Tissue",
       "definition": "Structured observation that this source discusses Brain / CNS.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
     },
     {
       "id": "paper_09_microplastics_in_the_human_body_exposure_detection_and_risk_of_carcino",
-      "type": "Study",
+      "type": "Publication",
       "name": "Microplastics in the Human Body: Exposure, Detection, and Risk of Carcinogenesis: A State-of-the-Art Review",
       "title": "Microplastics in the Human Body: Exposure, Detection, and Risk of Carcinogenesis: A State-of-the-Art Review",
       "label": "Microplastics in the Human Body: Exposure, Detection, and Risk of Carcinogenesis: A State-of-the-Art Review",
       "design": "human/in-vitro",
-      "definition": "Section-level source paper used in the 10-paper evidence-gated prototype.",
+      "definition": "Section-level source publication used in the 10-paper evidence-gated prototype.",
       "evidence_type": "human/in-vitro",
       "section_count": 2,
       "character_count": 8663,
@@ -2228,7 +2223,7 @@
       "paper_title": "Microplastics in the Human Body: Exposure, Detection, and Risk of Carcinogenesis: A State-of-the-Art Review",
       "concept_id": "concept_microplastics",
       "concept_name": "Microplastics",
-      "concept_ontology_type": "ParticleSizeClass",
+      "concept_ontology_type": "Agent",
       "evidence_sentence": "Introduction The term microplastic was used in 2004 by Thompson et al.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -2243,7 +2238,7 @@
       "paper_id": "paper_09_microplastics_in_the_human_body_exposure_detection_and_risk_of_carcino",
       "concept_id": "concept_microplastics",
       "concept_name": "Microplastics",
-      "concept_ontology_type": "ParticleSizeClass",
+      "concept_ontology_type": "Agent",
       "definition": "Structured observation that this source discusses Microplastics.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -2257,7 +2252,7 @@
       "paper_title": "Microplastics in the Human Body: Exposure, Detection, and Risk of Carcinogenesis: A State-of-the-Art Review",
       "concept_id": "concept_human",
       "concept_name": "Human evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "evidence_sentence": "Lehel and Murphy in 2021 described the trophic transfer of microplastics and the potential threats to human health, including carcinogenicity, liver dysfunction, and endocrine disruption [13,14].",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -2272,7 +2267,7 @@
       "paper_id": "paper_09_microplastics_in_the_human_body_exposure_detection_and_risk_of_carcino",
       "concept_id": "concept_human",
       "concept_name": "Human evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "definition": "Structured observation that this source discusses Human evidence.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -2286,7 +2281,7 @@
       "paper_title": "Microplastics in the Human Body: Exposure, Detection, and Risk of Carcinogenesis: A State-of-the-Art Review",
       "concept_id": "concept_mouse",
       "concept_name": "Mouse / mammal evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "evidence_sentence": "Reports published over the past 10 years have reported on some effects of human accumulation of MPs, including inflammation, oxidative stress, immunity suppression, promotion of carcinogenesis, and alteration of reproductive and cognitive functions [15,24,25,26].",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -2301,7 +2296,7 @@
       "paper_id": "paper_09_microplastics_in_the_human_body_exposure_detection_and_risk_of_carcino",
       "concept_id": "concept_mouse",
       "concept_name": "Mouse / mammal evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "definition": "Structured observation that this source discusses Mouse / mammal evidence.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -2315,7 +2310,7 @@
       "paper_title": "Microplastics in the Human Body: Exposure, Detection, and Risk of Carcinogenesis: A State-of-the-Art Review",
       "concept_id": "concept_polyethylene",
       "concept_name": "Polyethylene",
-      "concept_ontology_type": "Polymer",
+      "concept_ontology_type": "Agent",
       "evidence_sentence": "Approximately half of the output is PE, which comes in two types: low-density PE (LDPE) and high-density PE (HDPE) [7].",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -2330,7 +2325,7 @@
       "paper_id": "paper_09_microplastics_in_the_human_body_exposure_detection_and_risk_of_carcino",
       "concept_id": "concept_polyethylene",
       "concept_name": "Polyethylene",
-      "concept_ontology_type": "Polymer",
+      "concept_ontology_type": "Agent",
       "definition": "Structured observation that this source discusses Polyethylene.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -2344,7 +2339,7 @@
       "paper_title": "Microplastics in the Human Body: Exposure, Detection, and Risk of Carcinogenesis: A State-of-the-Art Review",
       "concept_id": "concept_nanoplastics",
       "concept_name": "Nanoplastics",
-      "concept_ontology_type": "ParticleSizeClass",
+      "concept_ontology_type": "Agent",
       "evidence_sentence": "Plastic particles can be categorized based on their size into nanoplastics, microplastics, mesoplastics, macroplastics, and megaplastics (Table 1) [1,2,3].",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -2359,7 +2354,7 @@
       "paper_id": "paper_09_microplastics_in_the_human_body_exposure_detection_and_risk_of_carcino",
       "concept_id": "concept_nanoplastics",
       "concept_name": "Nanoplastics",
-      "concept_ontology_type": "ParticleSizeClass",
+      "concept_ontology_type": "Agent",
       "definition": "Structured observation that this source discusses Nanoplastics.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -2402,7 +2397,7 @@
       "paper_title": "Microplastics in the Human Body: Exposure, Detection, and Risk of Carcinogenesis: A State-of-the-Art Review",
       "concept_id": "concept_liver",
       "concept_name": "Liver / hepatic effects",
-      "concept_ontology_type": "TissueOrgan",
+      "concept_ontology_type": "Tissue",
       "evidence_sentence": "Lehel and Murphy in 2021 described the trophic transfer of microplastics and the potential threats to human health, including carcinogenicity, liver dysfunction, and endocrine disruption [13,14].",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -2417,7 +2412,7 @@
       "paper_id": "paper_09_microplastics_in_the_human_body_exposure_detection_and_risk_of_carcino",
       "concept_id": "concept_liver",
       "concept_name": "Liver / hepatic effects",
-      "concept_ontology_type": "TissueOrgan",
+      "concept_ontology_type": "Tissue",
       "definition": "Structured observation that this source discusses Liver / hepatic effects.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -2453,12 +2448,12 @@
     },
     {
       "id": "paper_10_polystyrene_microplastics_exposition_on_human_placental_explants_induc",
-      "type": "Study",
+      "type": "Publication",
       "name": "Polystyrene microplastics exposition on human placental explants induces time-dependent cytotoxicity, oxidative stress and metabolic alterations",
       "title": "Polystyrene microplastics exposition on human placental explants induces time-dependent cytotoxicity, oxidative stress and metabolic alterations",
       "label": "Polystyrene microplastics exposition on human placental explants induces time-dependent cytotoxicity, oxidative stress and metabolic alterations",
       "design": "human/in-vitro",
-      "definition": "Section-level source paper used in the 10-paper evidence-gated prototype.",
+      "definition": "Section-level source publication used in the 10-paper evidence-gated prototype.",
       "evidence_type": "human/in-vitro",
       "section_count": 4,
       "character_count": 35112,
@@ -2473,7 +2468,7 @@
       "paper_title": "Polystyrene microplastics exposition on human placental explants induces time-dependent cytotoxicity, oxidative stress and metabolic alterations",
       "concept_id": "concept_placenta",
       "concept_name": "Placenta / pregnancy",
-      "concept_ontology_type": "TissueOrgan",
+      "concept_ontology_type": "Tissue",
       "evidence_sentence": "In humans, the placenta was the first organ to be reported with MPs presence (14, 15).",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -2488,7 +2483,7 @@
       "paper_id": "paper_10_polystyrene_microplastics_exposition_on_human_placental_explants_induc",
       "concept_id": "concept_placenta",
       "concept_name": "Placenta / pregnancy",
-      "concept_ontology_type": "TissueOrgan",
+      "concept_ontology_type": "Tissue",
       "definition": "Structured observation that this source discusses Placenta / pregnancy.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -2502,7 +2497,7 @@
       "paper_title": "Polystyrene microplastics exposition on human placental explants induces time-dependent cytotoxicity, oxidative stress and metabolic alterations",
       "concept_id": "concept_mouse",
       "concept_name": "Mouse / mammal evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "evidence_sentence": "The MPs are broadly categorized into two types: primary MPs, which are intentionally incorporated into consumer and commercial products such as cosmetics, microfibers, hygiene products, clothing and fishing nets; and secondary MPs, which arise from the degradation of larger polymers due to physical, chemical, or biological processes in terrestrial or marine environments, such as food packages, water bottles, bags, tire debris etc.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -2517,7 +2512,7 @@
       "paper_id": "paper_10_polystyrene_microplastics_exposition_on_human_placental_explants_induc",
       "concept_id": "concept_mouse",
       "concept_name": "Mouse / mammal evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "definition": "Structured observation that this source discusses Mouse / mammal evidence.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -2531,7 +2526,7 @@
       "paper_title": "Polystyrene microplastics exposition on human placental explants induces time-dependent cytotoxicity, oxidative stress and metabolic alterations",
       "concept_id": "concept_microplastics",
       "concept_name": "Microplastics",
-      "concept_ontology_type": "ParticleSizeClass",
+      "concept_ontology_type": "Agent",
       "evidence_sentence": "The environmental contamination results in the formation of smaller particles known as microplastics (MP), defined as synthetic solid particles or polymeric matrices, with regular or irregular shapes and sizes ranging from 1 \u00b5m to 5 mm, of either primary or secondary manufacturing origin, and insoluble in water (3).",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -2546,7 +2541,7 @@
       "paper_id": "paper_10_polystyrene_microplastics_exposition_on_human_placental_explants_induc",
       "concept_id": "concept_microplastics",
       "concept_name": "Microplastics",
-      "concept_ontology_type": "ParticleSizeClass",
+      "concept_ontology_type": "Agent",
       "definition": "Structured observation that this source discusses Microplastics.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -2589,7 +2584,7 @@
       "paper_title": "Polystyrene microplastics exposition on human placental explants induces time-dependent cytotoxicity, oxidative stress and metabolic alterations",
       "concept_id": "concept_polystyrene",
       "concept_name": "Polystyrene",
-      "concept_ontology_type": "Polymer",
+      "concept_ontology_type": "Agent",
       "evidence_sentence": "Furthermore, MPs can be mainly classified into six categories based on their chemical composition: polyethylene (PE), polystyrene (PS), polypropylene (PP), polyurethane (PU), polyvinyl chloride (PVC), and polyethylene terephthalate (PET) (5).",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -2604,7 +2599,7 @@
       "paper_id": "paper_10_polystyrene_microplastics_exposition_on_human_placental_explants_induc",
       "concept_id": "concept_polystyrene",
       "concept_name": "Polystyrene",
-      "concept_ontology_type": "Polymer",
+      "concept_ontology_type": "Agent",
       "definition": "Structured observation that this source discusses Polystyrene.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -2618,7 +2613,7 @@
       "paper_title": "Polystyrene microplastics exposition on human placental explants induces time-dependent cytotoxicity, oxidative stress and metabolic alterations",
       "concept_id": "concept_human",
       "concept_name": "Human evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "evidence_sentence": "The growing concern over MPs pollution highlights the urgent need for comprehensive research and effective management strategies to mitigate its impact on ecosystems and human health.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -2633,7 +2628,7 @@
       "paper_id": "paper_10_polystyrene_microplastics_exposition_on_human_placental_explants_induc",
       "concept_id": "concept_human",
       "concept_name": "Human evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "definition": "Structured observation that this source discusses Human evidence.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -2647,7 +2642,7 @@
       "paper_title": "Polystyrene microplastics exposition on human placental explants induces time-dependent cytotoxicity, oxidative stress and metabolic alterations",
       "concept_id": "concept_fish",
       "concept_name": "Fish / aquatic evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "evidence_sentence": "The MPs are broadly categorized into two types: primary MPs, which are intentionally incorporated into consumer and commercial products such as cosmetics, microfibers, hygiene products, clothing and fishing nets; and secondary MPs, which arise from the degradation of larger polymers due to physical, chemical, or biological processes in terrestrial or marine environments, such as food packages, water bottles, bags, tire debris etc.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -2662,7 +2657,7 @@
       "paper_id": "paper_10_polystyrene_microplastics_exposition_on_human_placental_explants_induc",
       "concept_id": "concept_fish",
       "concept_name": "Fish / aquatic evidence",
-      "concept_ontology_type": "HostPopulation",
+      "concept_ontology_type": "Host Population",
       "definition": "Structured observation that this source discusses Fish / aquatic evidence.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
@@ -2676,7 +2671,7 @@
       "paper_title": "Polystyrene microplastics exposition on human placental explants induces time-dependent cytotoxicity, oxidative stress and metabolic alterations",
       "concept_id": "concept_polyethylene",
       "concept_name": "Polyethylene",
-      "concept_ontology_type": "Polymer",
+      "concept_ontology_type": "Agent",
       "evidence_sentence": "Furthermore, MPs can be mainly classified into six categories based on their chemical composition: polyethylene (PE), polystyrene (PS), polypropylene (PP), polyurethane (PU), polyvinyl chloride (PVC), and polyethylene terephthalate (PET) (5).",
       "evidence_type": "human/in-vitro",
       "confidence": 0.74
@@ -2691,14 +2686,14 @@
       "paper_id": "paper_10_polystyrene_microplastics_exposition_on_human_placental_explants_induc",
       "concept_id": "concept_polyethylene",
       "concept_name": "Polyethylene",
-      "concept_ontology_type": "Polymer",
+      "concept_ontology_type": "Agent",
       "definition": "Structured observation that this source discusses Polyethylene.",
       "evidence_type": "human/in-vitro",
       "confidence": 0.7
     },
     {
       "id": "concept_microplastics",
-      "type": "ParticleSizeClass",
+      "type": "Agent",
       "name": "Microplastics",
       "label": "Microplastics",
       "category": "Agent",
@@ -2712,7 +2707,7 @@
     },
     {
       "id": "concept_nanoplastics",
-      "type": "ParticleSizeClass",
+      "type": "Agent",
       "name": "Nanoplastics",
       "label": "Nanoplastics",
       "category": "Agent",
@@ -2728,7 +2723,7 @@
     },
     {
       "id": "concept_polystyrene",
-      "type": "Polymer",
+      "type": "Agent",
       "name": "Polystyrene",
       "label": "Polystyrene",
       "category": "Polymer",
@@ -2744,7 +2739,7 @@
     },
     {
       "id": "concept_polyethylene",
-      "type": "Polymer",
+      "type": "Agent",
       "name": "Polyethylene",
       "label": "Polyethylene",
       "category": "Polymer",
@@ -2758,7 +2753,7 @@
     },
     {
       "id": "concept_brain",
-      "type": "TissueOrgan",
+      "type": "Tissue",
       "name": "Brain / CNS",
       "label": "Brain / CNS",
       "category": "Tissue",
@@ -2832,7 +2827,7 @@
     },
     {
       "id": "concept_neurotoxicity",
-      "type": "ClinicalOutcome",
+      "type": "Clinical Outcome",
       "name": "Neurotoxicity",
       "label": "Neurotoxicity",
       "category": "Outcome",
@@ -2847,7 +2842,7 @@
     },
     {
       "id": "concept_behavior",
-      "type": "ClinicalOutcome",
+      "type": "Clinical Outcome",
       "name": "Behavioral change",
       "label": "Behavioral change",
       "category": "Outcome",
@@ -2863,7 +2858,7 @@
     },
     {
       "id": "concept_liver",
-      "type": "TissueOrgan",
+      "type": "Tissue",
       "name": "Liver / hepatic effects",
       "label": "Liver / hepatic effects",
       "category": "Tissue",
@@ -2876,7 +2871,7 @@
     },
     {
       "id": "concept_gut",
-      "type": "TissueOrgan",
+      "type": "Tissue",
       "name": "Gut / intestinal effects",
       "label": "Gut / intestinal effects",
       "category": "Tissue",
@@ -2892,7 +2887,7 @@
     },
     {
       "id": "concept_placenta",
-      "type": "TissueOrgan",
+      "type": "Tissue",
       "name": "Placenta / pregnancy",
       "label": "Placenta / pregnancy",
       "category": "Tissue/Population",
@@ -2909,7 +2904,7 @@
     },
     {
       "id": "concept_fertility",
-      "type": "ClinicalOutcome",
+      "type": "Clinical Outcome",
       "name": "Fertility / reproductive effects",
       "label": "Fertility / reproductive effects",
       "category": "Outcome",
@@ -2925,7 +2920,7 @@
     },
     {
       "id": "concept_human",
-      "type": "HostPopulation",
+      "type": "Host Population",
       "name": "Human evidence",
       "label": "Human evidence",
       "category": "Host",
@@ -2941,7 +2936,7 @@
     },
     {
       "id": "concept_mouse",
-      "type": "HostPopulation",
+      "type": "Host Population",
       "name": "Mouse / mammal evidence",
       "label": "Mouse / mammal evidence",
       "category": "Host",
@@ -2957,7 +2952,7 @@
     },
     {
       "id": "concept_fish",
-      "type": "HostPopulation",
+      "type": "Host Population",
       "name": "Fish / aquatic evidence",
       "label": "Fish / aquatic evidence",
       "category": "Host",
@@ -2991,7 +2986,7 @@
     },
     {
       "id": "rel_observation_concept_001",
-      "relation_type": "has_size_class",
+      "relation_type": "has_agent",
       "source_node": "observation_01_001_nanoplastics",
       "target_node": "concept_nanoplastics",
       "evidence_sentence": "Over time, these enduring plastics fragment into microplastics and nanoplastics-tiny particles with variable chemical structures formed through degradation processes [9,10,11].",
@@ -3018,7 +3013,7 @@
     },
     {
       "id": "rel_observation_concept_002",
-      "relation_type": "has_size_class",
+      "relation_type": "has_agent",
       "source_node": "observation_01_002_microplastics",
       "target_node": "concept_microplastics",
       "evidence_sentence": "Over time, these enduring plastics fragment into microplastics and nanoplastics-tiny particles with variable chemical structures formed through degradation processes [9,10,11].",
@@ -3153,7 +3148,7 @@
     },
     {
       "id": "rel_observation_concept_007",
-      "relation_type": "has_polymer",
+      "relation_type": "has_agent",
       "source_node": "observation_01_007_polystyrene",
       "target_node": "concept_polystyrene",
       "evidence_sentence": "Microplastics and Nanoplastics Neurotoxic Effects on Marine Invertebrates Caenorhabditis elegans were subjected to five different spherical polystyrene microplastic sizes (0.1-5 \u03bcm) in a culture medium at 1 mg/L concentration.",
@@ -3207,7 +3202,7 @@
     },
     {
       "id": "rel_observation_concept_009",
-      "relation_type": "has_size_class",
+      "relation_type": "has_agent",
       "source_node": "observation_02_009_nanoplastics",
       "target_node": "concept_nanoplastics",
       "evidence_sentence": "13 Tiny plastic fragments are termed according to their sizes: secondary microplastics (MPs) and nanoplastics (NPs), the latter of which is the primary focus of this review.",
@@ -3261,7 +3256,7 @@
     },
     {
       "id": "rel_observation_concept_011",
-      "relation_type": "has_size_class",
+      "relation_type": "has_agent",
       "source_node": "observation_02_011_microplastics",
       "target_node": "concept_microplastics",
       "evidence_sentence": "13 Tiny plastic fragments are termed according to their sizes: secondary microplastics (MPs) and nanoplastics (NPs), the latter of which is the primary focus of this review.",
@@ -3423,7 +3418,7 @@
     },
     {
       "id": "rel_observation_concept_017",
-      "relation_type": "has_size_class",
+      "relation_type": "has_agent",
       "source_node": "observation_03_017_nanoplastics",
       "target_node": "concept_nanoplastics",
       "evidence_sentence": "Introduction Micro-/nanoplastics (MNPs) are a growing concern, both for human health and the environment, due to their widespread distribution and potential harmfulness.",
@@ -3504,7 +3499,7 @@
     },
     {
       "id": "rel_observation_concept_020",
-      "relation_type": "has_polymer",
+      "relation_type": "has_agent",
       "source_node": "observation_03_020_polystyrene",
       "target_node": "concept_polystyrene",
       "evidence_sentence": "Earlier simulation studies [16,17,18,19,20,21] found that when nanometer-sized polystyrene (PS) particles absorb into the hydrophobic core of lipid bilayers, the polymer chains that make up the plastic particle may disentangle and form a network of macromolecules within the membrane.",
@@ -3639,7 +3634,7 @@
     },
     {
       "id": "rel_observation_concept_025",
-      "relation_type": "has_size_class",
+      "relation_type": "has_agent",
       "source_node": "observation_04_025_microplastics",
       "target_node": "concept_microplastics",
       "evidence_sentence": "Introduction Microplastics (MPs) are plastic byproducts that emerge from the decomposition of plastic constituents present in routine consumer products, including scrubs, cleaning liquids, and cosmetics [1].",
@@ -3855,7 +3850,7 @@
     },
     {
       "id": "rel_observation_concept_033",
-      "relation_type": "has_size_class",
+      "relation_type": "has_agent",
       "source_node": "observation_05_033_nanoplastics",
       "target_node": "concept_nanoplastics",
       "evidence_sentence": "4 Effects of MNP exposure on mammalian fertility 4.1 Fertility effects in adult males Several adverse reproductive effects are observed in male mammals following oral exposure to MNPs of various size and with varying duration.",
@@ -4017,7 +4012,7 @@
     },
     {
       "id": "rel_observation_concept_039",
-      "relation_type": "has_size_class",
+      "relation_type": "has_agent",
       "source_node": "observation_05_039_microplastics",
       "target_node": "concept_microplastics",
       "evidence_sentence": "More detailed investigations identified microplastic-like particles within the syncytiotrophoblast cellular layer of the placenta, both free within the cytoplasm and encapsulated within structures located below the plasma membrane (i.e.",
@@ -4071,7 +4066,7 @@
     },
     {
       "id": "rel_observation_concept_041",
-      "relation_type": "has_size_class",
+      "relation_type": "has_agent",
       "source_node": "observation_06_041_microplastics",
       "target_node": "concept_microplastics",
       "evidence_sentence": "1 Introduction Microplastics are tiny plastic particles, measuring less than 5 mm in diameter, and they are found throughout our environment, including in oceans, rivers, land, and even the atmosphere.",
@@ -4152,7 +4147,7 @@
     },
     {
       "id": "rel_observation_concept_044",
-      "relation_type": "has_size_class",
+      "relation_type": "has_agent",
       "source_node": "observation_06_044_nanoplastics",
       "target_node": "concept_nanoplastics",
       "evidence_sentence": "This results in secondary microplastics and even smaller particles known as nanoplastics, which are less than 1 \u03bcm in diameter.",
@@ -4206,7 +4201,7 @@
     },
     {
       "id": "rel_observation_concept_046",
-      "relation_type": "has_polymer",
+      "relation_type": "has_agent",
       "source_node": "observation_06_046_polystyrene",
       "target_node": "concept_polystyrene",
       "evidence_sentence": "Microplastics exert multidimensional effects on the nervous system at the molecular level [e.g., microplastic exposure interferes with the ROS/TGF-\u03b2/Akt/FoxO3a signaling pathway (4)], cellular level [microplastics disrupt tight junctions between endothelial cells and enter endothelial cells via endocytosis (5)], and organ level [e.g., in the hippocampus, exposure to nanopolystyrene induces P53-mediated ferritinophagy and ferroptosis in the rat hippocampus (6)].",
@@ -4287,7 +4282,7 @@
     },
     {
       "id": "rel_observation_concept_049",
-      "relation_type": "has_size_class",
+      "relation_type": "has_agent",
       "source_node": "observation_07_049_microplastics",
       "target_node": "concept_microplastics",
       "evidence_sentence": "MPs can contaminate food sources via air, water, and soil contamination, as well as via packaging and processing [19,20].",
@@ -4503,7 +4498,7 @@
     },
     {
       "id": "rel_observation_concept_057",
-      "relation_type": "has_size_class",
+      "relation_type": "has_agent",
       "source_node": "observation_08_057_microplastics",
       "target_node": "concept_microplastics",
       "evidence_sentence": "Effects of Micro and Nanoplastics on Human Health A recent report from the World Health Organization [146] emphasized the ubiquitous microplastics presence in the environment and aroused great concern regarding the exposition and effects of nano and microplastics on human health [122,147,148,149,150].",
@@ -4557,7 +4552,7 @@
     },
     {
       "id": "rel_observation_concept_059",
-      "relation_type": "has_size_class",
+      "relation_type": "has_agent",
       "source_node": "observation_08_059_nanoplastics",
       "target_node": "concept_nanoplastics",
       "evidence_sentence": "Effects of Micro and Nanoplastics on Human Health A recent report from the World Health Organization [146] emphasized the ubiquitous microplastics presence in the environment and aroused great concern regarding the exposition and effects of nano and microplastics on human health [122,147,148,149,150].",
@@ -4665,7 +4660,7 @@
     },
     {
       "id": "rel_observation_concept_063",
-      "relation_type": "has_polymer",
+      "relation_type": "has_agent",
       "source_node": "observation_08_063_polystyrene",
       "target_node": "concept_polystyrene",
       "evidence_sentence": "Polystyrene particles of the size 50 nm have led to genotoxic and cytotoxic effects on pulmonary epithelial cells and macrophages (Calu-3 and THP-1) [166].",
@@ -4719,7 +4714,7 @@
     },
     {
       "id": "rel_observation_concept_065",
-      "relation_type": "has_size_class",
+      "relation_type": "has_agent",
       "source_node": "observation_09_065_microplastics",
       "target_node": "concept_microplastics",
       "evidence_sentence": "Introduction The term microplastic was used in 2004 by Thompson et al.",
@@ -4800,7 +4795,7 @@
     },
     {
       "id": "rel_observation_concept_068",
-      "relation_type": "has_polymer",
+      "relation_type": "has_agent",
       "source_node": "observation_09_068_polyethylene",
       "target_node": "concept_polyethylene",
       "evidence_sentence": "Approximately half of the output is PE, which comes in two types: low-density PE (LDPE) and high-density PE (HDPE) [7].",
@@ -4827,7 +4822,7 @@
     },
     {
       "id": "rel_observation_concept_069",
-      "relation_type": "has_size_class",
+      "relation_type": "has_agent",
       "source_node": "observation_09_069_nanoplastics",
       "target_node": "concept_nanoplastics",
       "evidence_sentence": "Plastic particles can be categorized based on their size into nanoplastics, microplastics, mesoplastics, macroplastics, and megaplastics (Table 1) [1,2,3].",
@@ -4989,7 +4984,7 @@
     },
     {
       "id": "rel_observation_concept_075",
-      "relation_type": "has_size_class",
+      "relation_type": "has_agent",
       "source_node": "observation_10_075_microplastics",
       "target_node": "concept_microplastics",
       "evidence_sentence": "The environmental contamination results in the formation of smaller particles known as microplastics (MP), defined as synthetic solid particles or polymeric matrices, with regular or irregular shapes and sizes ranging from 1 \u00b5m to 5 mm, of either primary or secondary manufacturing origin, and insoluble in water (3).",
@@ -5043,7 +5038,7 @@
     },
     {
       "id": "rel_observation_concept_077",
-      "relation_type": "has_polymer",
+      "relation_type": "has_agent",
       "source_node": "observation_10_077_polystyrene",
       "target_node": "concept_polystyrene",
       "evidence_sentence": "Furthermore, MPs can be mainly classified into six categories based on their chemical composition: polyethylene (PE), polystyrene (PS), polypropylene (PP), polyurethane (PU), polyvinyl chloride (PVC), and polyethylene terephthalate (PET) (5).",
@@ -5124,7 +5119,7 @@
     },
     {
       "id": "rel_observation_concept_080",
-      "relation_type": "has_polymer",
+      "relation_type": "has_agent",
       "source_node": "observation_10_080_polyethylene",
       "target_node": "concept_polyethylene",
       "evidence_sentence": "Furthermore, MPs can be mainly classified into six categories based on their chemical composition: polyethylene (PE), polystyrene (PS), polypropylene (PP), polyurethane (PU), polyvinyl chloride (PVC), and polyethylene terephthalate (PET) (5).",

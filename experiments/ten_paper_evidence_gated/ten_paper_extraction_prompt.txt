@@ -135,4 +135,4 @@ SOURCE PAPER CONTENT
 ]
 
 Expected evidence chain:
-Study -[provides]-> Evidence -[supports]-> Observation, with concepts attached only through approved ontology relations (has_polymer, has_size_class, affects, evaluates, assesses, investigates). Use only node and relationship types defined in entities_v1.json and relationships_v1.json.
+Publication -[provides]-> Evidence -[supports]-> Observation, with concepts attached only through approved relations (has_agent, affects, evaluates, assesses, investigates). Use only the environmental-health ontology node types: Agent, Biomarker, Clinical Outcome, Environmental Reservoir, Evidence, Exposure Pathway, Host Population, Mechanism, Observation, Publication, Study, Tissue.
